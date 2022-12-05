@@ -1,4 +1,4 @@
-package com.yubicolabs.passkey_rp;
+package com.yubicolabs.passkey_rp.handler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,7 @@ import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.serverless.proxy.spring.SpringBootLambdaContainerHandler;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
+import com.yubicolabs.passkey_rp.PasskeyRpApplication;
 
 public class StreamLambdaHandler implements RequestStreamHandler {
 

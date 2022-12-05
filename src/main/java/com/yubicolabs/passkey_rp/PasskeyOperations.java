@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonObject;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;
@@ -29,6 +28,7 @@ import com.yubicolabs.passkey_rp.data.AuthenticationResponse;
 import com.yubicolabs.passkey_rp.data.CredentialRegistration;
 import com.yubicolabs.passkey_rp.data.RegistrationRequest;
 import com.yubicolabs.passkey_rp.data.RegistrationResponse;
+import com.yubicolabs.passkey_rp.data.StartRegistrationRequest;
 
 @Service
 @Scope("singleton")
@@ -50,9 +50,9 @@ public class PasskeyOperations {
    *         PublicKeyCredentialCreationOptions, and requestID
    * @throws Exception
    */
-  public RegistrationRequest startRegistration(JsonObject controllerRequest) throws Exception {
-    String username = controllerRequest.get("username").getAsString();
-    String uid = controllerRequest.get("uid").getAsString();
+  public RegistrationRequest startRegistration(StartRegistrationRequest controllerRequest) throws Exception {
+    String username = controllerRequest.getUsername();
+    String uid = controllerRequest.getUid();
 
     ByteArray userID;
 

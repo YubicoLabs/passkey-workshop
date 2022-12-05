@@ -3,6 +3,8 @@ package com.yubicolabs.passkey_rp;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.yubico.internal.util.JacksonCodecs;
+import com.yubicolabs.passkey_rp.data.AuthenticationRequest;
 import com.yubicolabs.passkey_rp.data.AuthenticationResponse;
+import com.yubicolabs.passkey_rp.data.CredentialRegistration;
 import com.yubicolabs.passkey_rp.data.RegistrationResponse;
+import com.yubicolabs.passkey_rp.data.StartRegistrationRequest;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -30,60 +31,41 @@ public class PasskeyController {
 
   @Autowired
   PasskeyOperations passkeyOperations;
-  private final ObjectMapper jsonMapper = JacksonCodecs.json();
 
-  private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  @Bean
+  @Primary
+  public ObjectMapper objectMapper() {
+    return JacksonCodecs.json();
+  }
 
   @PostMapping("/passkey/register/start")
-  public ResponseEntity startRegistration(@RequestBody String request) {
-    JsonObject obj = JsonParser.parseString(request).getAsJsonObject();
-    try {
-      return ResponseEntity.status(HttpStatus.OK)
-          .body(passkeyOperations.startRegistration(obj));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(e);
-    }
+  public ResponseEntity startRegistration(@RequestBody StartRegistrationRequest request) throws Exception {
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(passkeyOperations.startRegistration(request));
   }
 
   @PostMapping("/passkey/register/finish")
-  public ResponseEntity finishRegistration(@RequestBody String request) {
-    try {
-      RegistrationResponse response = jsonMapper.readValue(request, RegistrationResponse.class);
+  public ResponseEntity<CredentialRegistration> finishRegistration(@RequestBody RegistrationResponse request)
+      throws Exception {
 
-      return ResponseEntity.status(HttpStatus.OK)
-          .body(passkeyOperations.finishRegistration(response));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(e);
-    }
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(passkeyOperations.finishRegistration(request));
   }
 
   @GetMapping("/passkey/authenticate/start")
-  public ResponseEntity startAuthentication(@RequestHeader Map<String, String> header) {
-    try {
-      header.forEach((key, value) -> {
-        System.out.println("Header " + key + " = " + value);
-      });
-      return ResponseEntity.status(HttpStatus.OK)
-          .body(passkeyOperations.startAuthentication());
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(e);
-    }
+  public ResponseEntity<AuthenticationRequest> startAuthentication(@RequestHeader Map<String, String> header)
+      throws Exception {
+    header.forEach((key, value) -> {
+      System.out.println("Header " + key + " = " + value);
+    });
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(passkeyOperations.startAuthentication());
   }
 
   @PostMapping("/passkey/authenticate/finish")
-  public ResponseEntity finishAuthentication(@RequestBody String request) {
-    try {
-      AuthenticationResponse response = jsonMapper.readValue(request, AuthenticationResponse.class);
-
-      return ResponseEntity.status(HttpStatus.OK)
-          .body(passkeyOperations.finishAuthentication(response));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(e);
-    }
+  public ResponseEntity finishAuthentication(@RequestBody AuthenticationResponse request) throws Exception {
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(passkeyOperations.finishAuthentication(request));
   }
 
   // TODO: Remove this when you are finished

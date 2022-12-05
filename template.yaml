@@ -11,7 +11,7 @@ Resources:
   PasskeyFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.yubicolabs.passkey_rp.StreamLambdaHandler::handleRequest
+      Handler: com.yubicolabs.passkey_rp.handler.StreamLambdaHandler::handleRequest
       Runtime: java11
       CodeUri: .
       MemorySize: 1512
