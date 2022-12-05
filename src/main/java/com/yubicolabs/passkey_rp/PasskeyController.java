@@ -1,5 +1,7 @@
 package com.yubicolabs.passkey_rp;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,7 +42,7 @@ public class PasskeyController {
           .body(passkeyOperations.startRegistration(obj));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(e.getMessage());
+          .body(e);
     }
   }
 
@@ -52,18 +55,21 @@ public class PasskeyController {
           .body(passkeyOperations.finishRegistration(response));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(e.getMessage());
+          .body(e);
     }
   }
 
   @GetMapping("/passkey/authenticate/start")
-  public ResponseEntity startAuthentication() {
+  public ResponseEntity startAuthentication(@RequestHeader Map<String, String> header) {
     try {
+      header.forEach((key, value) -> {
+        System.out.println("Header " + key + " = " + value);
+      });
       return ResponseEntity.status(HttpStatus.OK)
           .body(passkeyOperations.startAuthentication());
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(e.getMessage());
+          .body(e);
     }
   }
 
@@ -76,7 +82,7 @@ public class PasskeyController {
           .body(passkeyOperations.finishAuthentication(response));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(e.getMessage());
+          .body(e);
     }
   }
 
@@ -88,7 +94,7 @@ public class PasskeyController {
           .body(passkeyOperations.relyingPartyInstance.getStorageInstance().getRegistrationRequestStorage().getAll());
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(e.getMessage());
+          .body(e);
     }
   }
 

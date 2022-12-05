@@ -8,7 +8,7 @@ Globals:
     EndpointConfiguration: REGIONAL
 
 Resources:
-  SpringBootMvcFunction:
+  PasskeyFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: com.yubicolabs.passkey_rp.StreamLambdaHandler::handleRequest
@@ -18,11 +18,34 @@ Resources:
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 60
       Events:
-        HttpApiEvent:
+        AuthStart:
           Type: HttpApi
           Properties:
             TimeoutInMillis: 20000
             PayloadFormatVersion: "1.0"
+            Path: /passkey/authenticate/start
+            Method: get
+        AuthFinish:
+          Type: HttpApi
+          Properties:
+            TimeoutInMillis: 20000
+            PayloadFormatVersion: "1.0"
+            Path: /passkey/authenticate/finish
+            Method: post
+        RegStart:
+          Type: HttpApi
+          Properties:
+            TimeoutInMillis: 20000
+            PayloadFormatVersion: "1.0"
+            Path: /passkey/register/start
+            Method: post
+        RegFinish:
+          Type: HttpApi
+          Properties:
+            TimeoutInMillis: 20000
+            PayloadFormatVersion: "1.0"
+            Path: /passkey/register/finish
+            Method: post
 
 Outputs:
   SpringBootMvcApi:
