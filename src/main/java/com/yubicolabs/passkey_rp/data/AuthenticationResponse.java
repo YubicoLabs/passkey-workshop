@@ -21,7 +21,7 @@ public class AuthenticationResponse {
 
   @JsonCreator
   public AuthenticationResponse(
-      @JsonProperty("ByteArray") ByteArray requestId,
+      @JsonProperty("requestId") ByteArray requestId,
       @JsonProperty("assertionResponse") PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> assertionResponse,
       @JsonProperty("publicKeyCredentialRequestOptions") PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions) {
     this.requestId = requestId;
