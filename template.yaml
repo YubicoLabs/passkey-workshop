@@ -46,6 +46,13 @@ Resources:
             PayloadFormatVersion: "1.0"
             Path: /passkey/register/finish
             Method: post
+        ApiDocs:
+          Type: HttpApi
+          Properties:
+            TimeoutInMillis: 20000
+            PayloadFormatVersion: "1.0"
+            Path: /swagger-ui/{proxy+}
+            Method: get
 
 Outputs:
   SpringBootMvcApi:

@@ -23,6 +23,7 @@ import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.data.UserVerificationRequirement;
+import com.yubicolabs.passkey_rp.Services.RelyingPartyInstance;
 import com.yubicolabs.passkey_rp.data.AuthenticationRequest;
 import com.yubicolabs.passkey_rp.data.AuthenticationResponse;
 import com.yubicolabs.passkey_rp.data.CredentialRegistration;

@@ -1,4 +1,4 @@
-package com.yubicolabs.passkey_rp;
+package com.yubicolabs.passkey_rp.Services;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
-import com.yubicolabs.passkey_rp.Services.StorageInstance;
 
 import lombok.Getter;
 

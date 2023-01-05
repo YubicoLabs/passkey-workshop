@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.yubico.webauthn.data.ByteArray;
 import com.yubicolabs.passkey_rp.data.AuthenticationRequest;
+import com.yubicolabs.passkey_rp.interfaces.AssertionRequestStorage;
 
 public class AssertionRequestStorageLocal implements AssertionRequestStorage {
 

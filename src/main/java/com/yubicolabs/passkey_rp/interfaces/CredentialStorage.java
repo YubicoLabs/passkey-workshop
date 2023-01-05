@@ -1,4 +1,4 @@
-package com.yubicolabs.passkey_rp.Services;
+package com.yubicolabs.passkey_rp.interfaces;
 
 import java.util.Collection;
 

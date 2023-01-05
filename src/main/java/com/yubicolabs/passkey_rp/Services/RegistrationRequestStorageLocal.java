@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.yubico.webauthn.data.ByteArray;
 import com.yubicolabs.passkey_rp.data.RegistrationRequest;
+import com.yubicolabs.passkey_rp.interfaces.RegistrationRequestStorage;
 
 public class RegistrationRequestStorageLocal implements RegistrationRequestStorage {
 
