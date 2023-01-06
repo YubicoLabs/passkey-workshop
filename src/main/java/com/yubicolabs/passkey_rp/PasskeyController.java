@@ -21,6 +21,7 @@ import com.yubico.internal.util.JacksonCodecs;
 import com.yubicolabs.passkey_rp.data.AuthenticationRequest;
 import com.yubicolabs.passkey_rp.data.AuthenticationResponse;
 import com.yubicolabs.passkey_rp.data.CredentialRegistration;
+import com.yubicolabs.passkey_rp.data.RegistrationRequest;
 import com.yubicolabs.passkey_rp.data.RegistrationResponse;
 import com.yubicolabs.passkey_rp.data.StartRegistrationRequest;
 
@@ -39,7 +40,8 @@ public class PasskeyController {
   }
 
   @PostMapping("/passkey/register/start")
-  public ResponseEntity startRegistration(@RequestBody StartRegistrationRequest request) throws Exception {
+  public ResponseEntity<RegistrationRequest> startRegistration(@RequestBody StartRegistrationRequest request)
+      throws Exception {
     return ResponseEntity.status(HttpStatus.OK)
         .body(passkeyOperations.startRegistration(request));
   }
