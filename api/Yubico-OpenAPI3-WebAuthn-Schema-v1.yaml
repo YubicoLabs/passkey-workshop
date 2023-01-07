@@ -1,0 +1,307 @@
+openapi: "3.0.0"
+info:
+  title: Simple API overview
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /v1/status:
+    get:
+      description: Get API Status
+      operationId: APIStatus
+      summary: API status
+      responses:
+        '200':
+          description: API Status Response from Server
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                example:
+                  {"status": "OK"}
+  /v1/attestation/options:
+    post:
+      description: Register a new passkey for user
+      operationId: ServerPublicKeyCredentialCreationOptionsRequest
+      requestBody:
+        description: Create passkey for user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttestationOptions'
+            examples:
+              Default: 
+                $ref: '#/components/examples/AttestationOptionsRequired'
+              Optional: 
+                $ref: '#/components/examples/ServerPublicKeyCredentialCreationOptionsRequest'
+      responses:
+        '200':
+          description: Attestation Options Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttestationOptionsResponse'
+              examples:
+                Default:
+                  $ref: '#/components/examples/ServerPublicKeyCredentialCreationOptionsResponse'
+        '400':
+          description: 4xx or 5xx Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/attestation/result:
+    post:
+      description: Authenticator Attestation Response
+      operationId: ServerAuthenticatorAttestationResponse
+      requestBody:
+        description: Sending attestation response to server
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttestationResult'
+            examples:
+              Default: 
+                $ref: '#/components/examples/AttestationResultRequired'
+      responses:
+        '200':
+          description: Attestation Result Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttestationResultResponse'
+              examples:
+                Default:
+                  $ref: '#/components/examples/ServerAuthenticatorAttestationResponse'
+        '400':
+          description: 4xx or 5xx Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/assertion/options:
+    post:
+      description: Credential Get Options
+      operationId: ServerPublicKeyCredentialGetOptionsRequest
+      requestBody:
+        description: Get Credential Options for User
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssertionOptions'
+            examples:
+              Default: 
+                $ref: '#/components/examples/AssertionOptions'
+      responses:
+        '200':
+          description: Assertion Options Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssertionOptionsResponse'
+              examples:
+                Default:
+                  $ref: '#/components/examples/ServerPublicKeyCredentialGetOptionsRequest'
+        '400':
+          description: 4xx or 5xx Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/assertion/result:
+    post:
+      description: Authenticator Assertion Response
+      operationId: ServerAuthenticatorAssertionResponse
+      requestBody:
+        description: Authenticator Assertion Response 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssertionResult'
+            examples:
+              Default: 
+                $ref: '#/components/examples/AssertionResult'
+      responses:
+        '200':
+          description: Assertion Options Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssertionResultResponse'
+              examples:
+                Default:
+                  $ref: '#/components/examples/ServerAuthenticatorAssertionResponse'
+        '400':
+          description: 4xx or 5xx Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  # Schemas
+  schemas:
+    AttestationOptions:
+      properties:
+        userName: 
+          type: string
+    AttestationOptionsResponse:
+      properties:
+        userName: 
+          type: string
+    AttestationResult:
+      properties:
+        userName: 
+          type: string
+    AttestationResultResponse:
+      properties:
+        userName: 
+          type: string
+    AssertionOptions:
+      properties:
+        userName: 
+          type: string
+    AssertionOptionsResponse:
+      properties:
+        userName: 
+          type: string
+    AssertionResult:
+      properties:
+        userName: 
+          type: string
+    AssertionResultResponse:
+      properties:
+        userName: 
+          type: string
+    Error:
+      type: object
+      properties:
+        status: 
+          type: string
+          example: error
+        errorMessage:
+          type: string
+          example: clear error message
+  # Examples
+  examples:
+    AttestationOptionsRequired:
+      summary: 'Request body example (REQUIRED)'
+      value: |-
+        {
+          "username": "johndoe@example.com"
+        }
+    ServerPublicKeyCredentialCreationOptionsRequest:
+      summary: 'Request body example (OPTIONAL)'
+      value: |-
+        {
+          "username": "johndoe@example.com",
+          "displayName": "John Doe",
+          "authenticatorSelection": {
+            "requireResidentKey": false,
+            "authenticatorAttachment": "cross-platform",
+            "userVerification": "preferred"
+          },
+        "attestation": "direct"
+        }
+    ServerPublicKeyCredentialCreationOptionsResponse:
+      summary: ''
+      value: |-
+        {
+          "status": "ok",
+          "errorMessage": "",
+          "rp": {
+              "name": "Example Corporation"
+          },
+          "user": {
+              "id": "S3932ee31vKEC0JtJMIQ",
+              "name": "johndoe@example.com",
+              "displayName": "John Doe"
+          },
+
+          "challenge": "uhUjPNlZfvn7onwuhNdsLPkkE5Fv-lUN",
+          "pubKeyCredParams": [
+              {
+                  "type": "public-key",
+                  "alg": -7
+              }
+          ],
+          "timeout": 10000,
+          "excludeCredentials": [
+              {
+                  "type": "public-key",
+                  "id": "opQf1WmYAa5aupUKJIQp"
+              }
+          ],
+          "authenticatorSelection": {
+              "requireResidentKey": false,
+              "authenticatorAttachment": "cross-platform",
+              "userVerification": "preferred"
+          },
+          "attestation": "direct"
+        }
+    AttestationResultRequired:
+      summary: 'Send ServerPublicKeyCredential'
+      value: |-
+        {
+          "id": "LFdoCFJTyB82ZzSJUHc-c72yraRc_1mDvruha6ywA",
+          "response": {
+              "clientDataJSON": "eyJj0OiJTSEEtMjU2Iiwib3JpZ2luIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIiwidHlwZSI6IndlYmF1dGhuLmNyZWF0ZSJ9...",
+              "attestationObject": "o2NmbXRNAQELBQADggEBAHibGMqbpNt2IOL4i4z96Kqo1rqSUmonencd4xanO_PHEfxU0iZif615Xk9E4bcANPCfz-OLfeKXiT-1msixwzz8XGvl2OTMJ_Sh9G9vhE-HjAcovcHfumcdoQh..."
+          },
+          "type": "public-key"
+        }
+    ServerAuthenticatorAttestationResponse:
+      summary: ''
+      value: |-
+        {
+          "status": "OK",
+          "errorMessage": ""
+        }
+    AssertionOptions:
+      summary: 'ServerPublicKeyCredentialGetOptionsRequest'
+      value: |-
+        {
+          "username": "janedoe@example.com"
+        }
+    ServerPublicKeyCredentialGetOptionsRequest:
+      summary: 'ServerPublicKeyCredentialGetOptionsResponse'
+      value: |-
+        {
+          "status": "ok",
+          "errorMessage": "",
+          "challenge": "6283u0svT-YIF3pSolzkQHStwkJCaLKx",
+          "timeout": 20000,
+          "rpId": "example.com",
+          "allowCredentials": [
+              {
+                  "id": "m7xl_TkTcCe0WcXI2M-4ro9vJAuwcj4m",
+                  "type": "public-key"
+              }
+          ],
+          "userVerification": "required"
+        }
+    AssertionResult:
+      summary: 'AuthenticatorAssertionResponse'
+      value: |-
+        {
+          "id":"LFdoCFJTyB82ZzSJUHc-c72yraRc_1mPvGX8T6Jcqd31LUkKOS36FIAWgWl6itMKqmDvruha6ywA",
+          "response":{
+              "authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAAAAA",
+              "signature":"ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP-YQk9uXFnnDaHnr2yCKXL...",
+              "userHandle":"",
+              "clientDataJSON":"eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIiwidHlwZSI6IndlYmF1dGhuLmdldCJ9..."
+          },
+          "type":"public-key"
+        }
+    ServerAuthenticatorAssertionResponse:
+      summary: ''
+      value: |-
+        {
+          "status": "success",
+          "errorMessage": ""
+        }
+
+
