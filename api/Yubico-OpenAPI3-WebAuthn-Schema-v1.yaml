@@ -8,8 +8,7 @@ info:
 paths:
   /v1/status:
     get:
-      summary: API atatus
-      description: Get API status from server
+      summary: Get API status
       operationId: APIStatus
       responses:
         '200':
@@ -20,10 +19,9 @@ paths:
                   $ref: '#/components/schemas/APIStatus'
   /v1/attestation/options:
     post:
-      description: Register a new passkey for user
+      summary: Request to register a new public-key credential
       operationId: ServerPublicKeyCredentialCreationOptionsRequest
       requestBody:
-        description: Create passkey for user
         required: true
         content:
           application/json:
@@ -49,7 +47,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /v1/attestation/result:
     post:
-      description: Authenticator attestation response
+      summary: Send public-key attestation response
       operationId: ServerAuthenticatorAttestationResponse
       requestBody:
         description: Send authenticator attestation response as a ServerPublicKeyCredential object
@@ -73,7 +71,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /v1/assertion/options:
     post:
-      description: Request credential options for user
+      summary: Request public-key credential authentication options for user
       operationId: ServerPublicKeyCredentialGetOptionsRequest
       requestBody:
         description: Request credential options for user
@@ -97,7 +95,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /v1/assertion/result:
     post:
-      description: Authenticator assertion response
+      summary: Send public-key assertion response
       operationId: ServerAuthenticatorAssertionResponse
       requestBody:
         description: Send authenticator assertion response to server as a ServerAuthenticatorAssertionResponse object
@@ -113,6 +111,108 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssertionResultResponse'
+        '400':
+          description: 4xx response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/user:
+    delete:
+      summary: Delete user account
+      operationId: UserDelete
+      requestBody:
+        description: Delete user from server
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDelete'
+      responses:
+        '200':
+          description: User successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDeleteResponse'
+        '400':
+          description: 4xx response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/user/profile:
+    get:
+      summary: Get user profile
+      operationId: UserProfile
+      requestBody:
+        description: Get user profile by userName
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+      responses:
+        '200':
+          description: User profile response
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/UserProfileResponse'
+  /v1/user/credentials:
+    get:
+      summary: Get user credentials
+      operationId: UserCredentials
+      requestBody:
+        description: Get credentials for user by userName
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: User credentials response
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/UserCredentialsResponse'
+    put:
+      summary: Update a user credential
+      description: Update the nickName of the user credential
+      operationId: UserCredentialUpdate
+      requestBody:
+        description: Send updated nickName of user credential by id
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentialUpdate'
+      responses:
+        '200':
+          description: A successful user credential update response
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/UserCredentialUpdateResponse'
+    delete:
+      summary: Delete a user credential
+      description: Deletes a user credential by id
+      operationId: UserCredentialDelete
+      requestBody:
+        description: Delete user credential by specifying the credential id
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentialDelete'
+      responses:
+        '200':
+          description: A successful user credential deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCredentialDeleteResponse'
         '400':
           description: 4xx response
           content:
@@ -137,12 +237,9 @@ components:
     AttestationOptionsResponse:
       type: object
       properties: 
-        status:
+        requestId:
           type: string
-          example: ok
-        errorMessage:
-          type: string
-          example: ''
+          example: B-J4odOi9vcV-4TN_gpokEb1f1EI...
         rp:
           type: object
           properties:
@@ -153,9 +250,9 @@ components:
           type: object
           properties:
             id:
-              type: string
-              example: S3932ee31vKEC0JtJMIQ
-            name:
+              type: integer
+              example: 4542432
+            userName:
               type: string
               example: janedoe@example.com
             displayName:
@@ -186,22 +283,37 @@ components:
                 example: public-key
               id:
                 type: string
-                example: opQf1WmYAa5aupUKJIQp
+                example: opQf1WmYAa5au-kk-pUKJIQp...
         authenticatorSelection:
           type: object
           properties:
-            requireResidentKey:
-              type: boolean
-              example: false
+            residentKey:
+              type: string
+              example: preferred
+              default: preferred
+              enum:
+                - discouraged
+                - preferred
+                - required
             authenticatorAttachment:
               type: string
               example: cross-platform
+              default: cross-platform
+              enum:
+                - cross-platform
+                - platform
             userVerification:
               type: string
               example: preferred
+              default: preferred
+              enum: 
+                - required
+                - preferred
+                - discouraged
         attestation:
           type: string
           example: direct
+          default: direct
           enum:
             - none
             - indirect
@@ -238,9 +350,9 @@ components:
     AssertionOptionsResponse:
       type: object
       properties:
-        status: 
+        requestId:
           type: string
-          example: ok
+          example: B-J4odOi9vcV-4TN_gpokEb1f1EI...
         errorMessage: 
           type: string
           example: ''
@@ -263,9 +375,11 @@ components:
               type:
                 type: string
                 example: public-key
+                default: public-key
         userVerification:
           type: string
           example: preferred
+          default: preferred
           enum:
             - required
             - preferred
@@ -294,12 +408,104 @@ components:
         type: 
           type: string
           example: public-key
+          default: public-key
     AssertionResultResponse:
       type: object
       properties:
         status:
           type: string
           example: ok
+    UserProfile:
+      type: object
+      properties:
+        userName:
+          type: string
+          example: janedoe@example.com 
+    UserProfileResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 34545132
+        userName:
+          type: string
+          example: janedoe@example.com
+        displayName:
+          type: string
+          example: Jane Doe
+        lastLoginDate:
+          type: string
+          format: date-time
+          example: 2023-01-09T13:44:02Z
+    UserDelete:
+      type: object
+      properties:
+        userName:
+          type: string
+          example: janedoe@example.com
+    UserDeleteResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          example: deleted 
+    UserCredentials:
+      type: object
+      properties:
+        userName:
+          type: string
+          example: janedoe@example.com
+    UserCredentialsResponse:
+      type: object
+      properties:
+        credentials:
+          type: array
+          items:
+            properties:
+              id:
+                type: string
+                example: DthUeofXNtlMevkt_M7aiD3cm70...
+              type:
+                type: string
+                example: public-key
+              nickName:
+                type: string
+                example: YubiKey 5Ci
+              registrationTime:
+                type: string
+                format: date-time
+                example: 2022-07-21T17:32:28Z
+              lastUsedTime:
+                type: string
+                format: date-time
+                example: 2022-07-21T18:15:06Z
+    UserCredentialUpdate:
+      type: object
+      properties:
+        id:
+          type: string
+          example: DthUeofXNtlMevkt_M7aiD3cm70...
+        nickName:
+          type: string
+          example: YubiKey 5Ci home
+    UserCredentialUpdateResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: updated
+    UserCredentialDelete:
+      type: object
+      properties:
+        id:
+          type: string
+          example: DthUeofXNtlMevkt_M7aiD3cm70...
+    UserCredentialDeleteResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          example: deleted
     Error:
       type: object
       properties:
@@ -315,14 +521,13 @@ components:
       summary: 'Default (Required)'
       value: |-
         {
-          "username": "johndoe@example.com"
+          "username": "janedoe@example.com"
         }
     ServerPublicKeyCredentialCreationOptionsRequest-Optional:
       summary: 'Optional'
       value: |-
         {
-          "username": "johndoe@example.com",
-          "displayName": "John Doe",
+          "username": "janedoe@example.com",
           "authenticatorSelection": {
             "requireResidentKey": false,
             "authenticatorAttachment": "cross-platform",
