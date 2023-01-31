@@ -141,17 +141,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /v1/user/profile:
+  /v1/user/profile/{userName}:
     get:
       summary: Get user profile
       operationId: UserProfile
-      requestBody:
-        description: Get user profile by userName
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserProfile'
+      parameters:
+        - in: path
+          name: userName
+          schema:
+            type: string
+          required: true
+          description: Username used to query for credentials
       responses:
         '200':
           description: User profile response
@@ -475,12 +475,6 @@ components:
         status:
           type: string
           example: ok
-    UserProfile:
-      type: object
-      properties:
-        userName:
-          type: string
-          example: janedoe@example.com
     UserProfileResponse:
       type: object
       properties:
