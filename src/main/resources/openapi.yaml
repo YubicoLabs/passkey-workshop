@@ -1,0 +1,835 @@
+openapi: 3.0.0
+info:
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Passkey WebAuthn API by Yubico
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /v1/status:
+    get:
+      operationId: APIStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIStatus'
+          description: API status response
+      summary: Get API status
+      x-accepts: application/json
+  /v1/attestation/options:
+    post:
+      operationId: ServerPublicKeyCredentialCreationOptionsRequest
+      requestBody:
+        content:
+          application/json:
+            examples:
+              Default:
+                $ref: '#/components/examples/ServerPublicKeyCredentialCreationOptionsRequest-Optional'
+              Optional:
+                $ref: '#/components/examples/ServerPublicKeyCredentialCreationOptionsRequest-Optional'
+            schema:
+              $ref: '#/components/schemas/AttestationOptionsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttestationOptionsResponse'
+          description: Attestation options response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 4xx response
+      summary: Request to register a new public-key credential
+      x-content-type: application/json
+      x-accepts: application/json
+  /v1/attestation/result:
+    post:
+      operationId: ServerAuthenticatorAttestationResponse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttestationResultRequest'
+        description: Send authenticator attestation response as a ServerPublicKeyCredential
+          object
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttestationResultResponse'
+          description: New Passkey created for user
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 4xx response
+      summary: Send public-key attestation response
+      x-content-type: application/json
+      x-accepts: application/json
+  /v1/assertion/options:
+    post:
+      operationId: ServerPublicKeyCredentialGetOptionsRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssertionOptionsRequest'
+        description: Request credential options for user
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssertionOptionsResponse'
+          description: Assertion options response from server
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 4xx response
+      summary: Request public-key credential authentication options for user
+      x-content-type: application/json
+      x-accepts: application/json
+  /v1/assertion/result:
+    post:
+      operationId: ServerAuthenticatorAssertionResponse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssertionResultRequest'
+        description: Send authenticator assertion response to server as a ServerAuthenticatorAssertionResponse
+          object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssertionResultResponse'
+          description: Assertion result response from server
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 4xx response
+      summary: Send public-key assertion response
+      x-content-type: application/json
+      x-accepts: application/json
+  /v1/user:
+    delete:
+      operationId: UserDelete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDelete'
+        description: Delete user from server
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDeleteResponse'
+          description: User successfully deleted
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 4xx response
+      summary: Delete user account
+      x-content-type: application/json
+      x-accepts: application/json
+  /v1/user/profile/{userName}:
+    get:
+      operationId: UserProfile
+      parameters:
+      - description: Username used to query for credentials
+        explode: false
+        in: path
+        name: userName
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+          description: User profile response
+      summary: Get user profile
+      x-accepts: application/json
+  /v1/user/credentials/{userName}:
+    get:
+      operationId: UserCredentialsByID
+      parameters:
+      - description: Username used to query for credentials
+        explode: false
+        in: path
+        name: userName
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCredentialsResponse'
+          description: User credentials response
+      summary: Get user credentials by ID
+      x-accepts: application/json
+  /v1/user/credentials:
+    delete:
+      description: Deletes a user credential by id
+      operationId: UserCredentialDelete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentialDelete'
+        description: Delete user credential by specifying the credential id
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCredentialDeleteResponse'
+          description: A successful user credential deleted
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 4xx response
+      summary: Delete a user credential
+      x-content-type: application/json
+      x-accepts: application/json
+    put:
+      description: Update the nickName of the user credential
+      operationId: UserCredentialUpdate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentialUpdate'
+        description: Send updated nickName of user credential by id
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCredentialUpdateResponse'
+          description: A successful user credential update response
+      summary: Update a user credential
+      x-content-type: application/json
+      x-accepts: application/json
+components:
+  examples:
+    ServerPublicKeyCredentialCreationOptionsRequest-Default:
+      summary: Default (Required)
+      value: |-
+        {
+          "username": "janedoe@example.com"
+        }
+    ServerPublicKeyCredentialCreationOptionsRequest-Optional:
+      summary: Optional
+      value: |-
+        {
+          "username": "janedoe@example.com",
+          "authenticatorSelection": {
+            "residentKey": "preferred",
+            "authenticatorAttachment": "cross-platform",
+            "userVerification": "preferred"
+          },
+          "attestation": "direct"
+        }
+  schemas:
+    APIStatus:
+      example:
+        status: ok
+      properties:
+        status:
+          example: ok
+          type: string
+      type: object
+    AttestationOptionsRequest:
+      example:
+        attestation: direct
+        displayName: John Doe
+        userName: janedoe@example.com
+        authenticatorSelection:
+          authenticatorAttachment: cross-platform
+          userVerification: preferred
+          residentKey: preferred
+      properties:
+        userName:
+          example: janedoe@example.com
+          type: string
+        displayName:
+          example: John Doe
+          type: string
+        authenticatorSelection:
+          $ref: '#/components/schemas/AttestationOptionsRequest_authenticatorSelection'
+        attestation:
+          enum:
+          - direct
+          - enterprise
+          - indirect
+          - none
+          example: direct
+          type: string
+      type: object
+    AttestationOptionsResponse:
+      example:
+        requestId: B-J4odOi9vcV-4TN_gpokEb1f1EI...
+        publicKey:
+          attestation: direct
+          challenge: uhUjPNlZfvn7onwuhNdsLPkkE5Fv-lUN
+          authenticatorSelection:
+            authenticatorAttachment: cross-platform
+            userVerification: preferred
+            residentKey: preferred
+          user:
+            displayName: Jane Doe
+            name: janedoe@example.com
+            id: "4542432"
+          rp:
+            name: Example Corporation
+            id: login.example.com
+          timeout: 10000
+          excludeCredentials:
+          - id: opQf1WmYAa5au-kk-pUKJIQp...
+            type: public-key
+          - id: opQf1WmYAa5au-kk-pUKJIQp...
+            type: public-key
+          pubKeyCredParams:
+          - type: public-key
+            alg: -7
+          - type: public-key
+            alg: -7
+      properties:
+        requestId:
+          example: B-J4odOi9vcV-4TN_gpokEb1f1EI...
+          type: string
+        publicKey:
+          $ref: '#/components/schemas/AttestationOptionsResponse_publicKey'
+      type: object
+    AttestationResultRequest:
+      example:
+        makeCredentialResult:
+          response:
+            clientDataJSON: eyJj0OiJIiwidHlwZSI6IndlYmF1dGhyZWF0ZSJ9...
+            attestationObject: o2NmbXRNAQELBQADgbpNt2IOL4i4z96Kqo1rqSUmonen...
+          id: LFdoCFJSJUHc-c72yraRc_1mDvruywA
+          type: public-key
+          clientExtensionResults: {}
+        requestId: B-J4odOi9vcV-4TN_gpokEb1f1EI...
+      properties:
+        requestId:
+          example: B-J4odOi9vcV-4TN_gpokEb1f1EI...
+          type: string
+        makeCredentialResult:
+          $ref: '#/components/schemas/AttestationResultRequest_makeCredentialResult'
+      type: object
+    AttestationResultResponse:
+      example:
+        status: created
+      properties:
+        status:
+          example: created
+          type: string
+    AssertionOptionsRequest:
+      example:
+        userName: janedoe@example.com
+      properties:
+        userName:
+          example: janedoe@example.com
+          type: string
+      type: object
+    AssertionOptionsResponse:
+      example:
+        requestId: B-J4odOi9vcV-4TN_gpokEb1f1EI...
+        errorMessage: ""
+        publicKey:
+          userVerification: preferred
+          challenge: m7xl_TkTcCe0WcXI2M-4ro9vJAuwcj4m
+          rpId: example.com
+          timeout: 20000
+          allowCredentials:
+          - id: opQf1WmYAa5aupUKJIQp
+            type: public-key
+          - id: opQf1WmYAa5aupUKJIQp
+            type: public-key
+      properties:
+        requestId:
+          example: B-J4odOi9vcV-4TN_gpokEb1f1EI...
+          type: string
+        publicKey:
+          $ref: '#/components/schemas/AssertionOptionsResponse_publicKey'
+        errorMessage:
+          example: ""
+          type: string
+      type: object
+    AssertionResultRequest:
+      example:
+        assertionResult:
+          response:
+            userHandle: ""
+            clientDataJSON: eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsF1dGhuLmdldCJ9...
+            signature: ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP
+            authenticatorData: SZYN5Gh0NBcPZHZgW4_krrmihjzzuoMdl2MBAAAAAA...
+          id: LFdoCFJTyB82ZzSJUHc-c72yraRc_1mPvG
+          type: public-key
+        requestId: B-J4odOi9vcV-4TN_gpokEb1f1EI...
+      properties:
+        requestId:
+          example: B-J4odOi9vcV-4TN_gpokEb1f1EI...
+          type: string
+        assertionResult:
+          $ref: '#/components/schemas/AssertionResultRequest_assertionResult'
+      type: object
+    AssertionResultResponse:
+      example:
+        status: ok
+      properties:
+        status:
+          example: ok
+          type: string
+      type: object
+    UserProfileResponse:
+      example:
+        displayName: Jane Doe
+        id: 34545132
+        lastLoginDate: 2023-01-09T13:44:02Z
+        userName: janedoe@example.com
+      properties:
+        id:
+          example: 34545132
+          type: integer
+        userName:
+          example: janedoe@example.com
+          type: string
+        displayName:
+          example: Jane Doe
+          type: string
+        lastLoginDate:
+          example: 2023-01-09T13:44:02Z
+          format: date-time
+          type: string
+      type: object
+    UserDelete:
+      example:
+        userName: janedoe@example.com
+      properties:
+        userName:
+          example: janedoe@example.com
+          type: string
+      type: object
+    UserDeleteResponse:
+      example:
+        result: deleted
+      properties:
+        result:
+          example: deleted
+          type: string
+      type: object
+    UserCredentials:
+      properties:
+        userName:
+          example: janedoe@example.com
+          type: string
+      type: object
+    UserCredentialsResponse:
+      example:
+        credentials:
+        - registrationTime: 2022-07-21T17:32:28Z
+          nickName: YubiKey 5Ci
+          id: DthUeofXNtlMevkt_M7aiD3cm70...
+          type: public-key
+          lastUsedTime: 2022-07-21T18:15:06Z
+        - registrationTime: 2022-07-21T17:32:28Z
+          nickName: YubiKey 5Ci
+          id: DthUeofXNtlMevkt_M7aiD3cm70...
+          type: public-key
+          lastUsedTime: 2022-07-21T18:15:06Z
+      properties:
+        credentials:
+          items:
+            $ref: '#/components/schemas/UserCredentialsResponse_credentials_inner'
+          type: array
+      type: object
+    UserCredentialUpdate:
+      example:
+        nickName: YubiKey 5Ci home
+        id: DthUeofXNtlMevkt_M7aiD3cm70...
+      properties:
+        id:
+          example: DthUeofXNtlMevkt_M7aiD3cm70...
+          type: string
+        nickName:
+          example: YubiKey 5Ci home
+          type: string
+      type: object
+    UserCredentialUpdateResponse:
+      example:
+        status: updated
+      properties:
+        status:
+          example: updated
+          type: string
+      type: object
+    UserCredentialDelete:
+      example:
+        id: DthUeofXNtlMevkt_M7aiD3cm70...
+      properties:
+        id:
+          example: DthUeofXNtlMevkt_M7aiD3cm70...
+          type: string
+      type: object
+    UserCredentialDeleteResponse:
+      example:
+        result: deleted
+      properties:
+        result:
+          example: deleted
+          type: string
+      type: object
+    Error:
+      properties:
+        status:
+          example: error
+          type: string
+        errorMessage:
+          example: descriptive error message
+          type: string
+      type: object
+    AttestationOptionsRequest_authenticatorSelection:
+      example:
+        authenticatorAttachment: cross-platform
+        userVerification: preferred
+        residentKey: preferred
+      properties:
+        residentKey:
+          enum:
+          - preferred
+          - discouraged
+          - required
+          example: preferred
+          type: string
+        authenticatorAttachment:
+          enum:
+          - cross-platform
+          - platform
+          - none
+          example: cross-platform
+          type: string
+        userVerification:
+          enum:
+          - preferred
+          - discouraged
+          - required
+          example: preferred
+          type: string
+      type: object
+    AttestationOptionsResponse_publicKey_rp:
+      example:
+        name: Example Corporation
+        id: login.example.com
+      properties:
+        name:
+          example: Example Corporation
+          type: string
+        id:
+          example: login.example.com
+          type: string
+      type: object
+    AttestationOptionsResponse_publicKey_user:
+      example:
+        displayName: Jane Doe
+        name: janedoe@example.com
+        id: "4542432"
+      properties:
+        id:
+          example: "4542432"
+          type: string
+        name:
+          example: janedoe@example.com
+          type: string
+        displayName:
+          example: Jane Doe
+          type: string
+      type: object
+    AttestationOptionsResponse_publicKey_pubKeyCredParams_inner:
+      example:
+        type: public-key
+        alg: -7
+      properties:
+        type:
+          example: public-key
+          type: string
+        alg:
+          example: -7
+          type: integer
+    AttestationOptionsResponse_publicKey_excludeCredentials_inner:
+      example:
+        id: opQf1WmYAa5au-kk-pUKJIQp...
+        type: public-key
+      properties:
+        type:
+          example: public-key
+          type: string
+        id:
+          example: opQf1WmYAa5au-kk-pUKJIQp...
+          type: string
+    AttestationOptionsResponse_publicKey_authenticatorSelection:
+      example:
+        authenticatorAttachment: cross-platform
+        userVerification: preferred
+        residentKey: preferred
+      properties:
+        residentKey:
+          default: preferred
+          enum:
+          - discouraged
+          - preferred
+          - required
+          example: preferred
+          type: string
+        authenticatorAttachment:
+          default: cross-platform
+          enum:
+          - cross-platform
+          - platform
+          example: cross-platform
+          type: string
+        userVerification:
+          default: preferred
+          enum:
+          - required
+          - preferred
+          - discouraged
+          example: preferred
+          type: string
+      type: object
+    AttestationOptionsResponse_publicKey:
+      example:
+        attestation: direct
+        challenge: uhUjPNlZfvn7onwuhNdsLPkkE5Fv-lUN
+        authenticatorSelection:
+          authenticatorAttachment: cross-platform
+          userVerification: preferred
+          residentKey: preferred
+        user:
+          displayName: Jane Doe
+          name: janedoe@example.com
+          id: "4542432"
+        rp:
+          name: Example Corporation
+          id: login.example.com
+        timeout: 10000
+        excludeCredentials:
+        - id: opQf1WmYAa5au-kk-pUKJIQp...
+          type: public-key
+        - id: opQf1WmYAa5au-kk-pUKJIQp...
+          type: public-key
+        pubKeyCredParams:
+        - type: public-key
+          alg: -7
+        - type: public-key
+          alg: -7
+      properties:
+        rp:
+          $ref: '#/components/schemas/AttestationOptionsResponse_publicKey_rp'
+        user:
+          $ref: '#/components/schemas/AttestationOptionsResponse_publicKey_user'
+        challenge:
+          example: uhUjPNlZfvn7onwuhNdsLPkkE5Fv-lUN
+          type: string
+        pubKeyCredParams:
+          items:
+            $ref: '#/components/schemas/AttestationOptionsResponse_publicKey_pubKeyCredParams_inner'
+          type: array
+        timeout:
+          example: 10000
+          type: integer
+        excludeCredentials:
+          items:
+            $ref: '#/components/schemas/AttestationOptionsResponse_publicKey_excludeCredentials_inner'
+          type: array
+        authenticatorSelection:
+          $ref: '#/components/schemas/AttestationOptionsResponse_publicKey_authenticatorSelection'
+        attestation:
+          default: direct
+          enum:
+          - none
+          - indirect
+          - direct
+          example: direct
+          type: string
+      type: object
+    AttestationResultRequest_makeCredentialResult_response:
+      example:
+        clientDataJSON: eyJj0OiJIiwidHlwZSI6IndlYmF1dGhyZWF0ZSJ9...
+        attestationObject: o2NmbXRNAQELBQADgbpNt2IOL4i4z96Kqo1rqSUmonen...
+      properties:
+        clientDataJSON:
+          example: eyJj0OiJIiwidHlwZSI6IndlYmF1dGhyZWF0ZSJ9...
+          type: string
+        attestationObject:
+          example: o2NmbXRNAQELBQADgbpNt2IOL4i4z96Kqo1rqSUmonen...
+          type: string
+      type: object
+    AttestationResultRequest_makeCredentialResult:
+      example:
+        response:
+          clientDataJSON: eyJj0OiJIiwidHlwZSI6IndlYmF1dGhyZWF0ZSJ9...
+          attestationObject: o2NmbXRNAQELBQADgbpNt2IOL4i4z96Kqo1rqSUmonen...
+        id: LFdoCFJSJUHc-c72yraRc_1mDvruywA
+        type: public-key
+        clientExtensionResults: {}
+      properties:
+        id:
+          example: LFdoCFJSJUHc-c72yraRc_1mDvruywA
+          type: string
+        response:
+          $ref: '#/components/schemas/AttestationResultRequest_makeCredentialResult_response'
+        type:
+          example: public-key
+          type: string
+        clientExtensionResults:
+          example: {}
+          type: object
+      type: object
+    AssertionOptionsResponse_publicKey_allowCredentials_inner:
+      example:
+        id: opQf1WmYAa5aupUKJIQp
+        type: public-key
+      properties:
+        id:
+          example: opQf1WmYAa5aupUKJIQp
+          type: string
+        type:
+          default: public-key
+          example: public-key
+          type: string
+    AssertionOptionsResponse_publicKey:
+      example:
+        userVerification: preferred
+        challenge: m7xl_TkTcCe0WcXI2M-4ro9vJAuwcj4m
+        rpId: example.com
+        timeout: 20000
+        allowCredentials:
+        - id: opQf1WmYAa5aupUKJIQp
+          type: public-key
+        - id: opQf1WmYAa5aupUKJIQp
+          type: public-key
+      properties:
+        challenge:
+          example: m7xl_TkTcCe0WcXI2M-4ro9vJAuwcj4m
+          type: string
+        timeout:
+          example: 20000
+          type: integer
+        rpId:
+          example: example.com
+          type: string
+        allowCredentials:
+          items:
+            $ref: '#/components/schemas/AssertionOptionsResponse_publicKey_allowCredentials_inner'
+          type: array
+        userVerification:
+          default: preferred
+          enum:
+          - required
+          - preferred
+          - discouraged
+          example: preferred
+          type: string
+      type: object
+    AssertionResultRequest_assertionResult_response:
+      example:
+        userHandle: ""
+        clientDataJSON: eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsF1dGhuLmdldCJ9...
+        signature: ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP
+        authenticatorData: SZYN5Gh0NBcPZHZgW4_krrmihjzzuoMdl2MBAAAAAA...
+      properties:
+        authenticatorData:
+          example: SZYN5Gh0NBcPZHZgW4_krrmihjzzuoMdl2MBAAAAAA...
+          type: string
+        signature:
+          example: ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP
+          type: string
+        userHandle:
+          example: ""
+          type: string
+        clientDataJSON:
+          example: eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsF1dGhuLmdldCJ9...
+          type: string
+      type: object
+    AssertionResultRequest_assertionResult:
+      example:
+        response:
+          userHandle: ""
+          clientDataJSON: eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsF1dGhuLmdldCJ9...
+          signature: ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP
+          authenticatorData: SZYN5Gh0NBcPZHZgW4_krrmihjzzuoMdl2MBAAAAAA...
+        id: LFdoCFJTyB82ZzSJUHc-c72yraRc_1mPvG
+        type: public-key
+      properties:
+        id:
+          example: LFdoCFJTyB82ZzSJUHc-c72yraRc_1mPvG
+          type: string
+        response:
+          $ref: '#/components/schemas/AssertionResultRequest_assertionResult_response'
+        type:
+          default: public-key
+          example: public-key
+          type: string
+      type: object
+    UserCredentialsResponse_credentials_inner:
+      example:
+        registrationTime: 2022-07-21T17:32:28Z
+        nickName: YubiKey 5Ci
+        id: DthUeofXNtlMevkt_M7aiD3cm70...
+        type: public-key
+        lastUsedTime: 2022-07-21T18:15:06Z
+      properties:
+        id:
+          example: DthUeofXNtlMevkt_M7aiD3cm70...
+          type: string
+        type:
+          example: public-key
+          type: string
+        nickName:
+          example: YubiKey 5Ci
+          type: string
+        registrationTime:
+          example: 2022-07-21T17:32:28Z
+          format: date-time
+          type: string
+        lastUsedTime:
+          example: 2022-07-21T18:15:06Z
+          format: date-time
+          type: string
