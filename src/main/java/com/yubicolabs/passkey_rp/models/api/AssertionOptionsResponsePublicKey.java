@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.yubicolabs.passkey_rp.models.api.AssertionOptionsResponsePublicKeyAllowCredentialsInner;
@@ -14,7 +16,7 @@ import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import lombok.Builder;
 
 import java.util.*;
 import javax.annotation.Generated;
@@ -25,6 +27,8 @@ import javax.annotation.Generated;
 
 @JsonTypeName("AssertionOptionsResponse_publicKey")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
+@Builder
+@JsonInclude(Include.NON_NULL)
 public class AssertionOptionsResponsePublicKey {
 
   @JsonProperty("challenge")
@@ -45,9 +49,9 @@ public class AssertionOptionsResponsePublicKey {
    */
   public enum UserVerificationEnum {
     REQUIRED("required"),
-    
+
     PREFERRED("preferred"),
-    
+
     DISCOURAGED("discouraged");
 
     private String value;
@@ -87,9 +91,10 @@ public class AssertionOptionsResponsePublicKey {
 
   /**
    * Get challenge
+   * 
    * @return challenge
-  */
-  
+   */
+
   @Schema(name = "challenge", example = "m7xl_TkTcCe0WcXI2M-4ro9vJAuwcj4m", required = false)
   public String getChallenge() {
     return challenge;
@@ -106,9 +111,10 @@ public class AssertionOptionsResponsePublicKey {
 
   /**
    * Get timeout
+   * 
    * @return timeout
-  */
-  
+   */
+
   @Schema(name = "timeout", example = "20000", required = false)
   public Integer getTimeout() {
     return timeout;
@@ -125,9 +131,10 @@ public class AssertionOptionsResponsePublicKey {
 
   /**
    * Get rpId
+   * 
    * @return rpId
-  */
-  
+   */
+
   @Schema(name = "rpId", example = "example.com", required = false)
   public String getRpId() {
     return rpId;
@@ -137,12 +144,14 @@ public class AssertionOptionsResponsePublicKey {
     this.rpId = rpId;
   }
 
-  public AssertionOptionsResponsePublicKey allowCredentials(List<AssertionOptionsResponsePublicKeyAllowCredentialsInner> allowCredentials) {
+  public AssertionOptionsResponsePublicKey allowCredentials(
+      List<AssertionOptionsResponsePublicKeyAllowCredentialsInner> allowCredentials) {
     this.allowCredentials = allowCredentials;
     return this;
   }
 
-  public AssertionOptionsResponsePublicKey addAllowCredentialsItem(AssertionOptionsResponsePublicKeyAllowCredentialsInner allowCredentialsItem) {
+  public AssertionOptionsResponsePublicKey addAllowCredentialsItem(
+      AssertionOptionsResponsePublicKeyAllowCredentialsInner allowCredentialsItem) {
     if (this.allowCredentials == null) {
       this.allowCredentials = new ArrayList<>();
     }
@@ -152,9 +161,10 @@ public class AssertionOptionsResponsePublicKey {
 
   /**
    * Get allowCredentials
+   * 
    * @return allowCredentials
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "allowCredentials", required = false)
   public List<AssertionOptionsResponsePublicKeyAllowCredentialsInner> getAllowCredentials() {
     return allowCredentials;
@@ -171,9 +181,10 @@ public class AssertionOptionsResponsePublicKey {
 
   /**
    * Get userVerification
+   * 
    * @return userVerification
-  */
-  
+   */
+
   @Schema(name = "userVerification", example = "preferred", required = false)
   public UserVerificationEnum getUserVerification() {
     return userVerification;
@@ -228,4 +239,3 @@ public class AssertionOptionsResponsePublicKey {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

@@ -6,13 +6,13 @@ info:
   title: Passkey WebAuthn API by Yubico
   version: 1.0.0
 servers:
-- url: /
+  - url: /
 paths:
   /v1/status:
     get:
       operationId: APIStatus
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
@@ -35,13 +35,13 @@ paths:
               $ref: '#/components/schemas/AttestationOptionsRequest'
         required: true
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AttestationOptionsResponse'
           description: Attestation options response
-        "400":
+        '400':
           content:
             application/json:
               schema:
@@ -58,17 +58,18 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AttestationResultRequest'
-        description: Send authenticator attestation response as a ServerPublicKeyCredential
+        description:
+          Send authenticator attestation response as a ServerPublicKeyCredential
           object
         required: true
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AttestationResultResponse'
           description: New Passkey created for user
-        "400":
+        '400':
           content:
             application/json:
               schema:
@@ -88,13 +89,13 @@ paths:
         description: Request credential options for user
         required: true
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssertionOptionsResponse'
           description: Assertion options response from server
-        "400":
+        '400':
           content:
             application/json:
               schema:
@@ -111,17 +112,18 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AssertionResultRequest'
-        description: Send authenticator assertion response to server as a ServerAuthenticatorAssertionResponse
+        description:
+          Send authenticator assertion response to server as a ServerAuthenticatorAssertionResponse
           object
         required: true
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssertionResultResponse'
           description: Assertion result response from server
-        "400":
+        '400':
           content:
             application/json:
               schema:
@@ -141,13 +143,13 @@ paths:
         description: Delete user from server
         required: true
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserDeleteResponse'
           description: User successfully deleted
-        "400":
+        '400':
           content:
             application/json:
               schema:
@@ -160,16 +162,16 @@ paths:
     get:
       operationId: UserProfile
       parameters:
-      - description: Username used to query for credentials
-        explode: false
-        in: path
-        name: userName
-        required: true
-        schema:
-          type: string
-        style: simple
+        - description: Username used to query for credentials
+          explode: false
+          in: path
+          name: userName
+          required: true
+          schema:
+            type: string
+          style: simple
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
@@ -181,16 +183,16 @@ paths:
     get:
       operationId: UserCredentialsByID
       parameters:
-      - description: Username used to query for credentials
-        explode: false
-        in: path
-        name: userName
-        required: true
-        schema:
-          type: string
-        style: simple
+        - description: Username used to query for credentials
+          explode: false
+          in: path
+          name: userName
+          required: true
+          schema:
+            type: string
+          style: simple
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
@@ -210,13 +212,13 @@ paths:
         description: Delete user credential by specifying the credential id
         required: true
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserCredentialDeleteResponse'
           description: A successful user credential deleted
-        "400":
+        '400':
           content:
             application/json:
               schema:
@@ -236,7 +238,7 @@ paths:
         description: Send updated nickName of user credential by id
         required: true
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
@@ -257,7 +259,8 @@ components:
       summary: Optional
       value: |-
         {
-          "username": "janedoe@example.com",
+          "userName": "janedoe@example.com",
+          "displayName": "jane12345"
           "authenticatorSelection": {
             "residentKey": "preferred",
             "authenticatorAttachment": "cross-platform",
@@ -294,10 +297,10 @@ components:
           $ref: '#/components/schemas/AttestationOptionsRequest_authenticatorSelection'
         attestation:
           enum:
-          - direct
-          - enterprise
-          - indirect
-          - none
+            - direct
+            - enterprise
+            - indirect
+            - none
           example: direct
           type: string
       type: object
@@ -314,21 +317,21 @@ components:
           user:
             displayName: Jane Doe
             name: janedoe@example.com
-            id: "4542432"
+            id: '4542432'
           rp:
             name: Example Corporation
             id: login.example.com
           timeout: 10000
           excludeCredentials:
-          - id: opQf1WmYAa5au-kk-pUKJIQp...
-            type: public-key
-          - id: opQf1WmYAa5au-kk-pUKJIQp...
-            type: public-key
+            - id: opQf1WmYAa5au-kk-pUKJIQp...
+              type: public-key
+            - id: opQf1WmYAa5au-kk-pUKJIQp...
+              type: public-key
           pubKeyCredParams:
-          - type: public-key
-            alg: -7
-          - type: public-key
-            alg: -7
+            - type: public-key
+              alg: -7
+            - type: public-key
+              alg: -7
       properties:
         requestId:
           example: B-J4odOi9vcV-4TN_gpokEb1f1EI...
@@ -371,17 +374,17 @@ components:
     AssertionOptionsResponse:
       example:
         requestId: B-J4odOi9vcV-4TN_gpokEb1f1EI...
-        errorMessage: ""
+        errorMessage: ''
         publicKey:
           userVerification: preferred
           challenge: m7xl_TkTcCe0WcXI2M-4ro9vJAuwcj4m
           rpId: example.com
           timeout: 20000
           allowCredentials:
-          - id: opQf1WmYAa5aupUKJIQp
-            type: public-key
-          - id: opQf1WmYAa5aupUKJIQp
-            type: public-key
+            - id: opQf1WmYAa5aupUKJIQp
+              type: public-key
+            - id: opQf1WmYAa5aupUKJIQp
+              type: public-key
       properties:
         requestId:
           example: B-J4odOi9vcV-4TN_gpokEb1f1EI...
@@ -389,19 +392,20 @@ components:
         publicKey:
           $ref: '#/components/schemas/AssertionOptionsResponse_publicKey'
         errorMessage:
-          example: ""
+          example: ''
           type: string
       type: object
     AssertionResultRequest:
       example:
         assertionResult:
           response:
-            userHandle: ""
+            userHandle: ''
             clientDataJSON: eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsF1dGhuLmdldCJ9...
             signature: ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP
             authenticatorData: SZYN5Gh0NBcPZHZgW4_krrmihjzzuoMdl2MBAAAAAA...
           id: LFdoCFJTyB82ZzSJUHc-c72yraRc_1mPvG
           type: public-key
+          clientExtensionResults: {}
         requestId: B-J4odOi9vcV-4TN_gpokEb1f1EI...
       properties:
         requestId:
@@ -464,16 +468,16 @@ components:
     UserCredentialsResponse:
       example:
         credentials:
-        - registrationTime: 2022-07-21T17:32:28Z
-          nickName: YubiKey 5Ci
-          id: DthUeofXNtlMevkt_M7aiD3cm70...
-          type: public-key
-          lastUsedTime: 2022-07-21T18:15:06Z
-        - registrationTime: 2022-07-21T17:32:28Z
-          nickName: YubiKey 5Ci
-          id: DthUeofXNtlMevkt_M7aiD3cm70...
-          type: public-key
-          lastUsedTime: 2022-07-21T18:15:06Z
+          - registrationTime: 2022-07-21T17:32:28Z
+            nickName: YubiKey 5Ci
+            id: DthUeofXNtlMevkt_M7aiD3cm70...
+            type: public-key
+            lastUsedTime: 2022-07-21T18:15:06Z
+          - registrationTime: 2022-07-21T17:32:28Z
+            nickName: YubiKey 5Ci
+            id: DthUeofXNtlMevkt_M7aiD3cm70...
+            type: public-key
+            lastUsedTime: 2022-07-21T18:15:06Z
       properties:
         credentials:
           items:
@@ -533,23 +537,23 @@ components:
       properties:
         residentKey:
           enum:
-          - preferred
-          - discouraged
-          - required
+            - preferred
+            - discouraged
+            - required
           example: preferred
           type: string
         authenticatorAttachment:
           enum:
-          - cross-platform
-          - platform
-          - none
+            - cross-platform
+            - platform
+            - none
           example: cross-platform
           type: string
         userVerification:
           enum:
-          - preferred
-          - discouraged
-          - required
+            - preferred
+            - discouraged
+            - required
           example: preferred
           type: string
       type: object
@@ -569,10 +573,10 @@ components:
       example:
         displayName: Jane Doe
         name: janedoe@example.com
-        id: "4542432"
+        id: '4542432'
       properties:
         id:
-          example: "4542432"
+          example: '4542432'
           type: string
         name:
           example: janedoe@example.com
@@ -612,24 +616,24 @@ components:
         residentKey:
           default: preferred
           enum:
-          - discouraged
-          - preferred
-          - required
+            - discouraged
+            - preferred
+            - required
           example: preferred
           type: string
         authenticatorAttachment:
           default: cross-platform
           enum:
-          - cross-platform
-          - platform
+            - cross-platform
+            - platform
           example: cross-platform
           type: string
         userVerification:
           default: preferred
           enum:
-          - required
-          - preferred
-          - discouraged
+            - required
+            - preferred
+            - discouraged
           example: preferred
           type: string
       type: object
@@ -644,21 +648,21 @@ components:
         user:
           displayName: Jane Doe
           name: janedoe@example.com
-          id: "4542432"
+          id: '4542432'
         rp:
           name: Example Corporation
           id: login.example.com
         timeout: 10000
         excludeCredentials:
-        - id: opQf1WmYAa5au-kk-pUKJIQp...
-          type: public-key
-        - id: opQf1WmYAa5au-kk-pUKJIQp...
-          type: public-key
+          - id: opQf1WmYAa5au-kk-pUKJIQp...
+            type: public-key
+          - id: opQf1WmYAa5au-kk-pUKJIQp...
+            type: public-key
         pubKeyCredParams:
-        - type: public-key
-          alg: -7
-        - type: public-key
-          alg: -7
+          - type: public-key
+            alg: -7
+          - type: public-key
+            alg: -7
       properties:
         rp:
           $ref: '#/components/schemas/AttestationOptionsResponse_publicKey_rp'
@@ -683,9 +687,9 @@ components:
         attestation:
           default: direct
           enum:
-          - none
-          - indirect
-          - direct
+            - none
+            - indirect
+            - direct
           example: direct
           type: string
       type: object
@@ -741,10 +745,10 @@ components:
         rpId: example.com
         timeout: 20000
         allowCredentials:
-        - id: opQf1WmYAa5aupUKJIQp
-          type: public-key
-        - id: opQf1WmYAa5aupUKJIQp
-          type: public-key
+          - id: opQf1WmYAa5aupUKJIQp
+            type: public-key
+          - id: opQf1WmYAa5aupUKJIQp
+            type: public-key
       properties:
         challenge:
           example: m7xl_TkTcCe0WcXI2M-4ro9vJAuwcj4m
@@ -762,15 +766,15 @@ components:
         userVerification:
           default: preferred
           enum:
-          - required
-          - preferred
-          - discouraged
+            - required
+            - preferred
+            - discouraged
           example: preferred
           type: string
       type: object
     AssertionResultRequest_assertionResult_response:
       example:
-        userHandle: ""
+        userHandle: ''
         clientDataJSON: eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsF1dGhuLmdldCJ9...
         signature: ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP
         authenticatorData: SZYN5Gh0NBcPZHZgW4_krrmihjzzuoMdl2MBAAAAAA...
@@ -782,7 +786,7 @@ components:
           example: ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP
           type: string
         userHandle:
-          example: ""
+          example: ''
           type: string
         clientDataJSON:
           example: eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsF1dGhuLmdldCJ9...
@@ -791,12 +795,13 @@ components:
     AssertionResultRequest_assertionResult:
       example:
         response:
-          userHandle: ""
+          userHandle: ''
           clientDataJSON: eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsF1dGhuLmdldCJ9...
           signature: ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP
           authenticatorData: SZYN5Gh0NBcPZHZgW4_krrmihjzzuoMdl2MBAAAAAA...
         id: LFdoCFJTyB82ZzSJUHc-c72yraRc_1mPvG
         type: public-key
+        clientExtensionResults: {}
       properties:
         id:
           example: LFdoCFJTyB82ZzSJUHc-c72yraRc_1mPvG
@@ -807,6 +812,9 @@ components:
           default: public-key
           example: public-key
           type: string
+        clientExtensionResults:
+          example: {}
+          type: object
       type: object
     UserCredentialsResponse_credentials_inner:
       example:

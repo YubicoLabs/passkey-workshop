@@ -18,7 +18,7 @@ import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponse;
 import com.yubicolabs.passkey_rp.models.api.UserDelete;
 import com.yubicolabs.passkey_rp.models.api.UserDeleteResponse;
 import com.yubicolabs.passkey_rp.models.api.UserProfileResponse;
-
+import com.yubicolabs.passkey_rp.services.passkey.PasskeyOperations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,9 +47,13 @@ import javax.annotation.Generated;
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
 @Controller
 @RequestMapping("${openapi.passkeyWebAuthnAPIByYubico.base-path:}")
+@CrossOrigin(origins = "http://localhost:3000")
 public class V1ApiController implements V1Api {
 
     private final NativeWebRequest request;
+
+    @Autowired
+    PasskeyOperations passkeyOperations;
 
     @Autowired
     public V1ApiController(NativeWebRequest request) {
@@ -58,6 +63,61 @@ public class V1ApiController implements V1Api {
     @Override
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
+    }
+
+    @Override
+    public ResponseEntity<AttestationOptionsResponse> serverPublicKeyCredentialCreationOptionsRequest(
+            AttestationOptionsRequest attestationOptionsRequest) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(passkeyOperations.attestationOptions(attestationOptionsRequest));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public ResponseEntity<AttestationResultResponse> serverAuthenticatorAttestationResponse(
+            AttestationResultRequest attestationOptionsResult) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(passkeyOperations.attestationResult(attestationOptionsResult));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new AttestationResultResponse()
+                    .status("There was as issue registering your credential: " + e.getMessage()));
+        }
+    }
+
+    @Override
+    public ResponseEntity<AssertionOptionsResponse> serverPublicKeyCredentialGetOptionsRequest(
+            AssertionOptionsRequest assertionOptionsRequest) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(passkeyOperations.assertionOptions(assertionOptionsRequest));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(AssertionOptionsResponse.builder()
+                    .errorMessage("There was as issue registering your credential: " + e.getMessage()).build());
+        }
+    }
+
+    @Override
+    public ResponseEntity<UserCredentialsResponse> userCredentialsByID(String userName) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(passkeyOperations.getUserCredentials(userName));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public ResponseEntity<AssertionResultResponse> serverAuthenticatorAssertionResponse(
+            AssertionResultRequest assertionResultRequest) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(passkeyOperations.assertionResponse(assertionResultRequest));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

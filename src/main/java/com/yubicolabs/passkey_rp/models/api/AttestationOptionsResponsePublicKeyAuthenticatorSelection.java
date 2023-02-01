@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.openapitools.jackson.nullable.JsonNullable;
@@ -11,7 +13,7 @@ import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import lombok.Builder;
 
 import java.util.*;
 import javax.annotation.Generated;
@@ -22,6 +24,8 @@ import javax.annotation.Generated;
 
 @JsonTypeName("AttestationOptionsResponse_publicKey_authenticatorSelection")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
+@Builder
+@JsonInclude(Include.NON_NULL)
 public class AttestationOptionsResponsePublicKeyAuthenticatorSelection {
 
   /**
@@ -29,9 +33,9 @@ public class AttestationOptionsResponsePublicKeyAuthenticatorSelection {
    */
   public enum ResidentKeyEnum {
     DISCOURAGED("discouraged"),
-    
+
     PREFERRED("preferred"),
-    
+
     REQUIRED("required");
 
     private String value;
@@ -69,7 +73,7 @@ public class AttestationOptionsResponsePublicKeyAuthenticatorSelection {
    */
   public enum AuthenticatorAttachmentEnum {
     CROSS_PLATFORM("cross-platform"),
-    
+
     PLATFORM("platform");
 
     private String value;
@@ -107,9 +111,9 @@ public class AttestationOptionsResponsePublicKeyAuthenticatorSelection {
    */
   public enum UserVerificationEnum {
     REQUIRED("required"),
-    
+
     PREFERRED("preferred"),
-    
+
     DISCOURAGED("discouraged");
 
     private String value;
@@ -149,9 +153,10 @@ public class AttestationOptionsResponsePublicKeyAuthenticatorSelection {
 
   /**
    * Get residentKey
+   * 
    * @return residentKey
-  */
-  
+   */
+
   @Schema(name = "residentKey", example = "preferred", required = false)
   public ResidentKeyEnum getResidentKey() {
     return residentKey;
@@ -161,16 +166,18 @@ public class AttestationOptionsResponsePublicKeyAuthenticatorSelection {
     this.residentKey = residentKey;
   }
 
-  public AttestationOptionsResponsePublicKeyAuthenticatorSelection authenticatorAttachment(AuthenticatorAttachmentEnum authenticatorAttachment) {
+  public AttestationOptionsResponsePublicKeyAuthenticatorSelection authenticatorAttachment(
+      AuthenticatorAttachmentEnum authenticatorAttachment) {
     this.authenticatorAttachment = authenticatorAttachment;
     return this;
   }
 
   /**
    * Get authenticatorAttachment
+   * 
    * @return authenticatorAttachment
-  */
-  
+   */
+
   @Schema(name = "authenticatorAttachment", example = "cross-platform", required = false)
   public AuthenticatorAttachmentEnum getAuthenticatorAttachment() {
     return authenticatorAttachment;
@@ -180,16 +187,18 @@ public class AttestationOptionsResponsePublicKeyAuthenticatorSelection {
     this.authenticatorAttachment = authenticatorAttachment;
   }
 
-  public AttestationOptionsResponsePublicKeyAuthenticatorSelection userVerification(UserVerificationEnum userVerification) {
+  public AttestationOptionsResponsePublicKeyAuthenticatorSelection userVerification(
+      UserVerificationEnum userVerification) {
     this.userVerification = userVerification;
     return this;
   }
 
   /**
    * Get userVerification
+   * 
    * @return userVerification
-  */
-  
+   */
+
   @Schema(name = "userVerification", example = "preferred", required = false)
   public UserVerificationEnum getUserVerification() {
     return userVerification;
@@ -209,8 +218,11 @@ public class AttestationOptionsResponsePublicKeyAuthenticatorSelection {
     }
     AttestationOptionsResponsePublicKeyAuthenticatorSelection attestationOptionsResponsePublicKeyAuthenticatorSelection = (AttestationOptionsResponsePublicKeyAuthenticatorSelection) o;
     return Objects.equals(this.residentKey, attestationOptionsResponsePublicKeyAuthenticatorSelection.residentKey) &&
-        Objects.equals(this.authenticatorAttachment, attestationOptionsResponsePublicKeyAuthenticatorSelection.authenticatorAttachment) &&
-        Objects.equals(this.userVerification, attestationOptionsResponsePublicKeyAuthenticatorSelection.userVerification);
+        Objects.equals(this.authenticatorAttachment,
+            attestationOptionsResponsePublicKeyAuthenticatorSelection.authenticatorAttachment)
+        &&
+        Objects.equals(this.userVerification,
+            attestationOptionsResponsePublicKeyAuthenticatorSelection.userVerification);
   }
 
   @Override
@@ -240,4 +252,3 @@ public class AttestationOptionsResponsePublicKeyAuthenticatorSelection {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

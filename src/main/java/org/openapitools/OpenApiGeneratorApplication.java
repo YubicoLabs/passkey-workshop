@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"org.openapitools", "com.yubicolabs.passkey_rp.api" , "org.openapitools.configuration"})
+@ComponentScan(basePackages = { "org.openapitools", "com.yubicolabs.passkey_rp.api", "org.openapitools.configuration",
+        "com.yubicolabs.passkey_rp.services" })
 public class OpenApiGeneratorApplication {
 
     public static void main(String[] args) {

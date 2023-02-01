@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import lombok.Builder;
 
 import java.util.*;
 import javax.annotation.Generated;
@@ -23,6 +23,7 @@ import javax.annotation.Generated;
 
 @JsonTypeName("UserCredentialsResponse_credentials_inner")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
+@Builder
 public class UserCredentialsResponseCredentialsInner {
 
   @JsonProperty("id")
@@ -49,9 +50,10 @@ public class UserCredentialsResponseCredentialsInner {
 
   /**
    * Get id
+   * 
    * @return id
-  */
-  
+   */
+
   @Schema(name = "id", example = "DthUeofXNtlMevkt_M7aiD3cm70...", required = false)
   public String getId() {
     return id;
@@ -68,9 +70,10 @@ public class UserCredentialsResponseCredentialsInner {
 
   /**
    * Get type
+   * 
    * @return type
-  */
-  
+   */
+
   @Schema(name = "type", example = "public-key", required = false)
   public String getType() {
     return type;
@@ -87,9 +90,10 @@ public class UserCredentialsResponseCredentialsInner {
 
   /**
    * Get nickName
+   * 
    * @return nickName
-  */
-  
+   */
+
   @Schema(name = "nickName", example = "YubiKey 5Ci", required = false)
   public String getNickName() {
     return nickName;
@@ -106,9 +110,10 @@ public class UserCredentialsResponseCredentialsInner {
 
   /**
    * Get registrationTime
+   * 
    * @return registrationTime
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "registrationTime", example = "2022-07-21T17:32:28Z", required = false)
   public OffsetDateTime getRegistrationTime() {
     return registrationTime;
@@ -125,9 +130,10 @@ public class UserCredentialsResponseCredentialsInner {
 
   /**
    * Get lastUsedTime
+   * 
    * @return lastUsedTime
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "lastUsedTime", example = "2022-07-21T18:15:06Z", required = false)
   public OffsetDateTime getLastUsedTime() {
     return lastUsedTime;
@@ -182,4 +188,3 @@ public class UserCredentialsResponseCredentialsInner {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

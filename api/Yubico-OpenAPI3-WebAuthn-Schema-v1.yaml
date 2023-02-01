@@ -469,6 +469,9 @@ components:
               type: string
               example: public-key
               default: public-key
+            clientExtensionResults:
+              type: object
+              example: {}
     AssertionResultResponse:
       type: object
       properties:
@@ -581,7 +584,8 @@ components:
       summary: 'Optional'
       value: |-
         {
-          "username": "janedoe@example.com",
+          "userName": "janedoe@example.com",
+          "displayName": "jane12345"
           "authenticatorSelection": {
             "residentKey": "preferred",
             "authenticatorAttachment": "cross-platform",

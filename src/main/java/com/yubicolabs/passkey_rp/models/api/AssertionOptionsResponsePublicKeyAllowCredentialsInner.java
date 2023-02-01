@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import lombok.Builder;
 
 import java.util.*;
 import javax.annotation.Generated;
@@ -18,7 +18,7 @@ import javax.annotation.Generated;
 /**
  * AssertionOptionsResponsePublicKeyAllowCredentialsInner
  */
-
+@Builder
 @JsonTypeName("AssertionOptionsResponse_publicKey_allowCredentials_inner")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
 public class AssertionOptionsResponsePublicKeyAllowCredentialsInner {
@@ -36,9 +36,10 @@ public class AssertionOptionsResponsePublicKeyAllowCredentialsInner {
 
   /**
    * Get id
+   * 
    * @return id
-  */
-  
+   */
+
   @Schema(name = "id", example = "opQf1WmYAa5aupUKJIQp", required = false)
   public String getId() {
     return id;
@@ -55,9 +56,10 @@ public class AssertionOptionsResponsePublicKeyAllowCredentialsInner {
 
   /**
    * Get type
+   * 
    * @return type
-  */
-  
+   */
+
   @Schema(name = "type", example = "public-key", required = false)
   public String getType() {
     return type;
@@ -106,4 +108,3 @@ public class AssertionOptionsResponsePublicKeyAllowCredentialsInner {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

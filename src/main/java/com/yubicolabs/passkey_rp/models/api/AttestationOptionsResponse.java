@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import lombok.Builder;
 
 import java.util.*;
 import javax.annotation.Generated;
@@ -20,6 +20,7 @@ import javax.annotation.Generated;
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
+@Builder
 public class AttestationOptionsResponse {
 
   @JsonProperty("requestId")
@@ -35,9 +36,10 @@ public class AttestationOptionsResponse {
 
   /**
    * Get requestId
+   * 
    * @return requestId
-  */
-  
+   */
+
   @Schema(name = "requestId", example = "B-J4odOi9vcV-4TN_gpokEb1f1EI...", required = false)
   public String getRequestId() {
     return requestId;
@@ -54,9 +56,10 @@ public class AttestationOptionsResponse {
 
   /**
    * Get publicKey
+   * 
    * @return publicKey
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "publicKey", required = false)
   public AttestationOptionsResponsePublicKey getPublicKey() {
     return publicKey;
@@ -105,4 +108,3 @@ public class AttestationOptionsResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

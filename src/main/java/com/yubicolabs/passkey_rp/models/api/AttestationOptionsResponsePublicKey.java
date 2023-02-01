@@ -18,7 +18,7 @@ import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import lombok.Builder;
 
 import java.util.*;
 import javax.annotation.Generated;
@@ -29,6 +29,7 @@ import javax.annotation.Generated;
 
 @JsonTypeName("AttestationOptionsResponse_publicKey")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
+@Builder
 public class AttestationOptionsResponsePublicKey {
 
   @JsonProperty("rp")
@@ -59,9 +60,9 @@ public class AttestationOptionsResponsePublicKey {
    */
   public enum AttestationEnum {
     NONE("none"),
-    
+
     INDIRECT("indirect"),
-    
+
     DIRECT("direct");
 
     private String value;
@@ -101,9 +102,10 @@ public class AttestationOptionsResponsePublicKey {
 
   /**
    * Get rp
+   * 
    * @return rp
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "rp", required = false)
   public AttestationOptionsResponsePublicKeyRp getRp() {
     return rp;
@@ -120,9 +122,10 @@ public class AttestationOptionsResponsePublicKey {
 
   /**
    * Get user
+   * 
    * @return user
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "user", required = false)
   public AttestationOptionsResponsePublicKeyUser getUser() {
     return user;
@@ -139,9 +142,10 @@ public class AttestationOptionsResponsePublicKey {
 
   /**
    * Get challenge
+   * 
    * @return challenge
-  */
-  
+   */
+
   @Schema(name = "challenge", example = "uhUjPNlZfvn7onwuhNdsLPkkE5Fv-lUN", required = false)
   public String getChallenge() {
     return challenge;
@@ -151,12 +155,14 @@ public class AttestationOptionsResponsePublicKey {
     this.challenge = challenge;
   }
 
-  public AttestationOptionsResponsePublicKey pubKeyCredParams(List<AttestationOptionsResponsePublicKeyPubKeyCredParamsInner> pubKeyCredParams) {
+  public AttestationOptionsResponsePublicKey pubKeyCredParams(
+      List<AttestationOptionsResponsePublicKeyPubKeyCredParamsInner> pubKeyCredParams) {
     this.pubKeyCredParams = pubKeyCredParams;
     return this;
   }
 
-  public AttestationOptionsResponsePublicKey addPubKeyCredParamsItem(AttestationOptionsResponsePublicKeyPubKeyCredParamsInner pubKeyCredParamsItem) {
+  public AttestationOptionsResponsePublicKey addPubKeyCredParamsItem(
+      AttestationOptionsResponsePublicKeyPubKeyCredParamsInner pubKeyCredParamsItem) {
     if (this.pubKeyCredParams == null) {
       this.pubKeyCredParams = new ArrayList<>();
     }
@@ -166,9 +172,10 @@ public class AttestationOptionsResponsePublicKey {
 
   /**
    * Get pubKeyCredParams
+   * 
    * @return pubKeyCredParams
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "pubKeyCredParams", required = false)
   public List<AttestationOptionsResponsePublicKeyPubKeyCredParamsInner> getPubKeyCredParams() {
     return pubKeyCredParams;
@@ -185,9 +192,10 @@ public class AttestationOptionsResponsePublicKey {
 
   /**
    * Get timeout
+   * 
    * @return timeout
-  */
-  
+   */
+
   @Schema(name = "timeout", example = "10000", required = false)
   public Integer getTimeout() {
     return timeout;
@@ -197,12 +205,14 @@ public class AttestationOptionsResponsePublicKey {
     this.timeout = timeout;
   }
 
-  public AttestationOptionsResponsePublicKey excludeCredentials(List<AttestationOptionsResponsePublicKeyExcludeCredentialsInner> excludeCredentials) {
+  public AttestationOptionsResponsePublicKey excludeCredentials(
+      List<AttestationOptionsResponsePublicKeyExcludeCredentialsInner> excludeCredentials) {
     this.excludeCredentials = excludeCredentials;
     return this;
   }
 
-  public AttestationOptionsResponsePublicKey addExcludeCredentialsItem(AttestationOptionsResponsePublicKeyExcludeCredentialsInner excludeCredentialsItem) {
+  public AttestationOptionsResponsePublicKey addExcludeCredentialsItem(
+      AttestationOptionsResponsePublicKeyExcludeCredentialsInner excludeCredentialsItem) {
     if (this.excludeCredentials == null) {
       this.excludeCredentials = new ArrayList<>();
     }
@@ -212,34 +222,39 @@ public class AttestationOptionsResponsePublicKey {
 
   /**
    * Get excludeCredentials
+   * 
    * @return excludeCredentials
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "excludeCredentials", required = false)
   public List<AttestationOptionsResponsePublicKeyExcludeCredentialsInner> getExcludeCredentials() {
     return excludeCredentials;
   }
 
-  public void setExcludeCredentials(List<AttestationOptionsResponsePublicKeyExcludeCredentialsInner> excludeCredentials) {
+  public void setExcludeCredentials(
+      List<AttestationOptionsResponsePublicKeyExcludeCredentialsInner> excludeCredentials) {
     this.excludeCredentials = excludeCredentials;
   }
 
-  public AttestationOptionsResponsePublicKey authenticatorSelection(AttestationOptionsResponsePublicKeyAuthenticatorSelection authenticatorSelection) {
+  public AttestationOptionsResponsePublicKey authenticatorSelection(
+      AttestationOptionsResponsePublicKeyAuthenticatorSelection authenticatorSelection) {
     this.authenticatorSelection = authenticatorSelection;
     return this;
   }
 
   /**
    * Get authenticatorSelection
+   * 
    * @return authenticatorSelection
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "authenticatorSelection", required = false)
   public AttestationOptionsResponsePublicKeyAuthenticatorSelection getAuthenticatorSelection() {
     return authenticatorSelection;
   }
 
-  public void setAuthenticatorSelection(AttestationOptionsResponsePublicKeyAuthenticatorSelection authenticatorSelection) {
+  public void setAuthenticatorSelection(
+      AttestationOptionsResponsePublicKeyAuthenticatorSelection authenticatorSelection) {
     this.authenticatorSelection = authenticatorSelection;
   }
 
@@ -250,9 +265,10 @@ public class AttestationOptionsResponsePublicKey {
 
   /**
    * Get attestation
+   * 
    * @return attestation
-  */
-  
+   */
+
   @Schema(name = "attestation", example = "direct", required = false)
   public AttestationEnum getAttestation() {
     return attestation;
@@ -283,7 +299,8 @@ public class AttestationOptionsResponsePublicKey {
 
   @Override
   public int hashCode() {
-    return Objects.hash(rp, user, challenge, pubKeyCredParams, timeout, excludeCredentials, authenticatorSelection, attestation);
+    return Objects.hash(rp, user, challenge, pubKeyCredParams, timeout, excludeCredentials, authenticatorSelection,
+        attestation);
   }
 
   @Override
@@ -313,4 +330,3 @@ public class AttestationOptionsResponsePublicKey {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

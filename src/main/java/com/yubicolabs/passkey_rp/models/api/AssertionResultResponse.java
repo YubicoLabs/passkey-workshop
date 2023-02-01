@@ -9,7 +9,7 @@ import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import lombok.Builder;
 
 import java.util.*;
 import javax.annotation.Generated;
@@ -17,7 +17,7 @@ import javax.annotation.Generated;
 /**
  * AssertionResultResponse
  */
-
+@Builder
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
 public class AssertionResultResponse {
 
@@ -31,9 +31,10 @@ public class AssertionResultResponse {
 
   /**
    * Get status
+   * 
    * @return status
-  */
-  
+   */
+
   @Schema(name = "status", example = "ok", required = false)
   public String getStatus() {
     return status;
@@ -80,4 +81,3 @@ public class AssertionResultResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
-
