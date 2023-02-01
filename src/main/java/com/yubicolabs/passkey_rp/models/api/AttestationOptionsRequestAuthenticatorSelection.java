@@ -1,19 +1,12 @@
 package com.yubicolabs.passkey_rp.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
@@ -29,9 +22,9 @@ public class AttestationOptionsRequestAuthenticatorSelection {
    */
   public enum ResidentKeyEnum {
     PREFERRED("preferred"),
-    
+
     DISCOURAGED("discouraged"),
-    
+
     REQUIRED("required");
 
     private String value;
@@ -69,9 +62,9 @@ public class AttestationOptionsRequestAuthenticatorSelection {
    */
   public enum AuthenticatorAttachmentEnum {
     CROSS_PLATFORM("cross-platform"),
-    
+
     PLATFORM("platform"),
-    
+
     NONE("none");
 
     private String value;
@@ -109,9 +102,9 @@ public class AttestationOptionsRequestAuthenticatorSelection {
    */
   public enum UserVerificationEnum {
     PREFERRED("preferred"),
-    
+
     DISCOURAGED("discouraged"),
-    
+
     REQUIRED("required");
 
     private String value;
@@ -151,9 +144,10 @@ public class AttestationOptionsRequestAuthenticatorSelection {
 
   /**
    * Get residentKey
+   * 
    * @return residentKey
-  */
-  
+   */
+
   @Schema(name = "residentKey", example = "preferred", required = false)
   public ResidentKeyEnum getResidentKey() {
     return residentKey;
@@ -163,16 +157,18 @@ public class AttestationOptionsRequestAuthenticatorSelection {
     this.residentKey = residentKey;
   }
 
-  public AttestationOptionsRequestAuthenticatorSelection authenticatorAttachment(AuthenticatorAttachmentEnum authenticatorAttachment) {
+  public AttestationOptionsRequestAuthenticatorSelection authenticatorAttachment(
+      AuthenticatorAttachmentEnum authenticatorAttachment) {
     this.authenticatorAttachment = authenticatorAttachment;
     return this;
   }
 
   /**
    * Get authenticatorAttachment
+   * 
    * @return authenticatorAttachment
-  */
-  
+   */
+
   @Schema(name = "authenticatorAttachment", example = "cross-platform", required = false)
   public AuthenticatorAttachmentEnum getAuthenticatorAttachment() {
     return authenticatorAttachment;
@@ -189,9 +185,10 @@ public class AttestationOptionsRequestAuthenticatorSelection {
 
   /**
    * Get userVerification
+   * 
    * @return userVerification
-  */
-  
+   */
+
   @Schema(name = "userVerification", example = "preferred", required = false)
   public UserVerificationEnum getUserVerification() {
     return userVerification;
@@ -211,7 +208,9 @@ public class AttestationOptionsRequestAuthenticatorSelection {
     }
     AttestationOptionsRequestAuthenticatorSelection attestationOptionsRequestAuthenticatorSelection = (AttestationOptionsRequestAuthenticatorSelection) o;
     return Objects.equals(this.residentKey, attestationOptionsRequestAuthenticatorSelection.residentKey) &&
-        Objects.equals(this.authenticatorAttachment, attestationOptionsRequestAuthenticatorSelection.authenticatorAttachment) &&
+        Objects.equals(this.authenticatorAttachment,
+            attestationOptionsRequestAuthenticatorSelection.authenticatorAttachment)
+        &&
         Objects.equals(this.userVerification, attestationOptionsRequestAuthenticatorSelection.userVerification);
   }
 
@@ -242,4 +241,3 @@ public class AttestationOptionsRequestAuthenticatorSelection {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

@@ -1,19 +1,12 @@
 package com.yubicolabs.passkey_rp.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import java.time.OffsetDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
@@ -43,9 +36,10 @@ public class UserProfileResponse {
 
   /**
    * Get id
+   * 
    * @return id
-  */
-  
+   */
+
   @Schema(name = "id", example = "34545132", required = false)
   public Integer getId() {
     return id;
@@ -62,9 +56,10 @@ public class UserProfileResponse {
 
   /**
    * Get userName
+   * 
    * @return userName
-  */
-  
+   */
+
   @Schema(name = "userName", example = "janedoe@example.com", required = false)
   public String getUserName() {
     return userName;
@@ -81,9 +76,10 @@ public class UserProfileResponse {
 
   /**
    * Get displayName
+   * 
    * @return displayName
-  */
-  
+   */
+
   @Schema(name = "displayName", example = "Jane Doe", required = false)
   public String getDisplayName() {
     return displayName;
@@ -100,9 +96,10 @@ public class UserProfileResponse {
 
   /**
    * Get lastLoginDate
+   * 
    * @return lastLoginDate
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "lastLoginDate", example = "2023-01-09T13:44:02Z", required = false)
   public OffsetDateTime getLastLoginDate() {
     return lastLoginDate;
@@ -155,4 +152,3 @@ public class UserProfileResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

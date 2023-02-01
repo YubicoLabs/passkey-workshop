@@ -5,9 +5,7 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import com.yubico.webauthn.AssertionRequest;
-import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import com.yubicolabs.passkey_rp.interfaces.AssertionRequestStorage;
-import com.yubicolabs.passkey_rp.models.api.AssertionOptionsResponse;
 import com.yubicolabs.passkey_rp.models.dbo.AssertionOptionsDBO;
 
 public class AssertionRequestStorage_Local implements AssertionRequestStorage {

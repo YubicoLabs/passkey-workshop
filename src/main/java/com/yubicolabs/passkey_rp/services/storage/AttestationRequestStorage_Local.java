@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubicolabs.passkey_rp.interfaces.AttestationRequestStorage;
-import com.yubicolabs.passkey_rp.models.api.AttestationOptionsResponse;
 import com.yubicolabs.passkey_rp.models.dbo.AttestationOptionsDBO;
 
 public class AttestationRequestStorage_Local implements AttestationRequestStorage {

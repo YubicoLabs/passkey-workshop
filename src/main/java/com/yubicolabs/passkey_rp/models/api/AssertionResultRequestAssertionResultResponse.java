@@ -1,18 +1,10 @@
 package com.yubicolabs.passkey_rp.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
@@ -42,9 +34,10 @@ public class AssertionResultRequestAssertionResultResponse {
 
   /**
    * Get authenticatorData
+   * 
    * @return authenticatorData
-  */
-  
+   */
+
   @Schema(name = "authenticatorData", example = "SZYN5Gh0NBcPZHZgW4_krrmihjzzuoMdl2MBAAAAAA...", required = false)
   public String getAuthenticatorData() {
     return authenticatorData;
@@ -61,9 +54,10 @@ public class AssertionResultRequestAssertionResultResponse {
 
   /**
    * Get signature
+   * 
    * @return signature
-  */
-  
+   */
+
   @Schema(name = "signature", example = "ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP", required = false)
   public String getSignature() {
     return signature;
@@ -80,9 +74,10 @@ public class AssertionResultRequestAssertionResultResponse {
 
   /**
    * Get userHandle
+   * 
    * @return userHandle
-  */
-  
+   */
+
   @Schema(name = "userHandle", example = "", required = false)
   public String getUserHandle() {
     return userHandle;
@@ -99,9 +94,10 @@ public class AssertionResultRequestAssertionResultResponse {
 
   /**
    * Get clientDataJSON
+   * 
    * @return clientDataJSON
-  */
-  
+   */
+
   @Schema(name = "clientDataJSON", example = "eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsF1dGhuLmdldCJ9...", required = false)
   public String getClientDataJSON() {
     return clientDataJSON;
@@ -154,4 +150,3 @@ public class AssertionResultRequestAssertionResultResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

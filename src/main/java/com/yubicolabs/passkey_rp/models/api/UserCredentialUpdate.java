@@ -1,17 +1,9 @@
 package com.yubicolabs.passkey_rp.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
@@ -34,9 +26,10 @@ public class UserCredentialUpdate {
 
   /**
    * Get id
+   * 
    * @return id
-  */
-  
+   */
+
   @Schema(name = "id", example = "DthUeofXNtlMevkt_M7aiD3cm70...", required = false)
   public String getId() {
     return id;
@@ -53,9 +46,10 @@ public class UserCredentialUpdate {
 
   /**
    * Get nickName
+   * 
    * @return nickName
-  */
-  
+   */
+
   @Schema(name = "nickName", example = "YubiKey 5Ci home", required = false)
   public String getNickName() {
     return nickName;
@@ -104,4 +98,3 @@ public class UserCredentialUpdate {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

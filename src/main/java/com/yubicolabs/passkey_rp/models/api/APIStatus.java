@@ -1,17 +1,9 @@
 package com.yubicolabs.passkey_rp.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
@@ -31,9 +23,10 @@ public class APIStatus {
 
   /**
    * Get status
+   * 
    * @return status
-  */
-  
+   */
+
   @Schema(name = "status", example = "ok", required = false)
   public String getStatus() {
     return status;
@@ -80,4 +73,3 @@ public class APIStatus {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

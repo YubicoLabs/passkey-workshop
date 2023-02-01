@@ -3,7 +3,6 @@ package com.yubicolabs.passkey_rp.interfaces;
 import java.util.Optional;
 
 import com.yubico.webauthn.AssertionRequest;
-import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import com.yubicolabs.passkey_rp.models.dbo.AssertionOptionsDBO;
 
 public interface AssertionRequestStorage {

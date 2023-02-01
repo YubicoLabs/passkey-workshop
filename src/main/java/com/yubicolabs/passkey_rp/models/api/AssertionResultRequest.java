@@ -1,18 +1,10 @@
 package com.yubicolabs.passkey_rp.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.yubicolabs.passkey_rp.models.api.AssertionResultRequestAssertionResult;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
@@ -35,9 +27,10 @@ public class AssertionResultRequest {
 
   /**
    * Get requestId
+   * 
    * @return requestId
-  */
-  
+   */
+
   @Schema(name = "requestId", example = "B-J4odOi9vcV-4TN_gpokEb1f1EI...", required = false)
   public String getRequestId() {
     return requestId;
@@ -54,9 +47,10 @@ public class AssertionResultRequest {
 
   /**
    * Get assertionResult
+   * 
    * @return assertionResult
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "assertionResult", required = false)
   public AssertionResultRequestAssertionResult getAssertionResult() {
     return assertionResult;
@@ -105,4 +99,3 @@ public class AssertionResultRequest {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

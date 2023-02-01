@@ -1,19 +1,11 @@
 package com.yubicolabs.passkey_rp.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.yubicolabs.passkey_rp.models.api.AttestationResultRequestMakeCredentialResultResponse;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
@@ -43,9 +35,10 @@ public class AttestationResultRequestMakeCredentialResult {
 
   /**
    * Get id
+   * 
    * @return id
-  */
-  
+   */
+
   @Schema(name = "id", example = "LFdoCFJSJUHc-c72yraRc_1mDvruywA", required = false)
   public String getId() {
     return id;
@@ -55,16 +48,18 @@ public class AttestationResultRequestMakeCredentialResult {
     this.id = id;
   }
 
-  public AttestationResultRequestMakeCredentialResult response(AttestationResultRequestMakeCredentialResultResponse response) {
+  public AttestationResultRequestMakeCredentialResult response(
+      AttestationResultRequestMakeCredentialResultResponse response) {
     this.response = response;
     return this;
   }
 
   /**
    * Get response
+   * 
    * @return response
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "response", required = false)
   public AttestationResultRequestMakeCredentialResultResponse getResponse() {
     return response;
@@ -81,9 +76,10 @@ public class AttestationResultRequestMakeCredentialResult {
 
   /**
    * Get type
+   * 
    * @return type
-  */
-  
+   */
+
   @Schema(name = "type", example = "public-key", required = false)
   public String getType() {
     return type;
@@ -100,9 +96,10 @@ public class AttestationResultRequestMakeCredentialResult {
 
   /**
    * Get clientExtensionResults
+   * 
    * @return clientExtensionResults
-  */
-  
+   */
+
   @Schema(name = "clientExtensionResults", example = "{}", required = false)
   public Object getClientExtensionResults() {
     return clientExtensionResults;
@@ -124,7 +121,8 @@ public class AttestationResultRequestMakeCredentialResult {
     return Objects.equals(this.id, attestationResultRequestMakeCredentialResult.id) &&
         Objects.equals(this.response, attestationResultRequestMakeCredentialResult.response) &&
         Objects.equals(this.type, attestationResultRequestMakeCredentialResult.type) &&
-        Objects.equals(this.clientExtensionResults, attestationResultRequestMakeCredentialResult.clientExtensionResults);
+        Objects.equals(this.clientExtensionResults,
+            attestationResultRequestMakeCredentialResult.clientExtensionResults);
   }
 
   @Override
@@ -155,4 +153,3 @@ public class AttestationResultRequestMakeCredentialResult {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

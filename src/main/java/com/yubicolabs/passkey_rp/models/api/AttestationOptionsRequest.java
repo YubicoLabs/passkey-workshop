@@ -1,19 +1,12 @@
 package com.yubicolabs.passkey_rp.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.yubicolabs.passkey_rp.models.api.AttestationOptionsRequestAuthenticatorSelection;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
@@ -37,11 +30,11 @@ public class AttestationOptionsRequest {
    */
   public enum AttestationEnum {
     DIRECT("direct"),
-    
+
     ENTERPRISE("enterprise"),
-    
+
     INDIRECT("indirect"),
-    
+
     NONE("none");
 
     private String value;
@@ -81,9 +74,10 @@ public class AttestationOptionsRequest {
 
   /**
    * Get userName
+   * 
    * @return userName
-  */
-  
+   */
+
   @Schema(name = "userName", example = "janedoe@example.com", required = false)
   public String getUserName() {
     return userName;
@@ -100,9 +94,10 @@ public class AttestationOptionsRequest {
 
   /**
    * Get displayName
+   * 
    * @return displayName
-  */
-  
+   */
+
   @Schema(name = "displayName", example = "John Doe", required = false)
   public String getDisplayName() {
     return displayName;
@@ -112,16 +107,18 @@ public class AttestationOptionsRequest {
     this.displayName = displayName;
   }
 
-  public AttestationOptionsRequest authenticatorSelection(AttestationOptionsRequestAuthenticatorSelection authenticatorSelection) {
+  public AttestationOptionsRequest authenticatorSelection(
+      AttestationOptionsRequestAuthenticatorSelection authenticatorSelection) {
     this.authenticatorSelection = authenticatorSelection;
     return this;
   }
 
   /**
    * Get authenticatorSelection
+   * 
    * @return authenticatorSelection
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "authenticatorSelection", required = false)
   public AttestationOptionsRequestAuthenticatorSelection getAuthenticatorSelection() {
     return authenticatorSelection;
@@ -138,9 +135,10 @@ public class AttestationOptionsRequest {
 
   /**
    * Get attestation
+   * 
    * @return attestation
-  */
-  
+   */
+
   @Schema(name = "attestation", example = "direct", required = false)
   public AttestationEnum getAttestation() {
     return attestation;
@@ -193,4 +191,3 @@ public class AttestationOptionsRequest {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

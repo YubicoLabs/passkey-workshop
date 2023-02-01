@@ -1,18 +1,10 @@
 package com.yubicolabs.passkey_rp.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
@@ -36,9 +28,10 @@ public class AttestationResultRequestMakeCredentialResultResponse {
 
   /**
    * Get clientDataJSON
+   * 
    * @return clientDataJSON
-  */
-  
+   */
+
   @Schema(name = "clientDataJSON", example = "eyJj0OiJIiwidHlwZSI6IndlYmF1dGhyZWF0ZSJ9...", required = false)
   public String getClientDataJSON() {
     return clientDataJSON;
@@ -55,9 +48,10 @@ public class AttestationResultRequestMakeCredentialResultResponse {
 
   /**
    * Get attestationObject
+   * 
    * @return attestationObject
-  */
-  
+   */
+
   @Schema(name = "attestationObject", example = "o2NmbXRNAQELBQADgbpNt2IOL4i4z96Kqo1rqSUmonen...", required = false)
   public String getAttestationObject() {
     return attestationObject;
@@ -106,4 +100,3 @@ public class AttestationResultRequestMakeCredentialResultResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
-
