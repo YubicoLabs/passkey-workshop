@@ -21,6 +21,7 @@ import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.StartRegistrationOptions;
+import com.yubico.webauthn.AssertionRequest.AssertionRequestBuilder;
 import com.yubico.webauthn.StartAssertionOptions.StartAssertionOptionsBuilder;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.AuthenticatorAttachment;
@@ -73,11 +74,20 @@ public class PasskeyOperations {
 
       // @TODO - Add mechanism to get the UID for the user from storage (if one
       // exists)
+
+      /**
+       * See if the user exists
+       */
+      Optional<ByteArray> maybeUID = relyingPartyInstance.getStorageInstance().getCredentialStorage()
+          .getUserHandleForUsername(request.getUserName());
+
       // @TODO - remove line of code that generates a fake ID for every request
       UserIdentity userIdentity = UserIdentity.builder()
           .name(request.getUserName())
           .displayName(request.getDisplayName())
-          .id(generateRandomByteArray(32))
+          // If there is an existing user, attach their userhandle, otherwise generate a
+          // new one
+          .id(maybeUID.isPresent() ? maybeUID.get() : generateRandomByteArray(32))
           .build();
 
       /*
@@ -140,9 +150,6 @@ public class PasskeyOperations {
         relyingPartyInstance.getStorageInstance().getAttestationRequestStorage().invalidate(response.getRequestId());
       }
 
-      System.out.println("See below for response");
-      System.out.println(response);
-
       RegistrationResult newCred = relyingPartyInstance.getRelyingParty()
           .finishRegistration(FinishRegistrationOptions.builder()
               .request(options.getPkc())
@@ -190,17 +197,15 @@ public class PasskeyOperations {
 
         optionsBuilder.username(request.getUserName());
       }
-      PublicKeyCredentialRequestOptions pkc = relyingPartyInstance.getRelyingParty()
-          .startAssertion(optionsBuilder.build())
-          .getPublicKeyCredentialRequestOptions();
+      AssertionRequest pkc = relyingPartyInstance.getRelyingParty()
+          .startAssertion(optionsBuilder.build());
 
       ByteArray requestId = generateRandomByteArray(32);
 
-      AssertionOptionsResponse response = AssertionOptionsResponseConverter.PKCtoResponse(pkc, requestId);
+      AssertionOptionsResponse response = AssertionOptionsResponseConverter
+          .PKCtoResponse(pkc.getPublicKeyCredentialRequestOptions(), requestId);
 
-      relyingPartyInstance.getStorageInstance().getAssertionRequestStorage().insert(
-          AssertionRequest.builder().publicKeyCredentialRequestOptions(pkc).username(request.getUserName()).build(),
-          requestId.getBase64Url());
+      relyingPartyInstance.getStorageInstance().getAssertionRequestStorage().insert(pkc, requestId.getBase64Url());
 
       return response;
     } catch (Exception e) {
@@ -237,10 +242,19 @@ public class PasskeyOperations {
         relyingPartyInstance.getStorageInstance().getAssertionRequestStorage().invalidate(response.getRequestId());
       }
 
+      /*
+       * Build assertion request
+       */
+      AssertionRequestBuilder requestBuilder = AssertionRequest.builder()
+          .publicKeyCredentialRequestOptions(options.getAssertionRequest().getPublicKeyCredentialRequestOptions());
+
+      // Check if a username was present in the request
+      if (options.getAssertionRequest().getUsername().isPresent()) {
+        requestBuilder.username(options.getAssertionRequest().getUsername().get());
+      }
+
       AssertionResult result = relyingPartyInstance.getRelyingParty().finishAssertion(FinishAssertionOptions.builder()
-          .request(AssertionRequest.builder()
-              .publicKeyCredentialRequestOptions(options.getAssertionRequest().getPublicKeyCredentialRequestOptions())
-              .build())
+          .request(requestBuilder.build())
           .response(parseAssertionResponse(response.getAssertionResult()))
           .build());
 
@@ -344,8 +358,6 @@ public class PasskeyOperations {
     try {
       String responseJSON = mapper.writeValueAsString(response);
 
-      System.out.println(responseJSON);
-
       return PublicKeyCredential
           .parseRegistrationResponseJson(responseJSON);
 
@@ -358,8 +370,6 @@ public class PasskeyOperations {
       AssertionResultRequestAssertionResult response) throws Exception {
     try {
       String responseJSON = mapper.writeValueAsString(response);
-
-      System.out.println(responseJSON);
 
       return PublicKeyCredential
           .parseAssertionResponseJson(responseJSON);

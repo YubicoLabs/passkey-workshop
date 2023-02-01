@@ -50,8 +50,7 @@ public class AttestationOptionsResponseConverter {
                                                         ? pkc.getExcludeCredentials().get().stream()
                                                                         .map(item -> AttestationOptionsResponsePublicKeyExcludeCredentialsInner
                                                                                         .builder()
-                                                                                        .type(item.getType().toString()
-                                                                                                        .toLowerCase())
+                                                                                        .type(item.getType().getId())
                                                                                         .id(item.getId().getBase64Url())
                                                                                         .build())
                                                                         .collect(Collectors.toList())
