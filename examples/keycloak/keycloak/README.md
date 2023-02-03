@@ -1,5 +1,16 @@
 # KeyCloak
 
+Abridged instructions for setting up KeyCloak to test as an OIDC Provider and OAuth Authorization Server.
+
+## Running KeyCloak
+
+Two options running KeyCloak:
+
+1. using Docker
+2. using a local JRE
+
+### Using Docker
+
 Run a default instance of KeyCloak using Docker:
 
 	docker run \
@@ -8,6 +19,26 @@ Run a default instance of KeyCloak using Docker:
 	    -e KEYCLOAK_ADMIN_PASSWORD=admin \
 	    quay.io/keycloak/keycloak:20.0.3 start-dev
 
+
+### Using a JRE
+
+- Download and unpack the latest version of KeyCloak
+
+	wget https://github.com/keycloak/keycloak/releases/download/20.0.3/keycloak-20.0.3.tar.gz
+	tar xf keycloak-20.0.3.tar.gz
+	cd keycloak-20.0.3/
+
+- Use a recent Java version
+
+	export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+
+- Start the server:
+
+	bin/kc.sh start-dev
+
+- Open the a browser at the URL http://localhost:8080/ and create the admin user.
+
+### Test
 
 Test if KeyClock is running:
 
