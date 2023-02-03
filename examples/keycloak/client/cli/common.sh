@@ -5,9 +5,9 @@
 # Client:
 
 CLIENT_ID="myclient"
-#CLIENT_SECRET="pastemyclientsecrethere" # for confidential clients
-CLIENT_SECRET= # for public clients
-PORT=8001
+CLIENT_SECRET="93sm81WqQv93kvcUhfjYxP4bsPvVofee" # for confidential clients
+#CLIENT_SECRET= # for public clients
+PORT=8000
 REDIRECT_URI=http://localhost:$PORT
 TOKENFILE=token.json
 
