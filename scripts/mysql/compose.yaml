@@ -1,0 +1,10 @@
+services:
+  db:
+    container_name: passkey-mysql
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MASTER_PASSWORD}'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'

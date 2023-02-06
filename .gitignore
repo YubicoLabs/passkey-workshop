@@ -3,6 +3,7 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+.DS_Store
 
 ### STS ###
 .apt_generated
@@ -36,3 +37,5 @@ build/
 .aws-sam/*
 
 .openapi-generator
+
+scripts/mysql/.env
