@@ -3,6 +3,9 @@ package com.yubicolabs.passkey_rp.services.passkey;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +21,16 @@ import lombok.Getter;
 public class RelyingPartyInstance {
 
   @Getter
+  @Autowired
   private StorageInstance storageInstance;
 
   @Getter
   private RelyingParty relyingParty;
 
   // @TODO - Read these value from ENV
-  public RelyingPartyInstance() {
-    this.storageInstance = new StorageInstance();
+
+  @PostConstruct
+  private void setRPInstance() {
     this.relyingParty = RelyingParty.builder()
         .identity(generateIdentity())
         .credentialRepository(storageInstance.getCredentialStorage())

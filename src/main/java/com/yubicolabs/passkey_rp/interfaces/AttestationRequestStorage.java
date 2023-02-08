@@ -3,7 +3,7 @@ package com.yubicolabs.passkey_rp.interfaces;
 import java.util.Optional;
 
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
-import com.yubicolabs.passkey_rp.models.dbo.AttestationOptionsDBO;
+import com.yubicolabs.passkey_rp.models.common.AttestationOptions;
 
 public interface AttestationRequestStorage {
   /**
@@ -32,5 +32,5 @@ public interface AttestationRequestStorage {
    * @return Optional object that may include a registration request if found,
    *         empty otherwise
    */
-  public Optional<AttestationOptionsDBO> getIfPresent(String requestID);
+  public Optional<AttestationOptions> getIfPresent(String requestID);
 }

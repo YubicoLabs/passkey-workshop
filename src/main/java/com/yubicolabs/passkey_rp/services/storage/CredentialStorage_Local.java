@@ -10,7 +10,7 @@ import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import com.yubicolabs.passkey_rp.interfaces.CredentialStorage;
-import com.yubicolabs.passkey_rp.models.dbo.CredentialRegistration;
+import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;
 
 public class CredentialStorage_Local implements CredentialStorage {
 

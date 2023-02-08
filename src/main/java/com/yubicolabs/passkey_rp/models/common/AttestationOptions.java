@@ -1,4 +1,4 @@
-package com.yubicolabs.passkey_rp.models.dbo;
+package com.yubicolabs.passkey_rp.models.common;
 
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 
@@ -7,9 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Builder
-public class AttestationOptionsDBO {
+public class AttestationOptions {
   @Getter
-  PublicKeyCredentialCreationOptions pkc;
+  PublicKeyCredentialCreationOptions attestationRequest;
 
   @Getter
   @Setter

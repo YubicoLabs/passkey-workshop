@@ -1,4 +1,4 @@
-package com.yubicolabs.passkey_rp.models.dbo;
+package com.yubicolabs.passkey_rp.models.common;
 
 import com.yubico.webauthn.AssertionRequest;
 
@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Builder
-public class AssertionOptionsDBO {
+public class AssertionOptions {
 
   @Getter
   AssertionRequest assertionRequest;

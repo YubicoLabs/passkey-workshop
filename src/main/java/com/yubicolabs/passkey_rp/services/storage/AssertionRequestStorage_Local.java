@@ -6,16 +6,16 @@ import java.util.Optional;
 
 import com.yubico.webauthn.AssertionRequest;
 import com.yubicolabs.passkey_rp.interfaces.AssertionRequestStorage;
-import com.yubicolabs.passkey_rp.models.dbo.AssertionOptionsDBO;
+import com.yubicolabs.passkey_rp.models.common.AssertionOptions;
 
 public class AssertionRequestStorage_Local implements AssertionRequestStorage {
 
-  private Collection<AssertionOptionsDBO> authenticationRequestRepository = new HashSet<AssertionOptionsDBO>();
+  private Collection<AssertionOptions> authenticationRequestRepository = new HashSet<AssertionOptions>();
 
   @Override
   public Boolean insert(AssertionRequest request, String requestId) {
     return authenticationRequestRepository
-        .add(AssertionOptionsDBO.builder().assertionRequest(request).isActive(true).requestId(requestId).build());
+        .add(AssertionOptions.builder().assertionRequest(request).isActive(true).requestId(requestId).build());
   }
 
   @Override
@@ -31,8 +31,8 @@ public class AssertionRequestStorage_Local implements AssertionRequestStorage {
   }
 
   @Override
-  public Optional<AssertionOptionsDBO> getIfPresent(String requestID) {
-    Optional<AssertionOptionsDBO> maybeRequest = authenticationRequestRepository.stream()
+  public Optional<AssertionOptions> getIfPresent(String requestID) {
+    Optional<AssertionOptions> maybeRequest = authenticationRequestRepository.stream()
         .filter(reg -> reg.getRequestId().equals(requestID)).findFirst();
 
     if (maybeRequest.isPresent()) {

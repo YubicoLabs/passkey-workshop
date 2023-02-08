@@ -3,7 +3,7 @@ package com.yubicolabs.passkey_rp.interfaces;
 import java.util.Optional;
 
 import com.yubico.webauthn.AssertionRequest;
-import com.yubicolabs.passkey_rp.models.dbo.AssertionOptionsDBO;
+import com.yubicolabs.passkey_rp.models.common.AssertionOptions;
 
 public interface AssertionRequestStorage {
   /**
@@ -31,5 +31,5 @@ public interface AssertionRequestStorage {
    * @return Optional object that contains an assertion request if present, empty
    *         otherwise
    */
-  public Optional<AssertionOptionsDBO> getIfPresent(String requestID);
+  public Optional<AssertionOptions> getIfPresent(String requestID);
 }

@@ -51,9 +51,9 @@ import com.yubicolabs.passkey_rp.models.api.AttestationResultRequestMakeCredenti
 import com.yubicolabs.passkey_rp.models.api.AttestationResultResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponseCredentialsInner;
-import com.yubicolabs.passkey_rp.models.dbo.AssertionOptionsDBO;
-import com.yubicolabs.passkey_rp.models.dbo.AttestationOptionsDBO;
-import com.yubicolabs.passkey_rp.models.dbo.CredentialRegistration;
+import com.yubicolabs.passkey_rp.models.common.AssertionOptions;
+import com.yubicolabs.passkey_rp.models.common.AttestationOptions;
+import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;
 
 @Service
 @Scope("singleton")
@@ -126,10 +126,10 @@ public class PasskeyOperations {
       /*
        * Check if there is an active registration request
        */
-      Optional<AttestationOptionsDBO> maybeOptions = relyingPartyInstance.getStorageInstance()
+      Optional<AttestationOptions> maybeOptions = relyingPartyInstance.getStorageInstance()
           .getAttestationRequestStorage().getIfPresent(response.getRequestId());
 
-      AttestationOptionsDBO options;
+      AttestationOptions options;
 
       if (maybeOptions.isPresent()) {
         options = maybeOptions.get();
@@ -150,11 +150,11 @@ public class PasskeyOperations {
 
       RegistrationResult newCred = relyingPartyInstance.getRelyingParty()
           .finishRegistration(FinishRegistrationOptions.builder()
-              .request(options.getPkc())
+              .request(options.getAttestationRequest())
               .response(parseRegistrationResponse(response.getMakeCredentialResult()))
               .build());
 
-      CredentialRegistration toStore = buildCredentialDBO(options.getPkc(), newCred);
+      CredentialRegistration toStore = buildCredentialDBO(options.getAttestationRequest(), newCred);
 
       if (relyingPartyInstance.getStorageInstance().getCredentialStorage().addRegistration(toStore)) {
         return new AttestationResultResponse().status("created");
@@ -218,10 +218,10 @@ public class PasskeyOperations {
       /**
        * Check for assertion request
        */
-      Optional<AssertionOptionsDBO> maybeOptions = relyingPartyInstance.getStorageInstance()
+      Optional<AssertionOptions> maybeOptions = relyingPartyInstance.getStorageInstance()
           .getAssertionRequestStorage().getIfPresent(response.getRequestId());
 
-      AssertionOptionsDBO options;
+      AssertionOptions options;
 
       if (maybeOptions.isPresent()) {
         options = maybeOptions.get();

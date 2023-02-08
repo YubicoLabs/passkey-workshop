@@ -6,16 +6,16 @@ import java.util.Optional;
 
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubicolabs.passkey_rp.interfaces.AttestationRequestStorage;
-import com.yubicolabs.passkey_rp.models.dbo.AttestationOptionsDBO;
+import com.yubicolabs.passkey_rp.models.common.AttestationOptions;
 
 public class AttestationRequestStorage_Local implements AttestationRequestStorage {
 
-  private Collection<AttestationOptionsDBO> attestationRequestRepository = new HashSet<AttestationOptionsDBO>();
+  private Collection<AttestationOptions> attestationRequestRepository = new HashSet<AttestationOptions>();
 
   @Override
   public Boolean insert(PublicKeyCredentialCreationOptions request, String requestId) {
     return attestationRequestRepository
-        .add(AttestationOptionsDBO.builder().pkc(request).isActive(true).requestId(requestId).build());
+        .add(AttestationOptions.builder().attestationRequest(request).isActive(true).requestId(requestId).build());
   }
 
   @Override
@@ -31,8 +31,8 @@ public class AttestationRequestStorage_Local implements AttestationRequestStorag
   }
 
   @Override
-  public Optional<AttestationOptionsDBO> getIfPresent(String requestID) {
-    Optional<AttestationOptionsDBO> maybeRequest = attestationRequestRepository.stream()
+  public Optional<AttestationOptions> getIfPresent(String requestID) {
+    Optional<AttestationOptions> maybeRequest = attestationRequestRepository.stream()
         .filter(reg -> reg.getRequestId().equals(requestID)).findFirst();
 
     if (maybeRequest.isPresent()) {

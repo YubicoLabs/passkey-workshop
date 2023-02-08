@@ -1,4 +1,4 @@
-package com.yubicolabs.passkey_rp.models.dbo;
+package com.yubicolabs.passkey_rp.models.common;
 
 import java.time.Instant;
 import java.util.Optional;

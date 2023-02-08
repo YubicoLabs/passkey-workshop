@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.data.ByteArray;
-import com.yubicolabs.passkey_rp.models.dbo.CredentialRegistration;;
+import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;;
 
 public interface CredentialStorage extends CredentialRepository {
   /**
