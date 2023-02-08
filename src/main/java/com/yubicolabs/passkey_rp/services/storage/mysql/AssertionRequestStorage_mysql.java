@@ -1,9 +1,9 @@
 package com.yubicolabs.passkey_rp.services.storage.mysql;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 import com.yubico.webauthn.AssertionRequest;
@@ -34,14 +34,37 @@ public class AssertionRequestStorage_mysql implements AssertionRequestStorage {
 
   @Override
   public Boolean invalidate(String requestID) {
-    // TODO Auto-generated method stub
-    return null;
+    List<AssertionOptionsDBO> maybeList = assertionRequestRepositoryMysql.findByRequestId(requestID);
+
+    if (maybeList.size() >= 1) {
+      AssertionOptionsDBO request = maybeList.get(0);
+      request.setIsActive(false);
+      assertionRequestRepositoryMysql.save(request);
+      return true;
+    }
+    return false;
   }
 
   @Override
   public Optional<AssertionOptions> getIfPresent(String requestID) {
-    // TODO Auto-generated method stub
-    return Optional.empty();
+    try {
+      List<AssertionOptionsDBO> maybeList = assertionRequestRepositoryMysql.findByRequestId(requestID);
+
+      if (maybeList.size() >= 1) {
+        AssertionOptionsDBO request = maybeList.get(0);
+
+        System.out.println("Found  request of ID: " + request.getRequestId());
+
+        return Optional.ofNullable(
+            AssertionOptions.builder().assertionRequest(AssertionRequest.fromJson(request.getAssertionRequest()))
+                .requestId(request.getRequestId()).isActive(request.getIsActive()).build());
+      }
+      return Optional.empty();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Optional.ofNullable(null);
+    }
+
   }
 
 }
