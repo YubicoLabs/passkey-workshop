@@ -1,4 +1,4 @@
-package com.yubicolabs.passkey_rp.services.storage;
+package com.yubicolabs.passkey_rp.services.storage.local;
 
 import java.util.Collection;
 import java.util.HashSet;

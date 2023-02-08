@@ -53,8 +53,6 @@ public class AssertionRequestStorage_mysql implements AssertionRequestStorage {
       if (maybeList.size() >= 1) {
         AssertionOptionsDBO request = maybeList.get(0);
 
-        System.out.println("Found  request of ID: " + request.getRequestId());
-
         return Optional.ofNullable(
             AssertionOptions.builder().assertionRequest(AssertionRequest.fromJson(request.getAssertionRequest()))
                 .requestId(request.getRequestId()).isActive(request.getIsActive()).build());

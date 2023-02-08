@@ -10,11 +10,6 @@ CREATE TABLE
 
 CREATE TABLE assertion_requests ( id BIGINT );
 
-CREATE TABLE
-    attestation_requests (
-        requestId text,
-        attestationRequest text,
-        isActive boolean
-    );
+CREATE TABLE attestation_requests ( id BIGINT);
 
 SHOW TABLES;
