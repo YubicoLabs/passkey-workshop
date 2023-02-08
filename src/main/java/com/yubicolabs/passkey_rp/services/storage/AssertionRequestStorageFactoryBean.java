@@ -3,6 +3,7 @@ package com.yubicolabs.passkey_rp.services.storage;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 import com.yubicolabs.passkey_rp.interfaces.AssertionRequestStorage;
@@ -14,7 +15,7 @@ public class AssertionRequestStorageFactoryBean implements FactoryBean<Assertion
   @Value("${datasource.type}")
   private String name;
 
-  @Autowired
+  @Autowired(required = false)
   AssertionRequestStorage_mysql assertionRequestStorage_mysql;
 
   // @TODO - I need a way to abandon the mysql instance if the DB cannot connect

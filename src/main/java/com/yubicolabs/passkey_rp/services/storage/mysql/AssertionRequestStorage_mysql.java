@@ -3,6 +3,7 @@ package com.yubicolabs.passkey_rp.services.storage.mysql;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 import com.yubico.webauthn.AssertionRequest;
@@ -13,7 +14,7 @@ import com.yubicolabs.passkey_rp.models.dbo.mysql.AssertionOptionsDBO;
 @Component
 public class AssertionRequestStorage_mysql implements AssertionRequestStorage {
 
-  @Autowired(required = true)
+  @Autowired(required = false)
   private AssertionRequestRepositoryMysql assertionRequestRepositoryMysql;
 
   @Override
