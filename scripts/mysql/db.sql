@@ -2,11 +2,7 @@ CREATE DATABASE passkeyStorage;
 
 USE passkeyStorage;
 
-CREATE TABLE
-    credential_registrations (
-        userHandle text,
-        credential text
-    );
+CREATE TABLE credential_registrations (id BIGINT);
 
 CREATE TABLE assertion_requests ( id BIGINT );
 

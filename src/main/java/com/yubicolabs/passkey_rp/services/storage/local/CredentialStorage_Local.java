@@ -91,6 +91,7 @@ public class CredentialStorage_Local implements CredentialStorage {
 
   @Override
   public Boolean removeRegistration(ByteArray credentialId, ByteArray userHandle) {
+    
     return credentialRepository.removeIf(reg -> reg.getCredential().getCredentialId().equals(credentialId)
         && reg.getUserIdentity().getId().equals(userHandle));
   }
