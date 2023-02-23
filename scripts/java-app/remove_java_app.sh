@@ -12,3 +12,6 @@ rm com.yubicolabs.passkey_rp.jar
 
 echo "Removing environment variables"
 rm .env
+
+echo "Removing source folder"
+rm -rf source

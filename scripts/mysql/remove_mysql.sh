@@ -8,3 +8,5 @@ echo "Removing the existing image"
 docker image rm passkey_storage
 
 rm .env
+
+unset PASSKEY_MYSQL_PASSWORD

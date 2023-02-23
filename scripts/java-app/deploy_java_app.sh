@@ -3,12 +3,11 @@
 echo -e "\n****************************************"
 echo "Building the Java application"
 echo "****************************************"
-(cd ../.. && mvn clean package)
 
 echo -e "\n****************************************"
-echo "Moving JAR file from target dir to current directory"
+echo "Copying source folder to local directory"
 echo "****************************************"
-cp ../../target/com.yubicolabs.passkey_rp.jar com.yubicolabs.passkey_rp.jar 
+cp -r ../../examples/java-spring/ ./source/
 
 # Check if there is an ENV file
 # If no ENV file, generate an env file

@@ -37,7 +37,11 @@ public class OpenApiGeneratorApplication implements CommandLineRunner {
         // Determine if using in-mem or mysql
         String storageType = System.getenv("DATABASE_TYPE");
 
+        System.out.println(storageType);
+
         if (storageType.equals("local")) {
+            System.out.println("Here");
+
             System.setProperty("datasource.type", "local");
 
             // Used to prevent the application from attempting to establish a DB connection
