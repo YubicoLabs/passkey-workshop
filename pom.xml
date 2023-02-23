@@ -20,6 +20,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <build>
+       <finalName>com.yubicolabs.passkey_rp</finalName>
         <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
             <plugin>

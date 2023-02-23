@@ -4,8 +4,8 @@ services:
     build: .
     image: passkey_storage
     environment:
-      MYSQL_ROOT_PASSWORD: '${MASTER_PASSWORD}'
+      MYSQL_ROOT_PASSWORD: "${MASTER_PASSWORD}"
     ports:
-      - '3306:3306'
+      - "3306:3306"
     expose:
-      - '3306'
+      - "3306"

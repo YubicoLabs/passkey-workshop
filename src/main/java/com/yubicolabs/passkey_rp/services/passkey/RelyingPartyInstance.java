@@ -31,26 +31,59 @@ public class RelyingPartyInstance {
 
   @PostConstruct
   private void setRPInstance() {
+
     this.relyingParty = RelyingParty.builder()
         .identity(generateIdentity())
         .credentialRepository(storageInstance.getCredentialStorage())
         .origins(generateOrigins())
-        .attestationConveyancePreference(AttestationConveyancePreference.DIRECT)
-        .allowUntrustedAttestation(true)
+        .attestationConveyancePreference(
+            AttestationConveyancePreference.valueOf(System.getenv("RP_ATTESTATION_PREFERENCE")))
+        .allowUntrustedAttestation(Boolean.parseBoolean(System.getenv("RP_ALLOW_UNTRUSTED_ATTESTATION")))
         .validateSignatureCounter(true)
         .build();
+
+    System.out.println("Size of origins list: " + this.relyingParty.getOrigins().size());
   }
 
   private RelyingPartyIdentity generateIdentity() {
+    /*
+     * Get RP ID and Name from env variables
+     */
+    String rpID = System.getenv("RP_ID");
+    String rpName = System.getenv("RP_NAME");
+
     return RelyingPartyIdentity.builder()
-        .id("localhost")
-        .name("My passkey app")
+        .id(rpID)
+        .name(rpName)
         .build();
   }
 
   private Set<String> generateOrigins() {
+    /*
+     * Get origins list value from env variables
+     */
+
+    String originsVal = System.getenv("RP_ALLOWED_ORIGINS");
+    System.out.println(originsVal);
+
+    /*
+     * Split the origins list by comma (as noted by the shell script)
+     */
+
+    String[] originsList = originsVal.split(",");
+    System.out.println("Number of split: " + originsList.length);
+
+    /*
+     * Iterate through origins list
+     */
+
     Set<String> allowedOrigins = new HashSet<String>();
-    allowedOrigins.add("http://localhost:3000");
+
+    for (int i = 0; i < originsList.length; i++) {
+      System.out.println(originsList[i]);
+      allowedOrigins.add(originsList[i]);
+    }
+
     return allowedOrigins;
   }
 

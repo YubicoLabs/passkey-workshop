@@ -1,0 +1,15 @@
+services:
+  passkey-services:
+    container_name: passkey-services
+    build: .
+    image: passkey_services
+    environment:
+      RP_ID: "${RP_ID}"
+      RP_NAME: "${RP_NAME}"
+      RP_ALLOWED_ORIGINS: "${RP_ALLOWED_ORIGINS}"
+      RP_ATTESTATION_PREFERENCE: "${RP_ATTESTATION_PREFERENCE}"
+      RP_ALLOW_UNTRUSTED_ATTESTATION: "${RP_ALLOW_UNTRUSTED_ATTESTATION}"
+      DATABASE_TYPE: "${DATABASE_TYPE}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
+    ports:
+      - 8080:8080
