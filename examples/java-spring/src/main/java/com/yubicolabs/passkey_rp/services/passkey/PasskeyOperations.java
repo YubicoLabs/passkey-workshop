@@ -263,11 +263,11 @@ public class PasskeyOperations {
 
         return AssertionResultResponse.builder().status("ok").build();
       } else {
-        throw new Exception("Invalid assertion");
+        return AssertionResultResponse.builder().status("error").build();
       }
     } catch (Exception e) {
       e.printStackTrace();
-      throw new Exception("There was an issue while generating AssertionOptions: " + e.getMessage());
+      return AssertionResultResponse.builder().status("error").build();
     }
 
   }
