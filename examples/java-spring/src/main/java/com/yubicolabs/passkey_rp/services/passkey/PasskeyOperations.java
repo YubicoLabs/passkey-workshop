@@ -85,7 +85,7 @@ public class PasskeyOperations {
           .displayName(request.getDisplayName())
           // If there is an existing user, attach their userhandle, otherwise generate a
           // new one
-          .id(maybeUID.isPresent() ? maybeUID.get() : generateRandomByteArray(32))
+          .id(maybeUID.isPresent() ? maybeUID.get() : generateRandomByteArray(16))
           .build();
 
       /*

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import LogoutButton from "../../components/logout_button";
 import OIDCServices from "../../services/OIDCServices";
 
 export default function Home() {
@@ -15,5 +16,9 @@ export default function Home() {
     effectStillAuthenticated();
   }, []);
 
-  return <div>in home</div>;
+  return (
+    <div>
+      in home <LogoutButton />
+    </div>
+  );
 }

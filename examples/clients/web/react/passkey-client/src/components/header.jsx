@@ -16,11 +16,11 @@ export default function Header() {
             <Link className="nav-link" to="sign_in">
               Sign In
             </Link>
+            <Link className="nav-link" to="sign_up">
+              Sign up
+            </Link>
             <Link className="nav-link" to="test_panel">
               Test Panel
-            </Link>
-            <Link className="nav-link" to="/oidc/home">
-              OIDC
             </Link>
           </Nav>
         </Navbar.Collapse>

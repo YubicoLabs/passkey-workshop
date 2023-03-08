@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 
 import Loading from "../../components/loading";
 import OIDCServices from "../../services/OIDCServices";
+import Container from "react-bootstrap/esm/Container";
+import Card from "react-bootstrap/Card";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 import { useSearchParams, useNavigate } from "react-router-dom";
+import Utils from "../../services/Utils";
 
-export default function SignInCallback() {
+export default function Callback({ callbackInfo }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const code = searchParams.get("code");
 
@@ -15,9 +20,8 @@ export default function SignInCallback() {
 
   const retrieveToken = async () => {
     try {
-      console.warn(
-        "Checking auth: " + (await OIDCServices.stillAuthenticated())
-      );
+      await Utils.timeoutUtil(1500);
+
       const tokensFound = await OIDCServices.retrieveAccessToken(code);
 
       if (tokensFound) {
@@ -25,12 +29,13 @@ export default function SignInCallback() {
 
         if (checkingAuth) {
           navigate("/");
+        } else {
+          navigate("/sign_in");
         }
       } else {
         throw new Error("There was an issue getting your access token");
       }
     } catch (e) {
-      console.log(e);
       setLoading(false);
     }
   };
@@ -43,7 +48,17 @@ export default function SignInCallback() {
 
   return (
     <div style={{ marginTop: "5em" }}>
-      <Loading loadingInfo={{ message: "Loading your profile" }} />
+      <Container>
+        <Row>
+          <Col lg={{ span: 8, offset: 2 }} md={{ span: 10, offset: 1 }}>
+            <Card>
+              <Card.Body>
+                <Loading loadingInfo={{ message: callbackInfo.message }} />
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import { get } from "@github/webauthn-json";
 
 import PasskeyServices from "../../services/PasskeyServices";
 import Loading from "../../components/loading";
+import Utils from "../../services/Utils";
 
 export default function SignIn() {
   const [assertionResult, setAssertionResult] = useState("");
@@ -46,6 +47,8 @@ export default function SignIn() {
       };
 
       const assertionJSON = JSON.stringify(reqData);
+
+      await Utils.timeoutUtil(1500);
 
       setAssertionResult(assertionJSON);
     } catch (e) {
@@ -180,7 +183,7 @@ export default function SignIn() {
                   </div>
                 </Stack>
                 <div hidden={!loading}>
-                  <Loading loadingInfo={{ message: "Loading your profile" }} />
+                  <Loading loadingInfo={{ message: "Finding your profile" }} />
                 </div>
               </Card.Body>
             </Card>

@@ -1,17 +1,18 @@
-const OIDCServices = {
-  retrieveAccessToken,
-  getLocalAccessTokens,
-  stillAuthenticated
-};
-
+const GLOBAL_OIDC_URI = "http://localhost:8081/realms/normal/protocol/openid-connect";
 const GLOBAL_CLIENT_ID = "my_custom_client2";
 const GLOBAL_REDIRECT_URI = "http://localhost:3000/oidc/callback";
+const GLOBAL_LOGOUT_REDIRECT_URI = "http://localhost:3000/logout";
 
 const OIDC_AUTH_Configs = {
   client_id: GLOBAL_CLIENT_ID,
   redirect_uri: GLOBAL_REDIRECT_URI,
   scope: "openid",
   response_type: "code",
+};
+
+const OIDC_LOGOUT_Configs = {
+  client_id: GLOBAL_CLIENT_ID,
+  post_logout_redirect_uri: GLOBAL_REDIRECT_URI,
 };
 
 const OIDC_TOKEN_Configs = {
@@ -56,7 +57,6 @@ async function retrieveAccessToken(code) {
 
     return true;
   } catch (e) {
-    console.log("Something went wrong, please try to login again");
     return false;
   }
 }
@@ -89,16 +89,20 @@ async function refreshToken(code) {
       }
     );
 
-    const responseJSON = await response.json();
+    if(response.status === 200) {
+      const responseJSON = await response.json();
 
-    window.localStorage.setItem(
-      "APP_ACCESS_TOKENS",
-      JSON.stringify(responseJSON)
-    );
+      window.localStorage.setItem(
+        "APP_ACCESS_TOKENS",
+        JSON.stringify(responseJSON)
+      );
+  
+      return true;
+    } else {
+      throw new Error("Token not found");
+    }
 
-    return true;
   } catch (e) {
-    console.log("Something went wrong, please try to login again");
     return false;
   }
 }
@@ -167,5 +171,16 @@ async function testAccessToken(code) {
     return false
   }
 }
+
+const OIDCServices = {
+  retrieveAccessToken,
+  getLocalAccessTokens,
+  stillAuthenticated,
+  GLOBAL_OIDC_URI,
+  OIDC_LOGOUT_Configs,
+  GLOBAL_CLIENT_ID,
+  GLOBAL_REDIRECT_URI,
+  GLOBAL_LOGOUT_REDIRECT_URI
+};
 
 export default OIDCServices;
