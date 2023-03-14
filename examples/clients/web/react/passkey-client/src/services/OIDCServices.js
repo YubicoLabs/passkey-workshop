@@ -24,6 +24,7 @@ const OIDC_TOKEN_Configs = {
 const OIDC_TOKEN_REFRESH_Configs = {
   client_id: GLOBAL_CLIENT_ID,
   grant_type: "refresh_token",
+  redirect_uri: "http://localhost:3000"
 };
 
 async function retrieveAccessToken(code) {
@@ -63,6 +64,12 @@ async function retrieveAccessToken(code) {
 
 function getLocalAccessTokens() {
   const lsString = window.localStorage.getItem("APP_ACCESS_TOKENS");
+  const response = JSON.parse(lsString);
+  return response;
+}
+
+function getLocalUserInfo() {
+  const lsString = window.localStorage.getItem("USER_INFO");
   const response = JSON.parse(lsString);
   return response;
 }
@@ -130,7 +137,7 @@ async function stillAuthenticated() {
     return true
   } else {
     // Attempt to utilize the refresh token
-    const refreshSuccess = refreshToken(accessToken.refresh_token);
+    const refreshSuccess = await refreshToken(accessToken.refresh_token);
     if(!refreshSuccess) {
       return false;
     } 
@@ -164,8 +171,15 @@ async function testAccessToken(code) {
     );
 
     if(response.status !== 200) {
+      window.localStorage.removeItem("USER_INFO");
       return false
     }
+    const responseJSON = await response.json();
+
+    window.localStorage.setItem(
+      "USER_INFO",
+      JSON.stringify(responseJSON)
+    );
     return true;
   } catch(e) {
     return false
@@ -176,6 +190,7 @@ const OIDCServices = {
   retrieveAccessToken,
   getLocalAccessTokens,
   stillAuthenticated,
+  getLocalUserInfo,
   GLOBAL_OIDC_URI,
   OIDC_LOGOUT_Configs,
   GLOBAL_CLIENT_ID,

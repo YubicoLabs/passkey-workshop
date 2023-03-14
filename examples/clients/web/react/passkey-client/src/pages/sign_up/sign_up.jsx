@@ -12,7 +12,7 @@ import Popover from "react-bootstrap/Popover";
 import { QuestionCircle } from "react-bootstrap-icons";
 import Alert from "react-bootstrap/Alert";
 
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { create } from "@github/webauthn-json";
 
@@ -38,6 +38,9 @@ export default function SignUp() {
   const submitForm = async (e) => {
     try {
       e.preventDefault();
+      /**
+       * @TODO - Consider adding method call that checks if the username is valid prior to submission
+       */
       console.log(username);
 
       setLoading(true);
@@ -82,6 +85,12 @@ export default function SignUp() {
     setUsername(e.target.value);
   };
 
+  const onEnterKeyUp = async (e) => {
+    if (e.key === "Enter") {
+      await submitForm(e);
+    }
+  };
+
   return (
     <div style={{ marginTop: "5em" }}>
       <Container>
@@ -122,6 +131,7 @@ export default function SignUp() {
                           placeholder="Enter username"
                           value={username}
                           onChange={usernameOnChange}
+                          onKeyUp={onEnterKeyUp}
                         />
                       </Form.Group>
                       <Form.Group hidden>
@@ -175,14 +185,14 @@ export default function SignUp() {
                     </Form>
                   </div>
                   <div style={{ textAlign: "center" }}>
-                    <Button onClick={submitForm}>Sign in with passkey</Button>
+                    <Button onClick={submitForm}>Create account</Button>
                     <OverlayTrigger
                       trigger="click"
                       placement="right"
                       overlay={
                         <Popover>
                           <Popover.Header as="h3">
-                            Login with passkeys
+                            Sign up with passkeys
                           </Popover.Header>
                           <Popover.Body>
                             <span>
@@ -201,6 +211,18 @@ export default function SignUp() {
                       }>
                       <QuestionCircle style={{ marginLeft: "1em" }} />
                     </OverlayTrigger>
+                  </div>
+                  <div style={{ paddingTop: "1em" }}>
+                    <div>
+                      <h6 className="middle-text">
+                        <span>Already have an account?</span>
+                      </h6>
+                    </div>
+                    <div style={{ textAlign: "center", paddingTop: "0.5em" }}>
+                      <Link to="/sign_in">
+                        Click here to login to your account
+                      </Link>
+                    </div>
                   </div>
                 </Stack>
                 <div hidden={!loading}>

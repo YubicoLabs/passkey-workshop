@@ -8,6 +8,9 @@ import com.yubicolabs.passkey_rp.models.api.AttestationOptionsRequest;
 import com.yubicolabs.passkey_rp.models.api.AttestationOptionsResponse;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultRequest;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultResponse;
+import com.yubicolabs.passkey_rp.models.api.Error;
+import com.yubicolabs.passkey_rp.models.api.UserCredentialDelete;
+import com.yubicolabs.passkey_rp.models.api.UserCredentialDeleteResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponse;
 import com.yubicolabs.passkey_rp.services.passkey.PasskeyOperations;
 
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -25,7 +29,7 @@ import javax.annotation.Generated;
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
 @Controller
 @RequestMapping("${openapi.passkeyWebAuthnAPIByYubico.base-path:}")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8081"})
+@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:8081" })
 public class V1ApiController implements V1Api {
 
     private final NativeWebRequest request;
@@ -95,6 +99,19 @@ public class V1ApiController implements V1Api {
                     .body(passkeyOperations.assertionResponse(assertionResultRequest));
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<UserCredentialDeleteResponse> userCredentialDelete(
+            UserCredentialDelete userCredentialDelete) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(passkeyOperations.deleteCredential(userCredentialDelete));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(UserCredentialDeleteResponse.builder().result("error").build());
         }
     }
 

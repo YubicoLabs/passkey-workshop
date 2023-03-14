@@ -12,7 +12,7 @@ import Popover from "react-bootstrap/Popover";
 import { QuestionCircle } from "react-bootstrap-icons";
 import Alert from "react-bootstrap/Alert";
 
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { get } from "@github/webauthn-json";
 
@@ -25,6 +25,7 @@ export default function SignIn() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
 
   const oidcFormValues = {
     client_id: "my_custom_client2",
@@ -71,6 +72,16 @@ export default function SignIn() {
     }
   }, []);
 
+  const usernameOnChange = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const onEnterKeyUp = async (e) => {
+    if (e.key === "Enter") {
+      await submitForm(e);
+    }
+  };
+
   return (
     <div style={{ marginTop: "5em" }}>
       <Container>
@@ -109,6 +120,9 @@ export default function SignIn() {
                           type="text"
                           name="username"
                           placeholder="Enter username"
+                          value={username}
+                          onChange={usernameOnChange}
+                          onKeyUp={onEnterKeyUp}
                         />
                       </Form.Group>
                       <Form.Group hidden>
@@ -180,6 +194,18 @@ export default function SignIn() {
                       }>
                       <QuestionCircle style={{ marginLeft: "1em" }} />
                     </OverlayTrigger>
+                  </div>
+                  <div style={{ paddingTop: "1em" }}>
+                    <div>
+                      <h6 className="middle-text">
+                        <span>Need an account?</span>
+                      </h6>
+                    </div>
+                    <div style={{ textAlign: "center", paddingTop: "0.5em" }}>
+                      <Link to="/sign_up">
+                        Click here to register for a new account
+                      </Link>
+                    </div>
                   </div>
                 </Stack>
                 <div hidden={!loading}>

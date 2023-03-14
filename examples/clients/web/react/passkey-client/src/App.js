@@ -9,13 +9,14 @@ import SignIn from './pages/sign_in/sign_in';
 import SignUp from './pages/sign_up/sign_up';
 import TestPanel from './pages/test_panel/test_panel';
 import Callback from './pages/callback/callback';
+import Footer from './components/footer';
 
 function App() {
   return (
-    <div>
+    <div className="d-flex flex-column min-vh-100">
       <BrowserRouter>
         <Header />
-        <Container>
+        <Container className='content'>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="sign_in" element={<SignIn />} />
@@ -25,6 +26,7 @@ function App() {
             <Route path="/logout" element={<Callback callbackInfo={{message: "Thank you for visiting"}}  />} />
           </Routes>
         </Container>
+        <Footer />
       </BrowserRouter>
     </div>
 

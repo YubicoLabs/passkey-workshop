@@ -3,7 +3,8 @@ const PasskeyServices = {
   sendAttestationResult,
   getAssertionOptions,
   sendAssertionResult,
-  getCredentials
+  getCredentials,
+  deleteCredential
 }
 
 const baseURl = "http://localhost:8080/v1"
@@ -134,7 +135,6 @@ async function sendAssertionResult(requestID, assertionResult) {
 
 async function getCredentials(username) {
   try {
-
     const requestOptions = {
       method: "GET",
       headers: {
@@ -147,6 +147,32 @@ async function getCredentials(username) {
 
     console.info(`Printing credentials list for ${username}`);
     console.info(responseJSON);
+
+    return responseJSON;
+
+  } catch (e) {
+    console.error("There was an issue getting your credentials")
+    console.error(e.message)
+    throw e;
+  }
+}
+
+async function deleteCredential(credentialId) {
+  try {
+    const reqData = {
+      id: credentialId
+    };
+
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(reqData)
+    }
+
+    const response = await fetch(`${baseURl}/user/credentials`, requestOptions);
+    const responseJSON = await response.json();
 
     return responseJSON;
 

@@ -86,6 +86,13 @@ DATABASE_TYPE=$(getParam DATABASE_TYPE local)
 # ------------------------------------------------
 DATABASE_ROOT_PASSWORD=$(getParam DATABASE_ROOT_PASSWORD $(getRandomValue 16) )
 
+# ------------------------------------------------
+# Options: react | none
+# Allow you to choose the client you will be using for testing
+# none - deploys only the java app
+# ------------------------------------------------
+CLIENT_TYPE=$(getParam CLIENT_TYPE react )
+
 echo -e "\nVariables initialized"
 echo "****************************************"
 
@@ -111,7 +118,16 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "local" ]; then
     "$DATABASE_TYPE" \
     "$DATABASE_ROOT_PASSWORD" \
   )
-
   echo -e "\n Java application deployed"
+  echo "****************************************"
+fi
+
+if [ "$CLIENT_TYPE" == "react" ]; then
+  echo -e "\n****************************************"
+  echo "Deploying React app in docker"
+
+  (cd react-app && ./deploy_react_app.sh  )
+
+  echo -e "\n React application deployed"
   echo "****************************************"
 fi

@@ -15,5 +15,12 @@ export default function LogoutButton() {
     window.location.replace(logoutUrl);
   };
 
-  return <Button onClick={submitLogout}>Logout</Button>;
+  return (
+    <Button
+      style={{ width: "100%" }}
+      onClick={submitLogout}
+      variant="secondary">
+      Click to sign out of your account
+    </Button>
+  );
 }
