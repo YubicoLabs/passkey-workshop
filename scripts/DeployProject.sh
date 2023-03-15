@@ -11,7 +11,8 @@ function getParam {
 }
 
 function getParamAllowOrigins {
-    DEFVALUE=$(grep $1 $CONFIG_FILE | sed -e 's/.*http:/http:/;s/"//g;s/,//g')
+  ##@TODO - this needs to account for https - don't append http/https, add both origins to the backend s/\"//g;"
+    DEFVALUE=$(grep $1 $CONFIG_FILE | sed -e "s/\"$1\": //;s/\"//g;s/,//;")
     echo $(if test -z $(grep $1 $CONFIG_FILE | sed -e 's/.*://;s/"//g;s/,//g')
         then echo $2
         else echo $DEFVALUE
@@ -27,6 +28,8 @@ echo -e "\n****************************************"
 echo "Initializing application environment variables"
 
 CONFIG_FILE="DeployProject_Settings.json"
+
+RP_ALLOWED_ORIGINS=$(getParamAllowOrigins RP_ALLOWED_ORIGINS "localhost:3000")
 
 # ------------------------------------------------
 # DECLARE SYSTEM VARIABLES BASED ON SETTINGS FILE
@@ -47,10 +50,10 @@ RP_NAME=$(getParam RP_NAME "My app")
 # ------------------------------------------------
 # Options: custom
 # Denotes the origins allowed to submit registrations to your app
-# if multiple origins, then deliminate using a comma, no space
-# ex. http://localhost:3000,http://localhost:8080
+# Current script allows for one allowed origins, without the protocol heading
+# ex. localhost:3000 will allow both http://localhost:3000 and https://localhost:3000
 # ------------------------------------------------
-RP_ALLOWED_ORIGINS=$(getParamAllowOrigins RP_ALLOWED_ORIGINS "http://localhost:3000")
+RP_ALLOWED_ORIGINS=$(getParamAllowOrigins RP_ALLOWED_ORIGINS "localhost:3000")
 
 # ------------------------------------------------
 # Options: DIRECT, INDIRECT, ENTERPRISE, NONE

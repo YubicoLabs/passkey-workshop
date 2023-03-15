@@ -81,7 +81,8 @@ public class RelyingPartyInstance {
 
     for (int i = 0; i < originsList.length; i++) {
       System.out.println(originsList[i]);
-      allowedOrigins.add(originsList[i]);
+      allowedOrigins.add("http://" + originsList[i]);
+      allowedOrigins.add("https://" + originsList[i]);
     }
 
     return allowedOrigins;
