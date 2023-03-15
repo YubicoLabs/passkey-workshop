@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
@@ -22,6 +22,7 @@ import Utils from "../../services/Utils";
 
 export default function SignIn() {
   const [assertionResult, setAssertionResult] = useState("");
+  const [userHandle, setUserHandle] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -50,7 +51,7 @@ export default function SignIn() {
       const assertionJSON = JSON.stringify(reqData);
 
       await Utils.timeoutUtil(1500);
-
+      setUserHandle(assertionResult.response.userHandle);
       setAssertionResult(assertionJSON);
     } catch (e) {
       setLoading(false);
@@ -58,18 +59,26 @@ export default function SignIn() {
   };
 
   useEffect(() => {
-    if (assertionResult !== "") {
+    if (assertionResult !== "" && userHandle !== "") {
       document.getElementById("passkeyForm").requestSubmit();
     }
   }, [assertionResult]);
 
   useEffect(() => {
+    const invokeAutofill = async () => {
+      if (mediationAvailablle) {
+        await passkeySignIn();
+      }
+    };
+
     const errorFound = searchParams.get("status");
 
     if (errorFound !== null) {
       const errorMessage = searchParams.get("error_message");
       setErrorMessage(errorMessage);
     }
+
+    invokeAutofill();
   }, []);
 
   const usernameOnChange = (e) => {
@@ -81,6 +90,47 @@ export default function SignIn() {
       await submitForm(e);
     }
   };
+
+  const mediationAvailablle = () => {
+    const pubKeyCred = window.PublicKeyCredential;
+    if (
+      typeof pubKeyCred.isConditionalMediationAvailable === "function" &&
+      pubKeyCred.isConditionalMediationAvailable()
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const passkeySignIn = useCallback(async () => {
+    try {
+      const authAbortController = new AbortController();
+      const assertionOptions = await PasskeyServices.getAssertionOptions("");
+
+      console.log(assertionOptions);
+
+      const assertionResult = await get({
+        publicKey: assertionOptions.publicKey,
+        mediation: "conditional",
+        signal: authAbortController.signal,
+      });
+
+      await Utils.timeoutUtil(1500);
+      const reqData = {
+        requestId: assertionOptions.requestId,
+        assertionResult: assertionResult,
+      };
+
+      const assertionJSON = JSON.stringify(reqData);
+
+      await Utils.timeoutUtil(1500);
+      setUserHandle(assertionResult.response.userHandle);
+      setAssertionResult(assertionJSON);
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
 
   return (
     <div style={{ marginTop: "5em" }}>
@@ -123,6 +173,7 @@ export default function SignIn() {
                           value={username}
                           onChange={usernameOnChange}
                           onKeyUp={onEnterKeyUp}
+                          autoComplete="username webauthn"
                         />
                       </Form.Group>
                       <Form.Group hidden>
@@ -162,6 +213,14 @@ export default function SignIn() {
                           type="text"
                           name="assertionResult"
                           value={assertionResult}
+                          readOnly
+                        />
+                      </Form.Group>
+                      <Form.Group hidden>
+                        <Form.Control
+                          type="text"
+                          name="userHandle"
+                          value={userHandle}
                           readOnly
                         />
                       </Form.Group>

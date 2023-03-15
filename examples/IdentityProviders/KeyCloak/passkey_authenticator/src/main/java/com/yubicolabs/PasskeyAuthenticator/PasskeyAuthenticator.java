@@ -47,6 +47,19 @@ public class PasskeyAuthenticator implements Authenticator {
       // Attempt to locate the user in the realm
       UserModel currentUser = context.getSession().users().getUserByUsername(context.getRealm(), username);
 
+      /**
+       * Attempt to discern the user from the userhandle provided by the webauthn
+       * authentication ceremony
+       * The user handle should reference the ID set for the user in keycloak upon
+       * registration
+       */
+      if (currentUser == null) {
+        String userHanlde = context.getHttpRequest().getDecodedFormParameters().get("userHandle").get(0);
+
+        // Attempt to locate the user in the realm
+        currentUser = context.getSession().users().getUserById(context.getRealm(), userHanlde);
+      }
+
       // User was found
       if (currentUser != null) {
         logger.info("Current user is: " + currentUser.getUsername());
