@@ -7,5 +7,6 @@
   "DEPLOYMENT_ENVIRONMENT": "",
   "DATABASE_TYPE": "",
   "DATABASE_ROOT_PASSWORD": "",
-  "CLIENT_TYPE": ""
+  "CLIENT_TYPE": "",
+  "IDP_TYPE": ""
 }

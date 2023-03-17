@@ -1,0 +1,12 @@
+services:
+  idp:
+    container_name: passkey-keycloak
+    build: .
+    image: passkey_keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8081:8080"
+    expose:
+      - "8081"

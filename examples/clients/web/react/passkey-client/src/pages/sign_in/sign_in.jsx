@@ -29,7 +29,7 @@ export default function SignIn() {
   const [username, setUsername] = useState("");
 
   const oidcFormValues = {
-    client_id: "my_custom_client2",
+    client_id: "passkeyClient",
     redirect_uri: "http://localhost:3000/oidc/callback",
     scope: "openid",
     response_type: "code",
@@ -160,7 +160,7 @@ export default function SignIn() {
                   <div>
                     <Form
                       action={
-                        "http://localhost:8081/realms/normal/protocol/openid-connect/auth"
+                        "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect/auth"
                       }
                       method="post"
                       id="passkeyForm">

@@ -81,7 +81,7 @@ DEPLOYMENT_ENVIRONMENT=$(getParam DEPLOYMENT_ENVIRONMENT local)
 # local will leverage in memory data storage, all registrations will be lost when the application is shut down
 # mysql will deploy a local instance of mysql through Docker
 # ------------------------------------------------
-DATABASE_TYPE=$(getParam DATABASE_TYPE local)
+DATABASE_TYPE=$(getParam DATABASE_TYPE mysql)
 
 # ------------------------------------------------
 # Options: custom string
@@ -95,6 +95,14 @@ DATABASE_ROOT_PASSWORD=$(getParam DATABASE_ROOT_PASSWORD $(getRandomValue 16) )
 # none - deploys only the java app
 # ------------------------------------------------
 CLIENT_TYPE=$(getParam CLIENT_TYPE react )
+
+# ------------------------------------------------
+# Options: keycloak | none
+# Allow you to choose the IDP you will be using for testing
+# none - no IDP deployed
+# keycloak - initializes local instance of keycloak
+# ------------------------------------------------
+IDP_TYPE=$(getParam IDP_TYPE keycloak )
 
 echo -e "\nVariables initialized"
 echo "****************************************"
@@ -122,6 +130,16 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "local" ]; then
     "$DATABASE_ROOT_PASSWORD" \
   )
   echo -e "\n Java application deployed"
+  echo "****************************************"
+fi
+
+if [ "$IDP_TYPE" == "keycloak" ]; then
+  echo -e "\n****************************************"
+  echo "Deploying keycloak in docker"
+
+  (cd keycloak && ./deploy_keycloak.sh  )
+
+  echo -e "\n Keycloak deployed"
   echo "****************************************"
 fi
 

@@ -1,5 +1,5 @@
-const GLOBAL_OIDC_URI = "http://localhost:8081/realms/normal/protocol/openid-connect";
-const GLOBAL_CLIENT_ID = "my_custom_client2";
+const GLOBAL_OIDC_URI = "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect";
+const GLOBAL_CLIENT_ID = "passkeyClient";
 const GLOBAL_REDIRECT_URI = "http://localhost:3000/oidc/callback";
 const GLOBAL_LOGOUT_REDIRECT_URI = "http://localhost:3000/logout";
 
@@ -39,7 +39,7 @@ async function retrieveAccessToken(code) {
     formBody = formBody.join("&");
 
     const response = await fetch(
-      "http://localhost:8081/realms/normal/protocol/openid-connect/token",
+      "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect/token",
       {
         method: "POST",
         headers: {
@@ -86,7 +86,7 @@ async function refreshToken(code) {
     formBody = formBody.join("&");
 
     const response = await fetch(
-      "http://localhost:8081/realms/normal/protocol/openid-connect/token",
+      "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect/token",
       {
         method: "POST",
         headers: {
@@ -161,7 +161,7 @@ async function stillAuthenticated() {
 async function testAccessToken(code) {
   try {
     const response = await fetch(
-      "http://localhost:8081/realms/normal/protocol/openid-connect/userinfo",
+      "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect/userinfo",
       {
         method: "GET",
         headers: {

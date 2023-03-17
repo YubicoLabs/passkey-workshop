@@ -6,5 +6,8 @@ echo "Stopping react app"
 echo "Stopping java app"
 (cd java-app && ./stop_java_app.sh)
 
+echo "Stopping down keycloak"
+(cd keycloak && ./stop_keycloak.sh)
+
 echo "Stopping database"
 (cd mysql && ./stop_mysql.sh)

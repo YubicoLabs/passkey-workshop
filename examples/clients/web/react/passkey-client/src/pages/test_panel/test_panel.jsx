@@ -70,6 +70,7 @@ export default function TestPanel() {
         });
       }
     } catch (e) {
+      //console.log(e);
       console.info("Registration failed");
       setRegBanner({
         message: "Registration failed",
