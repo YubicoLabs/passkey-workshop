@@ -12,7 +12,7 @@ function getParam {
 
 function getParamAllowOrigins {
   ##@TODO - this needs to account for https - don't append http/https, add both origins to the backend s/\"//g;"
-    DEFVALUE=$(grep $1 $CONFIG_FILE | sed -e "s/\"$1\": //;s/\"//g;s/,//;")
+    DEFVALUE=$(grep $1 $CONFIG_FILE | sed -e "s/\"$1\": //;s/\"//g;" | sed 's/,*$//g')
     echo $(if test -z $(grep $1 $CONFIG_FILE | sed -e 's/.*://;s/"//g;s/,//g')
         then echo $2
         else echo $DEFVALUE
@@ -54,6 +54,13 @@ RP_NAME=$(getParam RP_NAME "My app")
 # ex. localhost:3000 will allow both http://localhost:3000 and https://localhost:3000
 # ------------------------------------------------
 RP_ALLOWED_ORIGINS=$(getParamAllowOrigins RP_ALLOWED_ORIGINS "localhost:3000")
+
+# ------------------------------------------------
+# Options: custom
+# Denotes the origins allowed to access the API (CORS)
+# ex. localhost:3000 will allow both http://localhost:3000 and https://localhost:3000
+# ------------------------------------------------
+RP_ALLOWED_CROSS_ORIGINS=$(getParamAllowOrigins RP_ALLOWED_CROSS_ORIGINS "localhost:3000")
 
 # ------------------------------------------------
 # Options: DIRECT, INDIRECT, ENTERPRISE, NONE
@@ -123,6 +130,7 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "local" ]; then
   (cd java-app && ./deploy_java_app.sh "$RP_ID" \
     "$RP_NAME" \
     "$RP_ALLOWED_ORIGINS" \
+    "$RP_ALLOWED_CROSS_ORIGINS" \
     "$RP_ATTESTATION_PREFERENCE" \
     "$RP_ALLOW_UNTRUSTED_ATTESTATION" \
     "$DEPLOYMENT_ENVIRONMENT" \

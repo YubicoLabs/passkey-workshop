@@ -29,7 +29,6 @@ import javax.annotation.Generated;
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
 @Controller
 @RequestMapping("${openapi.passkeyWebAuthnAPIByYubico.base-path:}")
-@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:8081" })
 public class V1ApiController implements V1Api {
 
     private final NativeWebRequest request;

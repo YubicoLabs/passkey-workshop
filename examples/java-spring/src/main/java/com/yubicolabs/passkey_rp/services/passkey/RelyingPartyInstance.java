@@ -64,14 +64,12 @@ public class RelyingPartyInstance {
      */
 
     String originsVal = System.getenv("RP_ALLOWED_ORIGINS");
-    System.out.println(originsVal);
 
     /*
      * Split the origins list by comma (as noted by the shell script)
      */
 
     String[] originsList = originsVal.split(",");
-    System.out.println("Number of split: " + originsList.length);
 
     /*
      * Iterate through origins list
@@ -80,7 +78,6 @@ public class RelyingPartyInstance {
     Set<String> allowedOrigins = new HashSet<String>();
 
     for (int i = 0; i < originsList.length; i++) {
-      System.out.println(originsList[i]);
       allowedOrigins.add("http://" + originsList[i]);
       allowedOrigins.add("https://" + originsList[i]);
     }

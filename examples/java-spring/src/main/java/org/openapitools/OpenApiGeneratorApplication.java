@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.Module;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.context.ApplicationContext;
 import org.openapitools.jackson.nullable.JsonNullableModule;
@@ -16,7 +18,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "org.openapitools", "org.openapitools.configuration", "com.yubicolabs.passkey_rp" })
@@ -89,6 +95,43 @@ public class OpenApiGeneratorApplication implements CommandLineRunner {
          * System.out.println(bean);
          * }
          */
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                /*
+                 * Get origins list value from env variables
+                 */
+
+                String originsVal = System.getenv("RP_ALLOWED_CROSS_ORIGINS");
+
+                /*
+                 * Split the origins list by comma (as noted by the shell script)
+                 */
+
+                String[] originsList = originsVal.split(",");
+
+                /*
+                 * Iterate through origins list
+                 */
+
+                Set<String> allowedOrigins = new HashSet<String>();
+
+                for (int i = 0; i < originsList.length; i++) {
+                    allowedOrigins.add("http://" + originsList[i]);
+                    allowedOrigins.add("https://" + originsList[i]);
+                }
+
+                String[] result = allowedOrigins.stream().toArray(String[]::new);
+
+                // String[] mappings = new String[] { "http://localhost:3000",
+                // "http://localhost:8000" };
+                registry.addMapping("/**").allowedOrigins(result);
+            }
+        };
     }
 
 }
