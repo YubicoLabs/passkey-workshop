@@ -28,6 +28,10 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
 
+  const [authAbortController, setAuthAbortController] = useState(
+    new AbortController()
+  );
+
   const oidcFormValues = {
     client_id: "passkeyClient",
     redirect_uri: "http://localhost:3000/oidc/callback",
@@ -39,7 +43,11 @@ export default function SignIn() {
     try {
       e.preventDefault();
       setLoading(true);
-      const assertionOptions = await PasskeyServices.getAssertionOptions("");
+      const assertionOptions = await PasskeyServices.getAssertionOptions(
+        username
+      );
+
+      authAbortController.abort();
 
       const assertionResult = await get(assertionOptions);
 
@@ -55,6 +63,7 @@ export default function SignIn() {
       setAssertionResult(assertionJSON);
     } catch (e) {
       setLoading(false);
+      setAuthAbortController(new AbortController());
     }
   };
 
@@ -64,22 +73,45 @@ export default function SignIn() {
     }
   }, [assertionResult]);
 
+  /**
+   * On initial page load
+   */
   useEffect(() => {
-    const invokeAutofill = async () => {
-      if (mediationAvailablle) {
-        await passkeySignIn();
-      }
-    };
-
     const errorFound = searchParams.get("status");
 
     if (errorFound !== null) {
       const errorMessage = searchParams.get("error_message");
       setErrorMessage(errorMessage);
     }
+  }, []);
+
+  /**
+   *
+   */
+  useEffect(() => {
+    const invokeAutofill = async () => {
+      if (
+        mediationAvailable() &&
+        authAbortController.signal.aborted === false
+      ) {
+        await passkeySignIn(authAbortController);
+      }
+    };
 
     invokeAutofill();
-  }, []);
+  }, [authAbortController]);
+
+  /**
+   * On page unmount
+   * Need to abort the running autofill request, otherwise it will interrupt the
+   * request on the sign up page
+   */
+  useEffect(
+    () => () => {
+      authAbortController.abort();
+    },
+    []
+  );
 
   const usernameOnChange = (e) => {
     setUsername(e.target.value);
@@ -91,7 +123,7 @@ export default function SignIn() {
     }
   };
 
-  const mediationAvailablle = () => {
+  const mediationAvailable = () => {
     const pubKeyCred = window.PublicKeyCredential;
     if (
       typeof pubKeyCred.isConditionalMediationAvailable === "function" &&
@@ -103,9 +135,8 @@ export default function SignIn() {
     }
   };
 
-  const passkeySignIn = useCallback(async () => {
+  const passkeySignIn = useCallback(async (authAbortController) => {
     try {
-      const authAbortController = new AbortController();
       const assertionOptions = await PasskeyServices.getAssertionOptions("");
 
       console.log(assertionOptions);
@@ -115,6 +146,8 @@ export default function SignIn() {
         mediation: "conditional",
         signal: authAbortController.signal,
       });
+
+      setLoading(true);
 
       await Utils.timeoutUtil(1500);
       const reqData = {
@@ -127,8 +160,11 @@ export default function SignIn() {
       await Utils.timeoutUtil(1500);
       setUserHandle(assertionResult.response.userHandle);
       setAssertionResult(assertionJSON);
+      setLoading(false);
     } catch (e) {
-      console.error(e);
+      if (e.constructor !== DOMException) {
+        console.error(e);
+      }
     }
   }, []);
 
