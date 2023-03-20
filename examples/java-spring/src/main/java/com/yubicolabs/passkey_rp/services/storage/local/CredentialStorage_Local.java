@@ -91,22 +91,18 @@ public class CredentialStorage_Local implements CredentialStorage {
 
   @Override
   public Boolean removeRegistration(ByteArray credentialId, ByteArray userHandle) {
-    
+
     return credentialRepository.removeIf(reg -> reg.getCredential().getCredentialId().equals(credentialId)
         && reg.getUserIdentity().getId().equals(userHandle));
   }
 
-  /*
-   * @Override
-   * public Boolean updateCredentialNickname(String nickname, ByteArray
-   * credentialId, ByteArray userHandle) {
-   * // TODO Auto-generated method stub
-   * return null;
-   * }
-   */
-  // @TODO - Add this method back when API is updated
-  // public Collection<CredentialRegistration> getAll() {
-  // return credentialRepository;
-  // }
+  @Override
+  public Boolean updateCredentialNickname(ByteArray credentialId, String newNickname) {
+    /*
+     * @TODO - Implement
+     */
+    return true;
+
+  }
 
 }

@@ -87,6 +87,7 @@
   text-align: center;
   align-items: center;
   margin: auto;
+  display: contents;
 }
 
 @media screen and (max-width: 576px) {

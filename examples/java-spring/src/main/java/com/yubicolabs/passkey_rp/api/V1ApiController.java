@@ -11,6 +11,8 @@ import com.yubicolabs.passkey_rp.models.api.AttestationResultResponse;
 import com.yubicolabs.passkey_rp.models.api.Error;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDelete;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDeleteResponse;
+import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdate;
+import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdateResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponse;
 import com.yubicolabs.passkey_rp.services.passkey.PasskeyOperations;
 
@@ -111,6 +113,19 @@ public class V1ApiController implements V1Api {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(UserCredentialDeleteResponse.builder().result("error").build());
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<UserCredentialUpdateResponse> userCredentialUpdate(
+            UserCredentialUpdate userCredentialUpdate) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(passkeyOperations.updateCredentialNickname(userCredentialUpdate));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(UserCredentialUpdateResponse.builder().status(e.getMessage()).build());
         }
     }
 

@@ -51,6 +51,8 @@ import com.yubicolabs.passkey_rp.models.api.AttestationResultRequestMakeCredenti
 import com.yubicolabs.passkey_rp.models.api.AttestationResultResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDelete;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDeleteResponse;
+import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdate;
+import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdateResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponseCredentialsInner;
 import com.yubicolabs.passkey_rp.models.api.UserDeleteResponse;
@@ -402,10 +404,6 @@ public class PasskeyOperations {
       // @TODO - remember to add a mechanism to verify the user making the request is
       // the same whose creds are being queried
 
-      // Get list of credentials with credential ID
-      // This should be 0 or 1
-      System.out.println(credential.getId());
-
       Collection<CredentialRegistration> credentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
           .getByCredentialId(ByteArray.fromBase64Url(credential.getId()));
 
@@ -419,6 +417,34 @@ public class PasskeyOperations {
         if (deleteResult) {
           UserCredentialDeleteResponse response = UserCredentialDeleteResponse.builder().result("deleted").build();
           return response;
+        } else {
+          throw new Exception("There was an issue deleting the credential");
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new Exception(e.getMessage());
+    }
+  }
+
+  public UserCredentialUpdateResponse updateCredentialNickname(UserCredentialUpdate userCredentialUpdate)
+      throws Exception {
+    try {
+      Collection<CredentialRegistration> credentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
+          .getByCredentialId(ByteArray.fromBase64Url(userCredentialUpdate.getId()));
+
+      if (credentials.size() == 0) {
+        throw new Exception("This credential does not exist");
+      } else {
+        CredentialRegistration updateCred = credentials.stream().findFirst().get();
+
+        Boolean updateResult = relyingPartyInstance.getStorageInstance().getCredentialStorage()
+            .updateCredentialNickname(
+                updateCred.getCredential().getCredentialId(), userCredentialUpdate.getNickName());
+
+        if (updateResult) {
+          return UserCredentialUpdateResponse.builder().status("updated").build();
+
         } else {
           throw new Exception("There was an issue deleting the credential");
         }

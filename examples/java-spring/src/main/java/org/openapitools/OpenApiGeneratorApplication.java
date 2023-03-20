@@ -129,7 +129,8 @@ public class OpenApiGeneratorApplication implements CommandLineRunner {
 
                 // String[] mappings = new String[] { "http://localhost:3000",
                 // "http://localhost:8000" };
-                registry.addMapping("/**").allowedOrigins(result);
+                registry.addMapping("/**").allowedOrigins(result).allowedMethods("GET", "PUT", "POST", "DELETE",
+                        "OPTIONS");
             }
         };
     }

@@ -196,4 +196,32 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
     }
   }
 
+  @Override
+  public Boolean updateCredentialNickname(ByteArray credentialId, String newNickname) {
+    try {
+      Collection<CredentialRegistration> credList = getByCredentialId(credentialId);
+
+      if (!credList.isEmpty()) {
+        CredentialRegistrationDBO dboObj = credentialRegistrationRepositoryMySql
+            .findByCredentialID(credentialId.getBase64Url()).get(0);
+        dboObj.setCredentialNickname(newNickname);
+
+        CredentialRegistrationDBO newObj = credentialRegistrationRepositoryMySql.save(dboObj);
+
+        System.out.println(newObj.getCredentialID() + " ****** " + newObj.getCredentialNickname());
+
+        if (newObj.getCredentialNickname().equals(newNickname)) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.out.println("There was a failure updating the id");
+      return false;
+    }
+  }
 }

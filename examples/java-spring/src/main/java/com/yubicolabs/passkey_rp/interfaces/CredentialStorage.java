@@ -67,8 +67,7 @@ public interface CredentialStorage extends CredentialRepository {
    * @param userHandle   user handle of the user attempting to make the request
    * @return true if the credential was successfully renamed, false otherwise
    */
-  // public Boolean updateCredentialNickname(String nickname, ByteArray
-  // credentialId, ByteArray userHandle);
+  public Boolean updateCredentialNickname(ByteArray credentialId, String newNickname);
 
   // TODO = Add method for getAll()
 }

@@ -5,10 +5,15 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/esm/Button";
 import Row from "react-bootstrap/Row";
 import Stack from "react-bootstrap/Stack";
+import Form from "react-bootstrap/Form";
+
 import Utils from "../services/Utils";
 import PasskeyServices from "../services/PasskeyServices";
 export default function CredentialCard({ credential, refreshCallback }) {
   const [loading, setLoading] = useState(false);
+
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [updateNickname, setUpdateNickname] = useState(credential.nickName);
 
   const deleteButton = async (e) => {
     try {
@@ -32,6 +37,39 @@ export default function CredentialCard({ credential, refreshCallback }) {
     }
   };
 
+  const updateButton = async (e) => {
+    /**
+     * Not updating, initiate update
+     */
+    if (!isUpdate) {
+      setIsUpdate(!isUpdate);
+    } else {
+      /**
+       * Exit update, there is nothing to update
+       */
+      if (updateNickname === credential.nickName) {
+        setIsUpdate(false);
+      } else {
+        /**
+         * Call to the RP to make an update to the nickname
+         */
+        await PasskeyServices.updateCredential(credential.id, updateNickname);
+        setIsUpdate(false);
+        await refreshCallback();
+      }
+    }
+  };
+
+  const usernameOnChange = (e) => {
+    setUpdateNickname(e.target.value);
+  };
+
+  const onEnterKeyUp = async (e) => {
+    if (e.key === "Enter") {
+      await updateButton();
+    }
+  };
+
   return (
     <Card>
       <Card.Body>
@@ -45,7 +83,22 @@ export default function CredentialCard({ credential, refreshCallback }) {
           </Col>
           <Col sm={7} xs={12}>
             <div className="credential-info">
-              <Card.Title>{credential.nickName}</Card.Title>
+              <Card.Title>
+                {isUpdate ? (
+                  <Form>
+                    <Form.Group>
+                      <Form.Label>New nickname</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={updateNickname}
+                        onChange={usernameOnChange}
+                        onKeyUp={onEnterKeyUp}></Form.Control>
+                    </Form.Group>
+                  </Form>
+                ) : (
+                  credential.nickName
+                )}
+              </Card.Title>
               <Stack gap={1}>
                 <span>
                   Reg time: {Utils.convertDate(credential.registrationTime)}
@@ -61,6 +114,28 @@ export default function CredentialCard({ credential, refreshCallback }) {
               {/**
                * TODO - Add edit button
                */}
+              <div className="delete-credential">
+                {/**
+                 * TODO - Consider adding modal
+                 * Consider adding wording about passkey lifecycle
+                 * "You still need to delete the passkey from your device"
+                 */}
+                <Button
+                  variant={
+                    isUpdate
+                      ? updateNickname === credential.nickName
+                        ? "secondary"
+                        : "success"
+                      : "secondary"
+                  }
+                  onClick={updateButton}>
+                  {isUpdate
+                    ? updateNickname === credential.nickName
+                      ? "Exit"
+                      : "Submit"
+                    : "Update"}
+                </Button>
+              </div>
               <div className="delete-credential">
                 {/**
                  * TODO - Consider adding modal

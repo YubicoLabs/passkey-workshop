@@ -4,7 +4,8 @@ const PasskeyServices = {
   getAssertionOptions,
   sendAssertionResult,
   getCredentials,
-  deleteCredential
+  deleteCredential,
+  updateCredential
 }
 
 const baseURl = "http://localhost:8080/v1"
@@ -170,6 +171,37 @@ async function deleteCredential(credentialId) {
       },
       body: JSON.stringify(reqData)
     }
+
+    console.warn(requestOptions)
+
+    const response = await fetch(`${baseURl}/user/credentials`, requestOptions);
+    const responseJSON = await response.json();
+
+    return responseJSON;
+
+  } catch (e) {
+    console.error("There was an issue getting your credentials")
+    console.error(e.message)
+    throw e;
+  }
+}
+
+async function updateCredential(credentialId, newNickname) {
+  try {
+    const reqData = {
+      id: credentialId,
+      nickName: newNickname
+    };
+
+    const requestOptions = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(reqData)
+    }
+
+    console.warn(requestOptions)
 
     const response = await fetch(`${baseURl}/user/credentials`, requestOptions);
     const responseJSON = await response.json();
