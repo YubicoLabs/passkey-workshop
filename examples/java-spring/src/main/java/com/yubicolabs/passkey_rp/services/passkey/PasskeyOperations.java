@@ -121,7 +121,7 @@ public class PasskeyOperations {
       return response;
 
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
       throw new Exception("There was an issue while generating AttestationOptions: " + e.getMessage());
     }
   }
@@ -164,12 +164,12 @@ public class PasskeyOperations {
       if (relyingPartyInstance.getStorageInstance().getCredentialStorage().addRegistration(toStore)) {
         return new AttestationResultResponse().status("created");
       } else {
-        throw new Exception("There was an issue creating your credential");
+        throw new Exception("There was an unknown issue creating your credential");
       }
 
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      throw new Exception(e.getMessage());
+      e.printStackTrace();
+      throw new Exception("There was an issue while registering your credential: " + e.getMessage());
     }
   }
 
@@ -214,7 +214,6 @@ public class PasskeyOperations {
     } catch (Exception e) {
       e.printStackTrace();
       throw new Exception("There was an issue while generating AssertionOptions: " + e.getMessage());
-
     }
   }
 
@@ -268,11 +267,11 @@ public class PasskeyOperations {
 
         return AssertionResultResponse.builder().status("ok").build();
       } else {
-        return AssertionResultResponse.builder().status("error").build();
+        throw new Exception("Your assertion failed for an unknown reason");
       }
     } catch (Exception e) {
       e.printStackTrace();
-      return AssertionResultResponse.builder().status("error").build();
+      throw new Exception("There was an issue finalizing your assertion your credential: " + e.getMessage());
     }
 
   }
@@ -297,8 +296,8 @@ public class PasskeyOperations {
 
       return new UserCredentialsResponse().credentials(credList);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      throw new Exception(e.getMessage());
+      e.printStackTrace();
+      throw new Exception("There was an issue getting your credentials: " + e.getMessage());
     }
 
   }
@@ -418,12 +417,12 @@ public class PasskeyOperations {
           UserCredentialDeleteResponse response = UserCredentialDeleteResponse.builder().result("deleted").build();
           return response;
         } else {
-          throw new Exception("There was an issue deleting the credential");
+          throw new Exception("There was an unknown issue deleting the credential");
         }
       }
     } catch (Exception e) {
       e.printStackTrace();
-      throw new Exception(e.getMessage());
+      throw new Exception("There was an issue deleting your credential" + e.getMessage());
     }
   }
 
@@ -446,12 +445,12 @@ public class PasskeyOperations {
           return UserCredentialUpdateResponse.builder().status("updated").build();
 
         } else {
-          throw new Exception("There was an issue deleting the credential");
+          throw new Exception("There was an unknown issue deleting the credential");
         }
       }
     } catch (Exception e) {
       e.printStackTrace();
-      throw new Exception(e.getMessage());
+      throw new Exception("There was an issue updating your credentials nickname: " + e.getMessage());
     }
   }
 
