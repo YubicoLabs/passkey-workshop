@@ -156,9 +156,7 @@ export default function SignIn() {
       setAssertionResult(assertionJSON);
       setLoading(false);
     } catch (e) {
-      if (e.constructor !== DOMException) {
-        console.error(e);
-      }
+      console.error(e);
     }
   }, []);
 
