@@ -19,6 +19,7 @@ import { get } from "@github/webauthn-json";
 import PasskeyServices from "../../services/PasskeyServices";
 import Loading from "../../components/loading";
 import Utils from "../../services/Utils";
+import OIDCServices from "../../services/OIDCServices";
 
 export default function SignIn() {
   const [assertionResult, setAssertionResult] = useState("");
@@ -31,13 +32,6 @@ export default function SignIn() {
   const [authAbortController, setAuthAbortController] = useState(
     new AbortController()
   );
-
-  const oidcFormValues = {
-    client_id: "passkeyClient",
-    redirect_uri: "http://localhost:3000/oidc/callback",
-    scope: "openid",
-    response_type: "code",
-  };
 
   const submitForm = async (e) => {
     try {
@@ -195,9 +189,7 @@ export default function SignIn() {
                   </div>
                   <div>
                     <Form
-                      action={
-                        "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect/auth"
-                      }
+                      action={`${OIDCServices.GLOBAL_OIDC_CONFIGS.baseUri}/auth`}
                       method="post"
                       id="passkeyForm">
                       <Form.Group>
@@ -216,7 +208,7 @@ export default function SignIn() {
                         <Form.Control
                           type="text"
                           name="client_id"
-                          value={oidcFormValues.client_id}
+                          value={OIDCServices.OIDC_AUTH_CONFIGS.client_id}
                           readOnly
                         />
                       </Form.Group>
@@ -224,7 +216,7 @@ export default function SignIn() {
                         <Form.Control
                           type="text"
                           name="redirect_uri"
-                          value={oidcFormValues.redirect_uri}
+                          value={OIDCServices.OIDC_AUTH_CONFIGS.redirect_uri}
                           readOnly
                         />
                       </Form.Group>
@@ -232,7 +224,7 @@ export default function SignIn() {
                         <Form.Control
                           type="text"
                           name="scope"
-                          value={oidcFormValues.scope}
+                          value={OIDCServices.OIDC_AUTH_CONFIGS.scope}
                           readOnly
                         />
                       </Form.Group>
@@ -240,7 +232,7 @@ export default function SignIn() {
                         <Form.Control
                           type="text"
                           name="response_type"
-                          value={oidcFormValues.response_type}
+                          value={OIDCServices.OIDC_AUTH_CONFIGS.response_type}
                           readOnly
                         />
                       </Form.Group>

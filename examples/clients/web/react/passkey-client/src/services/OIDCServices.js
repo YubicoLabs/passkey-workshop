@@ -1,45 +1,42 @@
-const GLOBAL_OIDC_URI = "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect";
-const GLOBAL_CLIENT_ID = "passkeyClient";
-const GLOBAL_REDIRECT_URI = "http://localhost:3000/oidc/callback";
-const GLOBAL_LOGOUT_REDIRECT_URI = "http://localhost:3000/logout";
 
-const OIDC_AUTH_Configs = {
-  client_id: GLOBAL_CLIENT_ID,
-  redirect_uri: GLOBAL_REDIRECT_URI,
+const GLOBAL_OIDC_CONFIGS = {
+  baseUri: "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect",
+  client: "passkeyClient",
+  redirect_uri: `${window.location.origin}/oidc/callback`,
+  logout_redirect_uri: `${window.location.origin}/logout`
+}
+
+const OIDC_AUTH_CONFIGS = {
+  client_id: GLOBAL_OIDC_CONFIGS.client,
+  redirect_uri: GLOBAL_OIDC_CONFIGS.redirect_uri,
   scope: "openid",
-  response_type: "code",
-};
+  response_type: "code"
+}
 
-const OIDC_LOGOUT_Configs = {
-  client_id: GLOBAL_CLIENT_ID,
-  post_logout_redirect_uri: GLOBAL_REDIRECT_URI,
-};
-
-const OIDC_TOKEN_Configs = {
-  client_id: GLOBAL_CLIENT_ID,
-  redirect_uri: GLOBAL_REDIRECT_URI,
+const OIDC_TOKEN_CONFIG = {
+  client_id: GLOBAL_OIDC_CONFIGS.client,
+  redirect_uri: GLOBAL_OIDC_CONFIGS.redirect_uri,
   grant_type: "authorization_code",
 };
 
-const OIDC_TOKEN_REFRESH_Configs = {
-  client_id: GLOBAL_CLIENT_ID,
+const OIDC_TOKEN_REFRESH_CONFIG = {
+  client_id: GLOBAL_OIDC_CONFIGS.client,
   grant_type: "refresh_token",
-  redirect_uri: "http://localhost:3000"
+  redirect_uri: `${window.location.origin}`
 };
 
 async function retrieveAccessToken(code) {
   try {
     var formBody = [];
-    for (var property in OIDC_TOKEN_Configs) {
+    for (var property in OIDC_TOKEN_CONFIG) {
       var encodedKey = encodeURIComponent(property);
-      var encodedValue = encodeURIComponent(OIDC_TOKEN_Configs[property]);
+      var encodedValue = encodeURIComponent(OIDC_TOKEN_CONFIG[property]);
       formBody.push(encodedKey + "=" + encodedValue);
     }
     formBody.push("code=" + encodeURIComponent(code));
     formBody = formBody.join("&");
 
-    const response = await fetch(
-      "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect/token",
+    const response = await fetch( `${GLOBAL_OIDC_CONFIGS.baseUri}/token`,
       {
         method: "POST",
         headers: {
@@ -77,16 +74,16 @@ function getLocalUserInfo() {
 async function refreshToken(code) {
   try {
     var formBody = [];
-    for (var property in OIDC_TOKEN_Configs) {
+    for (var property in OIDC_TOKEN_CONFIG) {
       var encodedKey = encodeURIComponent(property);
-      var encodedValue = encodeURIComponent(OIDC_TOKEN_REFRESH_Configs[property]);
+      var encodedValue = encodeURIComponent(OIDC_TOKEN_REFRESH_CONFIG[property]);
       formBody.push(encodedKey + "=" + encodedValue);
     }
     formBody.push("refresh_token=" + encodeURIComponent(code));
     formBody = formBody.join("&");
 
     const response = await fetch(
-      "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect/token",
+      `${GLOBAL_OIDC_CONFIGS.baseUri}/token`,
       {
         method: "POST",
         headers: {
@@ -161,7 +158,7 @@ async function stillAuthenticated() {
 async function testAccessToken(code) {
   try {
     const response = await fetch(
-      "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect/userinfo",
+      `${GLOBAL_OIDC_CONFIGS.baseUri}/userinfo`,
       {
         method: "GET",
         headers: {
@@ -191,11 +188,8 @@ const OIDCServices = {
   getLocalAccessTokens,
   stillAuthenticated,
   getLocalUserInfo,
-  GLOBAL_OIDC_URI,
-  OIDC_LOGOUT_Configs,
-  GLOBAL_CLIENT_ID,
-  GLOBAL_REDIRECT_URI,
-  GLOBAL_LOGOUT_REDIRECT_URI
+  GLOBAL_OIDC_CONFIGS,
+  OIDC_AUTH_CONFIGS,
 };
 
 export default OIDCServices;

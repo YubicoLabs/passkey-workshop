@@ -5,10 +5,7 @@ export default function LogoutButton() {
   const submitLogout = async (e) => {
     const id_token_hint = await OIDCServices.getLocalAccessTokens().id_token;
 
-    const logoutUrl =
-      OIDCServices.GLOBAL_OIDC_URI +
-      "/logout" +
-      `?client_id=${OIDCServices.GLOBAL_CLIENT_ID}&post_logout_redirect_uri=${OIDCServices.GLOBAL_LOGOUT_REDIRECT_URI}&id_token_hint=${id_token_hint}`;
+    const logoutUrl = `${OIDCServices.GLOBAL_OIDC_CONFIGS.baseUri}/logout?client_id=${OIDCServices.GLOBAL_OIDC_CONFIGS.client}&post_logout_redirect_uri=${OIDCServices.GLOBAL_OIDC_CONFIGS.logout_redirect_uri}&id_token_hint=${id_token_hint}`;
 
     localStorage.removeItem("APP_ACCESS_TOKENS");
 

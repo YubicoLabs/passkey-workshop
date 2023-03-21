@@ -19,6 +19,7 @@ import { create } from "@github/webauthn-json";
 import PasskeyServices from "../../services/PasskeyServices";
 import Loading from "../../components/loading";
 import Utils from "../../services/Utils";
+import OIDCServices from "../../services/OIDCServices";
 
 export default function SignUp() {
   const [attestationResult, setAttestationResult] = useState("");
@@ -118,9 +119,7 @@ export default function SignUp() {
                   </div>
                   <div>
                     <Form
-                      action={
-                        "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect/registrations"
-                      }
+                      action={`${OIDCServices.GLOBAL_OIDC_CONFIGS.baseUri}/registrations`}
                       method="post"
                       id="passkeyForm">
                       <Form.Group>
@@ -146,7 +145,7 @@ export default function SignUp() {
                         <Form.Control
                           type="text"
                           name="client_id"
-                          value={oidcFormValues.client_id}
+                          value={OIDCServices.OIDC_AUTH_CONFIGS.client_id}
                           readOnly
                         />
                       </Form.Group>
@@ -154,7 +153,7 @@ export default function SignUp() {
                         <Form.Control
                           type="text"
                           name="redirect_uri"
-                          value={oidcFormValues.redirect_uri}
+                          value={OIDCServices.OIDC_AUTH_CONFIGS.redirect_uri}
                           readOnly
                         />
                       </Form.Group>
@@ -162,7 +161,7 @@ export default function SignUp() {
                         <Form.Control
                           type="text"
                           name="scope"
-                          value={oidcFormValues.scope}
+                          value={OIDCServices.OIDC_AUTH_CONFIGS.scope}
                           readOnly
                         />
                       </Form.Group>
@@ -170,7 +169,7 @@ export default function SignUp() {
                         <Form.Control
                           type="text"
                           name="response_type"
-                          value={oidcFormValues.response_type}
+                          value={OIDCServices.OIDC_AUTH_CONFIGS.response_type}
                           readOnly
                         />
                       </Form.Group>
