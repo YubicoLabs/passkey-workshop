@@ -7,7 +7,7 @@ echo "****************************************"
 echo -e "\n****************************************"
 echo "Copying source folder to local directory"
 echo "****************************************"
-cp -r ../../examples/java-spring/ ./source/
+cp -r ../../../examples/java-spring/ ./source/
 
 # Check if there is an ENV file
 # If no ENV file, generate an env file

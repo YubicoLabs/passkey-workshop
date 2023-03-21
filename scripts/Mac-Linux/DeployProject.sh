@@ -11,7 +11,6 @@ function getParam {
 }
 
 function getParamAllowOrigins {
-  ##@TODO - this needs to account for https - don't append http/https, add both origins to the backend s/\"//g;"
     DEFVALUE=$(grep $1 $CONFIG_FILE | sed -e "s/\"$1\": //;s/\"//g;" | sed 's/,*$//g')
     echo $(if test -z $(grep $1 $CONFIG_FILE | sed -e 's/.*://;s/"//g;s/,//g')
         then echo $2
