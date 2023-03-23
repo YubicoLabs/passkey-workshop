@@ -1,4 +1,4 @@
-openapi: '3.0.0'
+openapi: "3.0.0"
 info:
   title: Passkey WebAuthn API by Yubico
   version: 1.0.0
@@ -11,12 +11,12 @@ paths:
       summary: Get API status
       operationId: APIStatus
       responses:
-        '200':
+        "200":
           description: API status response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIStatus'
+                $ref: "#/components/schemas/APIStatus"
   /v1/attestation/options:
     post:
       summary: Request to register a new public-key credential
@@ -26,25 +26,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AttestationOptionsRequest'
+              $ref: "#/components/schemas/AttestationOptionsRequest"
             examples:
               Default:
-                $ref: '#/components/examples/ServerPublicKeyCredentialCreationOptionsRequest-Optional'
+                $ref: "#/components/examples/ServerPublicKeyCredentialCreationOptionsRequest-Optional"
               Optional:
-                $ref: '#/components/examples/ServerPublicKeyCredentialCreationOptionsRequest-Optional'
+                $ref: "#/components/examples/ServerPublicKeyCredentialCreationOptionsRequest-Optional"
       responses:
-        '200':
+        "200":
           description: Attestation options response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AttestationOptionsResponse'
-        '400':
+                $ref: "#/components/schemas/AttestationOptionsResponse"
+        "400":
           description: 4xx response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /v1/attestation/result:
     post:
       summary: Send public-key attestation response
@@ -55,20 +55,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AttestationResultRequest'
+              $ref: "#/components/schemas/AttestationResultRequest"
       responses:
-        '201':
+        "201":
           description: New Passkey created for user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AttestationResultResponse'
-        '400':
+                $ref: "#/components/schemas/AttestationResultResponse"
+        "400":
           description: 4xx response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /v1/assertion/options:
     post:
       summary: Request public-key credential authentication options for user
@@ -79,20 +79,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AssertionOptionsRequest'
+              $ref: "#/components/schemas/AssertionOptionsRequest"
       responses:
-        '200':
+        "200":
           description: Assertion options response from server
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AssertionOptionsResponse'
-        '400':
+                $ref: "#/components/schemas/AssertionOptionsResponse"
+        "400":
           description: 4xx response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /v1/assertion/result:
     post:
       summary: Send public-key assertion response
@@ -103,20 +103,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AssertionResultRequest'
+              $ref: "#/components/schemas/AssertionResultRequest"
       responses:
-        '200':
+        "200":
           description: Assertion result response from server
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AssertionResultResponse'
-        '400':
+                $ref: "#/components/schemas/AssertionResultResponse"
+        "400":
           description: 4xx response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /v1/user:
     delete:
       summary: Delete user account
@@ -127,38 +127,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserDelete'
+              $ref: "#/components/schemas/UserDelete"
       responses:
-        '200':
+        "200":
           description: User successfully deleted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDeleteResponse'
-        '400':
+                $ref: "#/components/schemas/UserDeleteResponse"
+        "400":
           description: 4xx response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  /v1/user/profile:
+                $ref: "#/components/schemas/Error"
+  /v1/user/profile/{userName}:
     get:
       summary: Get user profile
       operationId: UserProfile
-      requestBody:
-        description: Get user profile by userName
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserProfile'
+      parameters:
+        - in: path
+          name: userName
+          schema:
+            type: string
+          required: true
+          description: Username used to query for credentials
       responses:
-        '200':
+        "200":
           description: User profile response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserProfileResponse'
+                $ref: "#/components/schemas/UserProfileResponse"
   /v1/user/credentials/{userName}:
     get:
       summary: Get user credentials by ID
@@ -171,12 +171,12 @@ paths:
           required: true
           description: Username used to query for credentials
       responses:
-        '200':
+        "200":
           description: User credentials response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserCredentialsResponse'
+                $ref: "#/components/schemas/UserCredentialsResponse"
   /v1/user/credentials:
     put:
       summary: Update a user credential
@@ -188,14 +188,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCredentialUpdate'
+              $ref: "#/components/schemas/UserCredentialUpdate"
       responses:
-        '200':
+        "200":
           description: A successful user credential update response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserCredentialUpdateResponse'
+                $ref: "#/components/schemas/UserCredentialUpdateResponse"
     delete:
       summary: Delete a user credential
       description: Deletes a user credential by id
@@ -206,20 +206,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCredentialDelete'
+              $ref: "#/components/schemas/UserCredentialDelete"
       responses:
-        '200':
+        "200":
           description: A successful user credential deleted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserCredentialDeleteResponse'
-        '400':
+                $ref: "#/components/schemas/UserCredentialDeleteResponse"
+        "400":
           description: 4xx response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
 components:
   # Schemas
   schemas:
@@ -243,18 +243,19 @@ components:
           properties:
             residentKey:
               type: string
-              example: 'preferred'
+              example: "preferred"
               enum:
                 - preferred
                 - discouraged
                 - required
+                - ""
             authenticatorAttachment:
               type: string
               example: cross-platform
               enum:
                 - cross-platform
                 - platform
-                - none
+                - ""
             userVerification:
               type: string
               example: preferred
@@ -262,6 +263,7 @@ components:
                 - preferred
                 - discouraged
                 - required
+                - ""
         attestation:
           type: string
           example: direct
@@ -437,7 +439,7 @@ components:
                 - discouraged
         errorMessage:
           type: string
-          example: ''
+          example: ""
     AssertionResultRequest:
       type: object
       properties:
@@ -461,7 +463,7 @@ components:
                   example: ME8fLjd5y6TUOLWt5l9DQIhANiYig9newAJZYTzG1i5lwP
                 userHandle:
                   type: string
-                  example: ''
+                  example: ""
                 clientDataJSON:
                   type: string
                   example: eyJjaGFTBrTmM4uIjoiaHR0cDovL2xvY2FsF1dGhuLmdldCJ9...
@@ -469,18 +471,15 @@ components:
               type: string
               example: public-key
               default: public-key
+            clientExtensionResults:
+              type: object
+              example: {}
     AssertionResultResponse:
       type: object
       properties:
         status:
           type: string
           example: ok
-    UserProfile:
-      type: object
-      properties:
-        userName:
-          type: string
-          example: janedoe@example.com
     UserProfileResponse:
       type: object
       properties:
@@ -578,16 +577,17 @@ components:
   # Examples
   examples:
     ServerPublicKeyCredentialCreationOptionsRequest-Default:
-      summary: 'Default (Required)'
+      summary: "Default (Required)"
       value: |-
         {
           "username": "janedoe@example.com"
         }
     ServerPublicKeyCredentialCreationOptionsRequest-Optional:
-      summary: 'Optional'
+      summary: "Optional"
       value: |-
         {
-          "username": "janedoe@example.com",
+          "userName": "janedoe@example.com",
+          "displayName": "jane12345"
           "authenticatorSelection": {
             "residentKey": "preferred",
             "authenticatorAttachment": "cross-platform",

@@ -3,6 +3,7 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+.DS_Store
 
 ### STS ###
 .apt_generated
@@ -36,3 +37,10 @@ build/
 .aws-sam/*
 
 .openapi-generator
+
+### ENV Files ###
+scripts/*/mysql/.env
+scripts/*/java-app/.env
+scripts/*/java-app/com.yubicolabs.passkey_rp.jar
+scripts/*/java-app/source
+scripts/*/react-app/source
