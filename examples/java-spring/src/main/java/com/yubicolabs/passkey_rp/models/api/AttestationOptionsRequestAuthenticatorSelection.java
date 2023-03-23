@@ -25,7 +25,9 @@ public class AttestationOptionsRequestAuthenticatorSelection {
 
     DISCOURAGED("discouraged"),
 
-    REQUIRED("required");
+    REQUIRED("required"),
+
+    EMPTY("");
 
     private String value;
 
@@ -65,7 +67,9 @@ public class AttestationOptionsRequestAuthenticatorSelection {
 
     PLATFORM("platform"),
 
-    NONE("none");
+    NONE("none"),
+
+    EMPTY("");
 
     private String value;
 
@@ -105,7 +109,9 @@ public class AttestationOptionsRequestAuthenticatorSelection {
 
     DISCOURAGED("discouraged"),
 
-    REQUIRED("required");
+    REQUIRED("required"),
+
+    EMPTY("");
 
     private String value;
 

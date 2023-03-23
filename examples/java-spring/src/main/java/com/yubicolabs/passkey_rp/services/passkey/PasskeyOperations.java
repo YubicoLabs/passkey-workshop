@@ -322,7 +322,7 @@ public class PasskeyOperations {
      * Set the UV requirement, set to preferred if not present
      */
 
-    if (request.getUserVerification() == null) {
+    if (request.getUserVerification() == null || request.getUserVerification().getValue().equals("")) {
       authSelectBuilder.userVerification(UserVerificationRequirement.PREFERRED);
     } else {
       String uvReq = request.getUserVerification().getValue().toUpperCase();
@@ -332,7 +332,7 @@ public class PasskeyOperations {
     /*
      * Set the resident key requirement, set to preferred if not present
      */
-    if (request.getResidentKey() == null) {
+    if (request.getResidentKey() == null || request.getResidentKey().getValue().equals("")) {
       authSelectBuilder.residentKey(ResidentKeyRequirement.PREFERRED);
     } else {
       String rkReq = request.getResidentKey().getValue().toUpperCase();
@@ -347,7 +347,7 @@ public class PasskeyOperations {
       String aaReq = request.getAuthenticatorAttachment().getValue();
       if (aaReq.equals("cross-platform")) {
         authSelectBuilder.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM);
-      } else if (aaReq.equals("cross-platform")) {
+      } else if (aaReq.equals("platform")) {
         authSelectBuilder.authenticatorAttachment(AuthenticatorAttachment.PLATFORM);
       }
     }
