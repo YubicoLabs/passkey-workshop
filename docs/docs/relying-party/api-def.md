@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # API definition
 
-Before we discuss the code used to build the relying party, we should discuss the API that defines a client's ability to interact with the relying party application. By the end of this section you should understand best practices for the API that should translate to better comprehension on how the application should behave.
+Before we discuss the code used to build the relying party, we are going to discuss the API that defines a client's ability to interact with the relying party application. By the end of this section you should understand best practices for the API that should translate to better comprehension on how the application should behave.
 
 Note that these best practices are for general passkey applications. The API defined in this section may be changed in later sections, especially to accommodate high assurance use cases where the relying party may need to limit options from the client.
 
@@ -34,7 +34,7 @@ The first call ([`/attestation/options`](http://localhost:8080/swagger-ui/index.
 
 The second call ([`/attestation/result`](http://localhost:8080/swagger-ui/index.html#/v1/serverAuthenticatorAttestationResponse)) is used to send the newly created passkey to be stored in the relying party.
 
-This topic will be covered in more detail in the following section on [Registration Flows](@TODO add new link).
+This topic will be covered in more detail in the following section on [Registration Flows](/docs/relying-party/reg-flow).
 
 ### Authentication
 
@@ -44,7 +44,7 @@ The first call ([`/assertion/options`](http://localhost:8080/swagger-ui/index.ht
 
 The second call ([ `/assertion/result`](http://localhost:8080/swagger-ui/index.html#/v1/serverAuthenticatorAssertionResponse)) is used to send the signed challenge to verify if a valid credential was used.
 
-This topic will be covered in more detail in the following section on [Authentication Flows](@TODO add new link).
+This topic will be covered in more detail in the following section on [Authentication Flows](/docs/relying-party/auth-flow).
 
 ### Credential management
 

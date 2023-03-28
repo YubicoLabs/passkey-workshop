@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Registration flows
@@ -146,111 +146,111 @@ Below is a sample implementation of the /attestation/options method. Note that `
 
 ```java
 public AttestationOptionsResponse attestationOptions(AttestationOptionsRequest request) throws Exception {
-    try {
+  try {
 
-      /**
-       * See if the user exists
-       */
-      Optional<ByteArray> maybeUID = CredentialStorage.getUserHandleForUsername(request.getUserName());
+    /**
+     * See if the user exists
+     */
+    Optional<ByteArray> maybeUID = CredentialStorage.getUserHandleForUsername(request.getUserName());
 
-      UserIdentity userIdentity = UserIdentity.builder()
-          .name(request.getUserName())
-          .displayName(request.getDisplayName())
-          /**
-           * If there is an existing user, attach their userhandle
-           * otherwise generate a new one
-           */
-          .id(maybeUID.isPresent() ? maybeUID.get() : generateRandomByteArray(16))
-          .build();
+    UserIdentity userIdentity = UserIdentity.builder()
+        .name(request.getUserName())
+        .displayName(request.getDisplayName())
+        /**
+         * If there is an existing user, attach their userhandle
+         * otherwise generate a new one
+         */
+        .id(maybeUID.isPresent() ? maybeUID.get() : generateRandomByteArray(16))
+        .build();
 
-      /*
-       * This method has been abstracted as there are a lot of "is not null" checks
-       * The goal is to convert the string values into valid ENUM for the
-       * AuthenticatorSelectionCriteria
-       */
-      AuthenticatorSelectionCriteria optionsSelectionCriteria = resolveAuthenticatorSelectionCriteria(
-          request.getAuthenticatorSelection());
+    /*
+      * This method has been abstracted as there are a lot of "is not null" checks
+      * The goal is to convert the string values into valid ENUM for the
+      * AuthenticatorSelectionCriteria
+      */
+    AuthenticatorSelectionCriteria optionsSelectionCriteria = resolveAuthenticatorSelectionCriteria(
+        request.getAuthenticatorSelection());
 
-      PublicKeyCredentialCreationOptions pkc = relyingPartyInstance.getRelyingParty()
-          .startRegistration(StartRegistrationOptions.builder()
-              .user(userIdentity)
-              .authenticatorSelection(optionsSelectionCriteria)
-              .timeout(180000) // 3 minutes
-              .build());
+    PublicKeyCredentialCreationOptions pkc = relyingPartyInstance.getRelyingParty()
+        .startRegistration(StartRegistrationOptions.builder()
+            .user(userIdentity)
+            .authenticatorSelection(optionsSelectionCriteria)
+            .timeout(180000) // 3 minutes
+            .build());
 
-      ByteArray requestId = generateRandomByteArray(32);
+    ByteArray requestId = generateRandomByteArray(32);
 
-      /**
-       * This method is a helper that converts the values in the pkc object to
-       * string that conforms to the API
-       */
-      AttestationOptionsResponse response = AttestationOptionsResponseConverter.PKCtoResponse(pkc, requestId);
+    /**
+     * This method is a helper that converts the values in the pkc object to
+     * string that conforms to the API
+     */
+    AttestationOptionsResponse response = AttestationOptionsResponseConverter.PKCtoResponse(pkc, requestId);
 
-      /*
-       * Insert the request into the attestation request storage to prevent replay
-       * attacks
-       */
-      AttestationRequestStorage.insert(pkc, requestId.getBase64Url());
+    /*
+      * Insert the request into the attestation request storage to prevent replay
+      * attacks
+      */
+    AttestationRequestStorage.insert(pkc, requestId.getBase64Url());
 
-      return response;
+    return response;
 
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new Exception("There was an issue while generating AttestationOptions: " + e.getMessage());
+  } catch (Exception e) {
+    e.printStackTrace();
+    throw new Exception("There was an issue while generating AttestationOptions: " + e.getMessage());
+  }
+}
+
+private static AuthenticatorSelectionCriteria resolveAuthenticatorSelectionCriteria(
+    AttestationOptionsRequestAuthenticatorSelection request) {
+  /*
+    * Generate authenticator selection
+    * 1. Start by inferring the values from the request, if the values were not
+    * present, then select a default
+    * 2. Determine if the object needs to contain an authenticatorAttachment
+    */
+  AuthenticatorSelectionCriteriaBuilder authSelectBuilder = AuthenticatorSelectionCriteria.builder();
+
+  /*
+    * Set the UV requirement, set to preferred if not present
+    */
+
+  if (request.getUserVerification() == null || request.getUserVerification().getValue().equals("")) {
+    authSelectBuilder.userVerification(UserVerificationRequirement.PREFERRED);
+  } else {
+    String uvReq = request.getUserVerification().getValue().toUpperCase();
+    authSelectBuilder.userVerification(UserVerificationRequirement.valueOf(uvReq));
+  }
+
+  /*
+    * Set the resident key requirement, set to preferred if not present
+    */
+  if (request.getResidentKey() == null || request.getResidentKey().getValue().equals("")) {
+    authSelectBuilder.residentKey(ResidentKeyRequirement.PREFERRED);
+  } else {
+    String rkReq = request.getResidentKey().getValue().toUpperCase();
+    authSelectBuilder.residentKey(ResidentKeyRequirement.valueOf(rkReq));
+  }
+
+  /*
+    * Set the auth attachment requirement, do not include the property if not
+    * included
+    */
+  if (request.getAuthenticatorAttachment() != null) {
+    String aaReq = request.getAuthenticatorAttachment().getValue();
+    if (aaReq.equals("cross-platform")) {
+      authSelectBuilder.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM);
+    } else if (aaReq.equals("platform")) {
+      authSelectBuilder.authenticatorAttachment(AuthenticatorAttachment.PLATFORM);
     }
   }
 
-  private static AuthenticatorSelectionCriteria resolveAuthenticatorSelectionCriteria(
-      AttestationOptionsRequestAuthenticatorSelection request) {
-    /*
-     * Generate authenticator selection
-     * 1. Start by inferring the values from the request, if the values were not
-     * present, then select a default
-     * 2. Determine if the object needs to contain an authenticatorAttachment
-     */
-    AuthenticatorSelectionCriteriaBuilder authSelectBuilder = AuthenticatorSelectionCriteria.builder();
-
-    /*
-     * Set the UV requirement, set to preferred if not present
-     */
-
-    if (request.getUserVerification() == null || request.getUserVerification().getValue().equals("")) {
-      authSelectBuilder.userVerification(UserVerificationRequirement.PREFERRED);
-    } else {
-      String uvReq = request.getUserVerification().getValue().toUpperCase();
-      authSelectBuilder.userVerification(UserVerificationRequirement.valueOf(uvReq));
-    }
-
-    /*
-     * Set the resident key requirement, set to preferred if not present
-     */
-    if (request.getResidentKey() == null || request.getResidentKey().getValue().equals("")) {
-      authSelectBuilder.residentKey(ResidentKeyRequirement.PREFERRED);
-    } else {
-      String rkReq = request.getResidentKey().getValue().toUpperCase();
-      authSelectBuilder.residentKey(ResidentKeyRequirement.valueOf(rkReq));
-    }
-
-    /*
-     * Set the auth attachment requirement, do not include the property if not
-     * included
-     */
-    if (request.getAuthenticatorAttachment() != null) {
-      String aaReq = request.getAuthenticatorAttachment().getValue();
-      if (aaReq.equals("cross-platform")) {
-        authSelectBuilder.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM);
-      } else if (aaReq.equals("platform")) {
-        authSelectBuilder.authenticatorAttachment(AuthenticatorAttachment.PLATFORM);
-      }
-    }
-
-    return authSelectBuilder.build();
-  }
+  return authSelectBuilder.build();
+}
 ```
 
 ## Attestation result method
 
-In this section we are going to outline, in detail, the attestation options method as well as provide a sample implementation in Java using the [java-webauthn-server library](https://github.com/Yubico/java-webauthn-server).
+In this section we are going to outline, in detail, the attestation result method as well as provide a sample implementation in Java using the [java-webauthn-server library](https://github.com/Yubico/java-webauthn-server).
 
 ### API request and response schema
 
