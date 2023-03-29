@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Architecture at a glance
 
-We will start by observing a high level architecture diagram of a standard passkey enabled application. This first diagram provides this high level overview, listing out all of the required components of our application. Please note that this diagram does **NOT** include the core functionality of your application, only the components necessary for passkey and authentication/authorization related actions
+We will start by observing a high level architecture diagram of a standard passkey enabled application. This first diagram outlines the required components of our application. Please note that this diagram does **NOT** include the core functionality of your application, only the components necessary for passkey and authentication/authorization related actions
 
 ![Passkey architecture diagram](/img/passkey_arch.jpg)
 
@@ -20,7 +20,7 @@ Authenticators can come in the form of hardware and software. Examples of hardwa
 
 ### Client application
 
-The client application is the front end application that your users use to interact with your app. The primary use in passkey applications will be for users to complete their authentication and registration ceremonies.
+The client application is the front end application utilized by your users. The primary use in passkey applications will be for users to complete their authentication and registration ceremonies.
 
 The experience offered by the client will have some variety depending on the user’s use of the operating system and browser, but should ultimately still provide the same degree of security and usability, assuming the ecosystem supports passkeys.
 

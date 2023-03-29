@@ -3,6 +3,6 @@
   "position": 3,
   "link": {
     "type": "generated-index",
-    "description": "In this section we are going to walk through a high level architecture of an application that utilizes passkeys. Our goal is to outline the key components that are required of a passkey application, and how they work in concert to create a seamless and secure authentication experience."
+    "description": "This section will outline a high level architecture of an application that utilizes passkeys. Our goal is to outline the key components that are required of a passkey application, and how they work in concert to create a seamless and secure authentication experience."
   }
 }
