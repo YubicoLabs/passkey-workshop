@@ -4,11 +4,11 @@ sidebar_position: 2
 
 # Data sources and RP configurations
 
-In this section we are going to outline some essential utilities that are needed in order to perform passkey functions in our application. This will provide the foundations for our relying party application that will ensure that the requests/responses from our API are compliant with mainstream platform implementations, and that our application can interact with some form of data source.
+In this section we are going to outline some essential utilities that are needed in order to perform passkey functions. This will provide the foundations for our relying party (**RP**) application that will ensure that the requests/responses from the API are compliant with mainstream platform implementations, and that our application can interact with some form of data source.
 
 ## Data sources
 
-To begin, let's first look at the data sources used in this project, and the interfaces that are leveraged.
+Let's first dive into the data sources used in this project, and the interfaces that are leveraged.
 
 ### Tables
 
@@ -20,7 +20,7 @@ Our example will need to leverage three different tables.
 
 These tables were explained in the architecture section. Please click the links above for more information.
 
-Note, that for our implementation we are using a MySQL database. To help with extensibility, we have provided an interface that can be used to add your preferred database. The idea is that these are the standard methods you are going to need in order to facilitate passkey transactions.
+Note, that our implementation leverages a MySQL database. To help with extensibility, we have provided an interface that can be used to add your preferred database. The idea is that these are the standard methods you are going to need in order to facilitate passkey transactions.
 
 ### Attestation request repository
 
@@ -68,9 +68,9 @@ public class AttestationOptionsDBO {
 }
 ```
 
-Note that the only field that should be altered is the `isActive` property. This will indicate if this request is still live. You should invalidate this item if the request has been used, or if is past some dedicated timeout period.
+Note that the only field that should be altered is the `isActive` property. This will indicate if this request is still live. You should invalidate this item if the request has been used, or if some timeout period has lapsed.
 
-The attestation request will relate to the PublicKeyCredentialCreationOptions, that will be discussed in a later section. For now just note that it's a complex object that will be stored as a JSON string.
+The attestation request will relate to the `PublicKeyCredentialCreationOptions`, that will be discussed in a later section. For now just note that it's a complex object that will be stored as a JSON string.
 
 #### Interface
 
@@ -91,13 +91,13 @@ public interface AttestationRequestStorage {
    * @param request created registration request to track for incoming
    *                registration
    * @return true if the registration was added to storage, and false
-   *         otherwiseinterface
+   *         otherwise
    */
   public Boolean insert(PublicKeyCredentialCreationOptions request, String requestId);
 
   /**
    * Invalidate the designated request to prevent replay attacks from duplicate
-   * registrations with the same request
+   * registrations with the same request ID
    *
    * @param requestID ID of the request to invalidate
    * @return true if the request was successfully invalidated, false otherwise
@@ -163,9 +163,9 @@ public class AssertionOptionsDBO {
 
 ```
 
-Note that the only field that should be altered is the `isActive` property. This will indicate if this request is still live. You should invalidate this item if the request has been used, or if is past some dedicated timeout period.
+Note that the only field that should be altered is the `isActive` property. This will indicate if this request is still live. You should invalidate this item if the request has been used, or if some timeout period has lapsed.
 
-The assertion request will relate to the PublicKeyCredentialRequestOptions, that will be discussed in a later section. For now just note that it's a complex object that will be stored as a JSON string.
+The assertion request will relate to the `PublicKeyCredentialRequestOptions`, that will be discussed in a later section. For now just note that it's a complex object that will be stored as a JSON string.
 
 #### Interface
 
@@ -191,7 +191,7 @@ public interface AssertionRequestStorage {
 
   /**
    * Invalidate the designated request to prevent replay attacks from duplicate
-   * authentication with the same request
+   * authentication with the same request ID
    *
    * @param requestID ID of the request to invalidate
    * @return true if the request was successfully invalidated, false otherwise
@@ -276,9 +276,9 @@ public class CredentialRegistrationDBO {
 
 The property `credential` will be the field that stores the actual passkey itself. Some of the other fields like `credentialId` and `userHandle` can be inferred from the data encoded in the `credential` property, but are highlighted to help improve searchability of credentials from your application. Many operations may need to either find an individual credential by ID, or group all of the credentials by `userHandle`.
 
-The time based properties, `registrationTime`, `lastUsedTime` and `lastUpdateTime`, are not required, and are generally best practices.
+The time based properties, `registrationTime`, `lastUsedTime` and `lastUpdateTime`, are not required, but are generally best practices that can be used for reporting.
 
-Also note how the only option that is allowed to be updated is the `credentialNickname`. As discussed in an earlier section, you should not allow users to edit the passkey (credential) directly.
+Note the only option that is allowed to be updated is the `credentialNickname`. As discussed in an earlier section, you should not allow users to edit the passkey (credential) directly, but instead provide some identifier that they can use to help with credential management
 
 #### Interface
 
@@ -449,6 +449,6 @@ public class RelyingPartyInstance {
 
 ```
 
-Note in our example that some of the fields are driven by environment variables. These variables are created during the [deployment phase](/docs/deploy). If you have been following along with this guide, then they should be utilizing default values. Later sections may change these values based on the use case, especially around the attestation related fields.
+Note in our example that some of the fields are driven by environment variables. These variables are created during the [deployment phase](/docs/deploy). If you have been following along with this guide, then they should be utilizing default values. Later sections may change these values based on the use case.
 
-Also note the use of the `StorageInstance` reference declared at the top of the code sample. This object will contain your various data sources declared above. Behind the scenes this object is comprised of various factories that initialize, and delegate the database provider that should be used, that all adhere to the interfaces mentioned above. At this moment, you are most likely leveraging the MySQL server included in this project. For more technical information, please see the [source code](https://github.com/YubicoLabs/passkey-workshop/blob/main/examples/java-spring/src/main/java/com/yubicolabs/passkey_rp/services/storage/StorageInstance.java).
+Note the use of the `StorageInstance` reference declared at the top of the code sample. This object will contain your various data sources declared in the previous section. Behind the scenes this object is comprised of various factories that initialize, and delegate the database provider that should be used, that all adhere to the interfaces mentioned above. At this moment, you are most likely leveraging the MySQL server included in this project. For more technical information, please see the [source code](https://github.com/YubicoLabs/passkey-workshop/blob/main/examples/java-spring/src/main/java/com/yubicolabs/passkey_rp/services/storage/StorageInstance.java).

@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Registration flows
 
-In this section we are going to go over the registration flow for a new passkey. Note that the use of the term registration refers to the creation of a passkey, not the initial registration of a user (which is an entirely different subject).
+This section will cover the registration flow for a new passkey. Note that the use of the term registration refers to the creation of a passkey, not the initial registration of a user (which is an entirely different subject).
 
 By the end of this section you will understand how to use and implement both of the `/attestation/options` and `/attestation/result` methods (as defined by our [API](relying-party/api-def))
 
@@ -20,7 +20,7 @@ The second call ([`/attestation/result`](http://localhost:8080/swagger-ui/index.
 
 ## Attestation options method
 
-In this section we are going to outline, in detail, the attestation options method as well as provide a sample implementation in Java using the [java-webauthn-server library](https://github.com/Yubico/java-webauthn-server).
+This section will outline the attestation options method as well as provide a sample implementation in Java using the [java-webauthn-server library](https://github.com/Yubico/java-webauthn-server).
 
 ### API request and response schema
 
@@ -46,7 +46,7 @@ These properties will help the client declare the options that it wishes to use 
 - Characteristics of the user
 - Rules for generating the passkey
 
-`userName`, and `displayName` are used to declare the user that we are creating a passkey for. Our implementation separates these into two separate properties as the display name is what the user might see in your app, and the username may be some sort of unique identifier such as an email address.
+`userName`, and `displayName` are used to declare the user creating the passkey. Our implementation separates these into two properties as the display name is what the user might see in your app, and the username may be some sort of unique identifier such as an email address.
 
 The other properties will instruct your client, specifically your ecosystem (platform + browser) on how to generate the credential. These properties are defined in various sections in the WebAuthn specification, which will be noted below.
 
@@ -57,21 +57,21 @@ The other properties will instruct your client, specifically your ecosystem (pla
 - enterprise
 - none
 
-`residentKey` defines the [ResidentKeyRequirement](https://www.w3.org/TR/webauthn-2/#enum-residentKeyRequirement), or the relying party's preference for creating a [discoverable credential](linktofundamentalsection). It's important to remember that passkeys MUST be a discoverable credential.
+`residentKey` defines the [ResidentKeyRequirement](https://www.w3.org/TR/webauthn-2/#enum-residentKeyRequirement), or the relying party's preference for creating a [discoverable credential](linktofundamentalsection). It's important to remember that passkeys MUST be a discoverable credential (but remember that non-discoverable credentials are still valid WebAuthn credentials)
 
 - required
 - preferred (default)
 - discouraged
 
 ::::danger Behaviors of preferred
-Different browsers may treat required in different ways. In most cases preferred will attempt to create a passkey, if the option is available (this applies to both security keys and platform authenticators).
+Different browsers may treat the choice of `preferred` in different ways. In most cases `preferred` will attempt to create a passkey, if the option is available (this applies to both security keys and platform authenticators).
 ::::
 
 ::::danger Limits on hardware authenticators
 Keep in mind that some devices, like security keys, may have a limit on the number of passkeys that can be registered
 ::::
 
-`userVerifications` defines the [UserVerificationRequirement](https://www.w3.org/TR/webauthn-2/#enumdef-userverificationrequirement), or the preference to perform [user verification](linktofundsection). In short, the RP can declare if they want to force the user to use something like a security key PIN, biometric scan (Face ID), or other forms of verification.
+`userVerifications` defines the [UserVerificationRequirement](https://www.w3.org/TR/webauthn-2/#enumdef-userverificationrequirement), or the preference to perform [user verification](linktofundsection). In short, the RP can declare if it want to force the user to use something like a security key PIN, biometric scan (Face ID), or other forms of verification.
 
 - required
 - preferred (default)
@@ -81,6 +81,10 @@ Keep in mind that some devices, like security keys, may have a limit on the numb
 
 ::::tip Best to be permissive
 Err on the side of caution when using this setting. For most use cases you should not set this setting, and instead allow your users to use any authenticator that they want to use. Allow for both the convenience of platform authenticators, and the high degree of assurance of security keys for the users who want it.
+::::
+
+::::danger cross-platform will always present multiple options
+If a developer declares the preference for cross-platform, the user will always see options for both security keys and the hybrid flow (QR code). As of now there is not an implementation that allows a developer to hide one option, both will always be presented
 ::::
 
 - platform
@@ -250,7 +254,7 @@ private static AuthenticatorSelectionCriteria resolveAuthenticatorSelectionCrite
 
 ## Attestation result method
 
-In this section we are going to outline, in detail, the attestation result method as well as provide a sample implementation in Java using the [java-webauthn-server library](https://github.com/Yubico/java-webauthn-server).
+This section will outline the attestation result method as well as provide a sample implementation in Java using the [java-webauthn-server library](https://github.com/Yubico/java-webauthn-server).
 
 ### API request and response schema
 

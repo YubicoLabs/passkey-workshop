@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Authentication flows
 
-In this section we are going to go over the authentication flows for logging in with a passkey.
+This section will cover the authentication flows for logging in with a passkey.
 
 By the end of this section you will understand how to use and implement both of the `/assertion/options` and `/assertion/result` methods (as defined by our [API](relying-party/api-def))
 
@@ -20,7 +20,7 @@ The second call ([`/attestation/result`](http://localhost:8080/swagger-ui/index.
 
 ## Assertion options method
 
-In this section we are going to outline, in detail, the assertion options method as well as provide a sample implementation in Java using the [java-webauthn-server library](https://github.com/Yubico/java-webauthn-server).
+This section will outline the assertion options method as well as provide a sample implementation in Java using the [java-webauthn-server library](https://github.com/Yubico/java-webauthn-server).
 
 ### API request and response schema
 
@@ -58,7 +58,7 @@ In order to trigger the use of a non-discoverable credential flow, you will incl
 
 #### Response
 
-As indicated in the previous section, this method will include two different types of responses. In the WebAuthn specification, this object is referred to as the [PublicKeyCredentialCRequestOptions](https://www.w3.org/TR/webauthn-2/#dictionary-assertion-options), but will contain extra data depending on the flow being used.
+As indicated in the previous section, this method will include two different types of responses. In the WebAuthn specification, this object is referred to as the [PublicKeyCredentialRequestOptions](https://www.w3.org/TR/webauthn-2/#dictionary-assertion-options), but will contain extra data depending on the flow being used.
 
 ##### Discoverable credential flow
 
@@ -86,7 +86,7 @@ Below is the response body of the `/attestation/options` method for a non-discov
   "publicKey": {
     "challenge": "m7xl_TkTcCe0WcXI2M-4ro9vJAuwcj4m",
     "timeout": 20000,
-    "rpId": "example.com",
+    "rpId": "localhost",
     "allowCredentials": [
       {
         "id": "opQf1WmYAa5aupUKJIQp",
@@ -105,6 +105,12 @@ This means that the WebAuthn ceremony will only succeed if the user can demonstr
 The **exclusion** of this list will allow the user to select a passkey (discoverable credential) on their authenticator, if one exists.
 
 The key difference is that the non-discoverable flow is looking for a specific set of credentials, while the discoverable flow is looking for the user to select one of their credentials.
+
+::::tip passkeys can be used in non-discoverable credential flows
+Just because a passkey is a discoverable credential, does not mean that it cannot be used in a non-discoverable credential flow. Regardless of credential type, the RP will have the credential ID, and can be passed to the client if requested by the flow.
+
+With that said, non-discoverable credentials cannot be leveraged in the discoverable credential flow. So if you have users who rely on the use of non-discoverable credentials, then ensure that you provide them with the option to utilize a non-discoverable credential flow
+::::
 
 ### Implementation
 
@@ -165,7 +171,7 @@ public AssertionOptionsResponse assertionOptions(AssertionOptionsRequest request
 
 ## Assertion result method
 
-In this section we are going to outline, in detail, the assertion result method as well as provide a sample implementation in Java using the [java-webauthn-server library](https://github.com/Yubico/java-webauthn-server).
+This section will outline the assertion result method as well as provide a sample implementation in Java using the [java-webauthn-server library](https://github.com/Yubico/java-webauthn-server).
 
 ### API request and response schema
 
