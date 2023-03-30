@@ -1,0 +1,8 @@
+{
+  "label": "Relying Party",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "This section will cover the relying party component of a passkey application. We are going to cover best practices for defining the API of the application, along with common business logic that can be used to facilitate the registration and authentication ceremonies."
+  }
+}

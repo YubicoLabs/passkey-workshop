@@ -12,7 +12,7 @@ The ecosystem (browser | operating system) is a critical component that your app
 
 - Support for new functionality (Autofill)
 - Wording and displays for modals and prompts
-- Default values for `PublicKeyCredentialCreationOptions` and `PublicKeyCredentialRequestOptions`
+- Default behaviors for `PublicKeyCredentialCreationOptions` and `PublicKeyCredentialRequestOptions` configurations
 
 Before you develop an application you should consider what ecosystem your users are leveraging. For consumer applications the permutations of ecosystems is boundless, but it’s wise to support the major browsers (Google Chrome, Apple Safari, Microsoft Edge, Mozilla Firefox) and operating systems (Windows, iOS, macOS, and Android).
 
@@ -25,7 +25,7 @@ Please refer to these resources to see passkey support across a variety of diffe
 
 ## Web vs native applications
 
-In line with the topic mentioned above, you may need multiple implementations of your client depending on the ecosystems used by your users. For the most part, a single web based application will be supported across mainstream ecosystems (but please consult the browser support matrices mentioned above). Native applications will require targeted implementations for each ecosystem that you wish to support. For instance, your passkey implementation for an Android application will not work for iOS.
+In line with the topic mentioned above, you may need multiple implementations of your client depending on the ecosystems used by your users. For the most part, a single web based application will be supported across mainstream ecosystems (but please consult the browser support matrices mentioned above). Native applications will require targeted implementations for each ecosystem that you wish to support. For instance, your passkey implementation for a native Android application will not work for iOS.
 
 ::::tip Not every component requires a targeted implementation
 The client portion of our application is the only component that requires targeted implementations based on the ecosystem. The relying party should be usable by all of your clients through some form of API.

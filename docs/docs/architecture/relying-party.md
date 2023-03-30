@@ -10,11 +10,11 @@ In terms of passkey applications, this is the component that will manage credent
 
 ## Build vs buy
 
-It is not always required to develop each components of an RP. There are many services that provide passkey/webauthn functionality out-of-the-box (such as Okta, or Azure B2C).
+It is not always required to develop each component of an RP. There are many services that provide passkey/webauthn functionality out-of-the-box (such as Okta, or Azure B2C).
 
 The determination of build vs buy should be made by evaluating options against your security policies, use case, and developer resources. Some use cases may work well using the out of the box features of a service. Other use cases may require more specific functionality based on your security policies that may leave you with no choice but to develop your own solution.
 
-The examples in the workshop is a demonstration of a fully custom built solution; or in more accurate terms, a solution comprised of different mainstream services that work together to create a passkey experience. Note that the components used in our examples are not meant to act as our recommended technologies; rather, we are trying to demonstrate that a passkey application, if architected correctly, can be built using technologies familiar to many developers.
+The examples in the workshop are a demonstration of a fully custom built solution; or in more accurate terms, a solution comprised of different mainstream services that work together to create a passkey experience. Note that the components used in our examples are not meant to act as our recommended technologies; rather, we are trying to demonstrate that a passkey application, if architected correctly, can be built using technologies familiar to many developers.
 
 Once you have grasped the fundamental concepts, feel free to leverage the interfaces defined in our application to integration your preferred technologies.
 
