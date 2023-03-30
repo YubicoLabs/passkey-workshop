@@ -35,7 +35,7 @@ DEPLOYMENT_ENVIRONMENT=$deployment_environment
 DATABASE_TYPE=$database_type
 DATABASE_PASSWORD=$database_root_password
 "@
-  $content | Out-File -FilePath .\.env
+  $content | Out-File -encoding ASCII .\.env
   Write-Host ".env file created"
   Write-Host "****************************************"
 }

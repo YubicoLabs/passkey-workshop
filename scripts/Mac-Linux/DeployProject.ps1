@@ -126,9 +126,9 @@ Write-Host IDP_TYPE=$IDP_TYPE
 if($DATABASE_TYPE -eq "mysql") {
   Write-Host "****************************************"
   Write-Host "MYSQL database requested - creating local mysql instance"
-  cd mysql
+  Set-Location -Path mysql
   ./deploy_mysql.ps1 -password $DATABASE_ROOT_PASSWORD
-  cd -
+  Set-Location -Path ..
   Write-Host "mysql instance created"
   Write-Host "****************************************"
 }
@@ -139,7 +139,7 @@ if($DEPLOYMENT_ENVIRONMENT -eq "local") {
 
   Set-Location -Path java-app
   ./deploy_java_app.ps1 "$RP_ID" "$RP_NAME" "$RP_ALLOWED_ORIGINS" "$RP_ALLOWED_CROSS_ORIGINS" "$RP_ATTESTATION_PREFERENCE" "$RP_ALLOW_UNTRUSTED_ATTESTATION" "$DEPLOYMENT_ENVIRONMENT" "$DATABASE_TYPE" "$DATABASE_ROOT_PASSWORD"
-  Set-Location -Path -
+  Set-Location -Path ..
   Write-Host "Java application deployed"
   Write-Host "****************************************"
 }
@@ -150,7 +150,7 @@ if( $IDP_TYPE -eq "keycloak" ) {
 
   Set-Location -Path keycloak
   ./deploy_keycloak.ps1
-  Set-Location -Path -
+  Set-Location -Path ..
 
   Write-Host "Keycloak deployed"
   Write-Host "****************************************"
@@ -162,7 +162,7 @@ if( $CLIENT_TYPE -eq "react" ) {
 
   Set-Location -Path react-app
   ./deploy_react_app.ps1
-  Set-Location -Path -
+  Set-Location -Path ..
 
   Write-Host "React application deployed"
   Write-Host "****************************************"

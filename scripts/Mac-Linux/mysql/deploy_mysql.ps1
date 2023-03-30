@@ -10,7 +10,7 @@ Write-Host "Composing MYSQL database"
 if( ![System.IO.File]::Exists("$pwd/.env") ) {
   Write-Host "Creating new Docker container"
   Write-Host "Writing password to .env file"
-  echo "MASTER_PASSWORD=$password" > .env
+  Write-Output "MASTER_PASSWORD=$password" | out-file -encoding ASCII .env
 }
 
 if((docker compose up -d 2>&1) -match '^(?!error)'){
