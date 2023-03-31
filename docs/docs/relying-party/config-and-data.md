@@ -360,7 +360,7 @@ public interface CredentialStorage extends CredentialRepository {
 
 The next step is to set the common configurations for your relying party. This means setting the RP ID that is used to identify the specific relying party, the application's name, where to find the credential repository, and the web domains/origins that are allowed to create passkeys for this site.
 
-In the java-webauthn-server, this is packaged as a `RelyingParty` object. This `RelyingParty` instance will be used through the application in order to create and process attestation and assertion requests.
+In the java-webauthn-server, this is packaged as a `RelyingParty` object. This `RelyingParty` instance will be used throughout the application in order to create and process attestation and assertion requests.
 
 The `RelyingParty` instance can be declared as such
 
