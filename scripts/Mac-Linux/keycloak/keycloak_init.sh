@@ -36,5 +36,6 @@ echo $AUTH_OUTPUT
 echo ./opt/keycloak/bin/kcadm.sh create clients -r $REALM_NAME -s clientId=$CLIENT_NAME -s protocol=openid-connect -s enabled=true -s 'redirectUris=["http://localhost:3000/logout", "/*", "http://localhost:3000/oidc/callback"]' -s 'webOrigins=["*", "/*"]' -s 'authenticationFlowBindingOverrides={"browser": "'$AUTH_OUTPUT'", "direct_grant": ""}'
 ./opt/keycloak/bin/kcadm.sh create clients -r $REALM_NAME -s clientId=$CLIENT_NAME -s protocol=openid-connect -s enabled=true -s 'redirectUris=["http://localhost:3000/logout", "/*", "http://localhost:3000/oidc/callback"]' -s 'webOrigins=["*", "/*"]' -s 'authenticationFlowBindingOverrides={"browser": "'$AUTH_OUTPUT'", "direct_grant": ""}'
 
+echo "Finalizing initalization"
 > init.done
 echo "Keycloak initialized"

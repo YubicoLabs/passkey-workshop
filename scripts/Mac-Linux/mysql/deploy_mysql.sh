@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Generating databse params
+# Generating database params
 echo "Composing MYSQL database"
 
 # Check if there is an ENV file
