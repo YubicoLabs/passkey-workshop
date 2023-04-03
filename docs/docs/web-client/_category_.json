@@ -3,6 +3,6 @@
   "position": 5,
   "link": {
     "type": "generated-index",
-    "description": "This section will cover the example web client for a passkey application. We are going to cover the different user flows, implementation examples, and best practices for creating the application."
+    "description": "This section will cover the web client for a passkey application. We are going to discuss the different user flows, implementation examples, and best practices for creating the application."
   }
 }

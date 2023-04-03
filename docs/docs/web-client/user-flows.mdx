@@ -6,13 +6,13 @@ import ReactPlayer from "react-player";
 
 # User flows
 
-This section will discuss the various user flows that can be used for passkey related functionality in your web application. These flows include
+This page will discuss the various user flows that can be used for passkey related functionality in your web application. These flows include
 
 - Passkey registration
 - Passkey authentication
 - Passkey/credential management
 
-This page will demonstrate how these flows are invoked in our sample web application. The following pages will go into specific implementation guidance for each flow.
+This page will demonstrate how these flows are invoked in our sample web application. The succeeding pages will go into specific implementation guidance for each flow.
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ Ensure that you have deployed the RP and client sample found in this project.
 
 ## Example ecosystem
 
-The following ecosystem was used to create the examples in this video.
+The following ecosystem was used to create the examples in the following videos.
 
 - The web app was developed in React
 - Laptop: MacBook using MacOS 13, with Touch ID enabled
@@ -33,7 +33,7 @@ The following ecosystem was used to create the examples in this video.
 
 The registration flow is what will allow a user to create a brand new passkey for their account. In our scenario, we will assume that the user has already authenticated into their account through some form of traditional authentication mechanism.
 
-The user, is in their account management screen, where they are shown an option to add passkeys to their account.
+The user is in their account management screen, where they are shown an option to add passkeys to their account.
 
 The video below will demonstrate a user registering a passkey using a security key.
 
@@ -55,7 +55,7 @@ The next video will demonstrate a user registering their platform authenticator 
   style={{ marginBottom: "2em" }}
 />
 
-Note how the flow is very similar in both examples - with the major difference being in the authenticator used. The security key has a few more steps, as the MacOS platform has a preference for the use of Touch ID.
+Note how the flow is similar in both examples with the major difference being in the authenticator used. The security key has a few more steps, as the MacOS platform has a preference for the use of Touch ID.
 
 ## Authentication
 
@@ -67,7 +67,7 @@ It's important to note that there are a few flows that a user can use in order t
 
 ### Autofill flow
 
-We will start with a method that is familiar to users; autofill. In the current paradigm, autofill is used to insert both a username, and password, so how does this apply to passkeys.
+We will start with a method that is familiar to users, autofill. In the current paradigm, autofill is used to insert both a username, and password, so that a user does not need to manually input or remember their credentials. So how does this apply to passkeys.
 
 For passkey autofill, the user is presented with a list of possible credentials tied to their account for a webpage, similar to what has been done traditionally for passwords. The user selects their credential (for passkeys on their phone/laptop), or they can attempt to use a passkey on an external authenticator.
 
@@ -93,15 +93,15 @@ The next video demonstrates how to use a passkey on a security key using autofil
 
 ### Usernameless flow
 
-There is another authentication flow that can be leveraged for passkeys. You can take advantage of the traditional "modal" experience that has existed in browsers/platforms for some time. There is almost no difference between this flow, and autofill, other than how they are invoked - The user will still be invoked for their credential information in similar ways.
+There is another authentication flow that can be leveraged for passkeys. You can take advantage of the traditional "modal" experience that has existed in browsers/platforms for some time. There is almost no difference between this flow, and autofill, other than how they are invoked. The user will still be prompted for their credential information in similar ways.
 
-The first video demonstrates how to use a passkey on their security key, without providing your username to the service.
+The first video demonstrates how to use a passkey on a security key, without providing a username to the service.
 
 <ReactPlayer
   controls
   width="75%"
   height="75%"
-  url="/videos/auth-modal-sec-key.mp4"
+  url="/videos/auth-modal-input.mp4"
   style={{ marginBottom: "2em" }}
 />
 
@@ -111,7 +111,7 @@ The next video demonstrates how this same flow can occur, even without the prese
   controls
   width="75%"
   height="75%"
-  url="/videos/auth-modal-touchid.mp4"
+  url="/videos/auth-modal-sec-key.mp4"
   style={{ marginBottom: "2em" }}
 />
 

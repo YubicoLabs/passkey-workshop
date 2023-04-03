@@ -41,6 +41,8 @@ The method below will be used to facilitate the passkey registration ceremony. N
 import PasskeyServices from "../../services/PasskeyServices";
 import { create } from "@github/webauthn-json";
 
+const [username, setUsername] = useState("");
+
 const addNewPasskey = async (e) => {
   try {
     e.preventDefault();
@@ -57,6 +59,7 @@ const addNewPasskey = async (e) => {
      * This method is typically referred to as
      * `navigator.credentials.create` but we are
      * leveraging the @github/webauthn-json package
+     * to help with readability and encoding
      */
     const makeCredentialResult = await create(attestationOptions);
 
@@ -66,8 +69,9 @@ const addNewPasskey = async (e) => {
     );
 
     if (credentialCreateResult.status === "created") {
-      await refreshCredentialList();
-      setLoading(false);
+      /**
+       * Do something
+       */
     } else {
       throw new Error("Error with creating result");
     }

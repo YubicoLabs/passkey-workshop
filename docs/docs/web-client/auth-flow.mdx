@@ -37,7 +37,7 @@ const authenticateUser = async () => {
     /**
      * Assume the username is a variable that defaults
      * as empty (""), or can be changed through
-     * and input field by the user
+     * an input field by the user
      */
     const assertionOptions = await PasskeyServices.getAssertionOptions(
       username
@@ -90,7 +90,7 @@ The user interface items for usernameless passkey authentication is fairly simpl
 
 The user will click this button to begin the authentication ceremony. The button will trigger an 'onClick' event that will handle the registration ceremony.
 
-Because the "global" username has been set to default, the call to `authenticateUser` will pass an empty `userName` field to the RP, indicating the use of a discoverable credential flow.
+Because the global username has been set to empty by default, the call to `authenticateUser` will pass an empty `userName` field to the RP, indicating the use of a discoverable credential flow.
 
 ```jsx
 <Button onClick="{authenticateUser}">Add a new passkey</Button>
@@ -137,7 +137,7 @@ const onUsernameChange = (e) => {
 :::tip Clicking the button when the username field is empty
 The great thing about this implementation is that the button can work for both discoverable and non-discoverable credential flows.
 
-If the username field contain input from the user, the button will invoke a non-discoverable credential flow.
+If the username field contains input from the user, the button will invoke a non-discoverable credential flow.
 
 If the username field is empty, the button will invoke a discoverable credential flow.
 
@@ -164,7 +164,7 @@ The video below will provide a demonstrate this flow.
   style={{ marginBottom: "2em" }}
 />
 
-:::tip This flow also support security keys
+:::tip This flow also supports security keys
 The flow we demonstrated above was done using Touch ID on a MacBook. This flow is not only specific for platform authenticators, and can allow for the use of passkeys on security keys (as supported by the platform)
 :::
 
@@ -206,12 +206,12 @@ const mediationAvailable = async () => {
 
 ### Handle autofill request
 
-There is a variation in autofill `get` requests, that deviates from the standard modal experience. We need to take four additional actions when using an autofill request.
+When using autofill there are properties in the `get` method parameters that deviate from the standard modal experience. We need to take four additional actions when using an autofill request.
 
 1. We need to invoke the WebAuthn `get` ceremony as soon as the user enters the webpage
 2. Need to append additional information to the object that is passed into the `get` method.
 3. Create an abort controller object that can terminate the autofill request (more on this below)
-4. Add the autofill webauthn property to the username input field
+4. Add the autofill property to the username input field
 
 The code sample below will demonstrate methods that can be used to handle the autofill request.
 
