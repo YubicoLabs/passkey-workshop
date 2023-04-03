@@ -8,9 +8,6 @@ on:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
 
 jobs:
-  defaults:
-    run:
-      working-directory: ./docs
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
