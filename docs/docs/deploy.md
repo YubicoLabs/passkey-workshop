@@ -25,13 +25,13 @@ Your first step will be to clone the repository from GitHub, using git.
 With HTTPS
 
 ```bash
-git clone https://github.com/YubicoLabs/passkey-relying-party-example.git
+git clone https://github.com/YubicoLabs/passkey-workshop.git
 ```
 
 Once the repository is cloned, navigate into the scripts folder.
 
 ```bash
-cd passkey-relying-party-example/scripts
+cd passkey-workshop/scripts
 ```
 
 The scripts folder contains two options: Mac-Linux (using bash), and for Windows (using Powershell). Choose your applicable folder, and navigate to it.
@@ -52,7 +52,7 @@ cd Mac-Linux
 
 Regardless of environment, both folders contain a file that will allow you to configure certain aspects of your passkey application.
 
-The file `DeployProject_Settings.json` will allow you to set specific parameters for use in the application (if no values are provided, our deploy script will apply default values based on our best practices).
+The file `DeployProject.conf` will allow you to set specific parameters for use in the application (if no values are provided, our deploy script will apply default values based on our best practices).
 
 ::::danger Ensure you understand the configurations before changing them
 If this is your first time deploying this application, or you are unfamiliar with passkeys, then we recommend that you utilize the default settings.
