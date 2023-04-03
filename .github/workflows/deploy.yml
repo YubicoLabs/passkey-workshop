@@ -2,7 +2,6 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    working-directory: docs
     branches:
       - main
     # Review gh actions docs if you want to further define triggers, paths, etc
