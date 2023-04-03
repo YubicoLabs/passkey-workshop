@@ -54,7 +54,7 @@ In the current paradigm, **password** management best practices dictate that a u
 
 The user should only have two options:
 
-- Update attributes that are used to help them identity a passkey (like a nickname)
+- Update attributes that are used to help them identify a passkey (like a nickname)
 - Delete the passkey from the RP (good in the case of a lost or stolen authenticator)
 
 Both of these options are provided in our example. They can be tested once a credential has been registered to the RP.

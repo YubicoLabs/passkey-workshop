@@ -16,7 +16,7 @@ The determination of build vs buy should be made by evaluating options against y
 
 The examples in the workshop are a demonstration of a fully custom built solution; or in more accurate terms, a solution comprised of different mainstream services that work together to create a passkey experience. Note that the components used in our examples are not meant to act as our recommended technologies; rather, we are trying to demonstrate that a passkey application, if architected correctly, can be built using technologies familiar to many developers.
 
-Once you have grasped the fundamental concepts, feel free to leverage the interfaces defined in our application to integration your preferred technologies.
+Once you have grasped the fundamental concepts, feel free to leverage the interfaces defined in our application to integrate your preferred technologies.
 
 ## Components in our RP example
 
@@ -30,7 +30,7 @@ RPs are not only limited to using Java, and Yubico's library. [This page](https:
 
 Our example leverages [Keycloak](https://www.keycloak.org/) as our identity provider, and authorization server.
 
-It's important to note that Keycloak provides WebAuthn functionality out of the box. With that said our implementation leverages a custom Keycloak authentication SPI, that connects to our application layer component (mentioned above). We took this approach as went to be able to extend our application logic, beyond what is provided in Keycloak.
+It's important to note that Keycloak provides WebAuthn functionality out of the box. With that said our implementation leverages a custom Keycloak authentication SPI, that connects to our application layer component (mentioned above). We took this approach in-order to extend our application logic beyond what is provided in Keycloak.
 
 ### Credential repository
 
@@ -40,7 +40,7 @@ Our application leverages MySQL as the database leveraged by the application. Be
 
 The credential repository is the table that will store the passkeys that are created by the user. Keep in mind that these are the public keys that correspond to the private key, managed by your authenticator.
 
-One of the main advantages that passkeys have over passwords is that the compromising of this table is not as severe, as if it contained passwords. The public keys are useless without the corresponding private key.
+One of the main advantages that passkeys have over passwords is that a compromise of this table is not as severe, as would be the case when it contained passwords. The public keys are useless without the corresponding private key.
 
 Note that many of the fields are noted as TEXT. Where noted, this is either a base64url string denoting an identifier, or a json string that contains data used by the application.
 
@@ -62,7 +62,7 @@ CREATE TABLE credential_registrations (
 The attestation request repository will store the requests that have been issued by the relying party for the creation of a new passkey. This is important to implement as you will want a mechanism to ensure only valid registration requests are sent to your application. This will allow you to:
 
 - Block unprompted registrations
-- Block registrations that send a challenge that does not match what was issued
+- Block registrations that send a challenge that does not match what was previously issued
 - Invalidate registration requests that have been used or have exceeded a timeout period
 
 ```sql

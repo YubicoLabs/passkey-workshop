@@ -1,0 +1,152 @@
+---
+sidebar_position: 1
+---
+
+import ReactPlayer from "react-player";
+
+# User flows
+
+This page will discuss the various user flows that can be used for passkey related functionality in your web application. These flows include
+
+- Passkey registration
+- Passkey authentication
+- Passkey/credential management
+
+This page will demonstrate how these flows are invoked in our sample web application. The succeeding pages will go into specific implementation guidance for each flow.
+
+## Prerequisites
+
+Ensure that you have deployed the RP and client sample found in this project.
+
+[Follow the instructions on this page to deploy the application.](/docs/deploy)
+
+## Example ecosystem
+
+The following ecosystem was used to create the examples in the following videos.
+
+- The web app was developed in React
+- Laptop: MacBook using MacOS 13, with Touch ID enabled
+- Browser: Safari
+- Authenticator: Yubikey 5Ci
+
+## Registration
+
+The registration flow is what will allow a user to create a brand new passkey for their account. In our scenario, we will assume that the user has already authenticated into their account through some form of traditional authentication mechanism.
+
+The user is in their account management screen, where they are shown an option to add passkeys to their account.
+
+The video below will demonstrate a user registering a passkey using a security key.
+
+<ReactPlayer
+  controls
+  width="75%"
+  height="75%"
+  url="/videos/reg-sec-key.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+The next video will demonstrate a user registering their platform authenticator (Touch ID)
+
+<ReactPlayer
+  controls
+  width="75%"
+  height="75%"
+  url="/videos/reg-touchid.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+Note how the flow is similar in both examples with the major difference being in the authenticator used. The security key has a few more steps, as the MacOS platform has a preference for the use of Touch ID.
+
+## Authentication
+
+The authentication flow is what will allow a user to use a passkey to access their account. In our scenario, we will assume that the user has already registered a passkey to their account.
+
+The user will load into your application, and be presented with a login screen.
+
+It's important to note that there are a few flows that a user can use in order to authenticate using a passkey. The videos below will demonstrate each flow, and offer a brief explanation. Details about the flow will be provided ih the Authentication page later on in this topic.
+
+### Autofill flow
+
+We will start with a method that is familiar to users, autofill. In the current paradigm, autofill is used to insert both a username, and password, so that a user does not need to manually input or remember their credentials. So how does this apply to passkeys?
+
+For passkey autofill, the user is presented with a list of possible credentials tied to their account for a webpage, similar to what has been done traditionally for passwords. The user selects their credential (for passkeys on their phone/laptop), or they can attempt to use a passkey on an external authenticator.
+
+The first video demonstrates how to use a passkey on your phone/laptop autofill.
+
+<ReactPlayer
+  controls
+  width="75%"
+  height="75%"
+  url="/videos/auth-touchid.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+The next video demonstrates how to use a passkey on a security key using autofill.
+
+<ReactPlayer
+  controls
+  width="75%"
+  height="75%"
+  url="/videos/auth-sec-key.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+### Usernameless flow
+
+There is another authentication flow that can be leveraged for passkeys. You can take advantage of the traditional "modal" experience that has existed in browsers/platforms for some time. There is almost no difference between this flow, and autofill, other than how they are invoked. The user will still be prompted for their credential information in similar ways.
+
+The first video demonstrates how to use a passkey on a security key, without providing a username to the service.
+
+<ReactPlayer
+  controls
+  width="75%"
+  height="75%"
+  url="/videos/auth-modal-input.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+The next video demonstrates how this same flow can occur, even without the presence of an input field for a username
+
+<ReactPlayer
+  controls
+  width="75%"
+  height="75%"
+  url="/videos/auth-modal-sec-key.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+:::tip modal vs autofill
+It should be noted that autofill for passkeys was created as a way to encourage the use of passkeys by providing a mental model that is familiar to non-technical users. It is our recommendation to leverage autofill for your initial implementation to increase the adoption of passkeys among your users.
+
+With that said, there should be some eventual transition to the use of the "button-only" flow as a username input field will no longer be needed in a world where everyone is leveraging a passkey. The presence of a username field also helps users who have authenticators that don't support the creation of discoverable credentials, so also ensure that you understand the authenticators being used by your users.
+:::
+
+### Username flow
+
+The last flow that we will cover is how to support the use of non-discoverable credentials. As noted in the last section, the presence of a username field also helps users who have authenticators that don't support the creation of discoverable credentials.
+
+The username input field is important as users using non-discoverable credentials need to denote to the relying party the user who is authenticating in order to get an allowCredentials list populated in their authentication request ([see more information here](/docs/relying-party/auth-flow#non-discoverable-credential-flow-1)).
+
+The video demonstrates how to use a passkey on their security key using the non-discoverable credential flow.
+
+<ReactPlayer
+  controls
+  width="75%"
+  height="75%"
+  url="/videos/auth-ndc-sec-key.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+### Hybrid flow
+
+Lastly we will talk about hybrid flows. A common issue that arises with passkeys on your mobile devices, and laptops is understanding how to authenticate on a non-trusted device (device not linked to my cloud account). The answer is simple for security keys that move freely between devices, but the issue still persists with passkeys on phones/laptops.
+
+The hybrid flow allows you to perform an authentication ceremony across your trusted device, and a non-trusted device. This is done through a connection that is established between two devices, commonly through bluetooth, initiated by a mobile device scanning a QR code on their phone.
+
+<ReactPlayer
+  controls
+  width="75%"
+  height="75%"
+  url="/videos/hybrid-auth.mp4"
+  style={{ marginBottom: "2em" }}
+/>

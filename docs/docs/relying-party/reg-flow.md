@@ -57,7 +57,7 @@ The other properties will instruct your client, specifically your ecosystem (pla
 - enterprise
 - none
 
-`residentKey` defines the [ResidentKeyRequirement](https://www.w3.org/TR/webauthn-2/#enum-residentKeyRequirement), or the relying party's preference for creating a [discoverable credential](linktofundamentalsection). It's important to remember that passkeys MUST be a discoverable credential (but remember that non-discoverable credentials are still valid WebAuthn credentials)
+`residentKey` defines the [ResidentKeyRequirement](https://www.w3.org/TR/webauthn-2/#enum-residentKeyRequirement), or the relying party's preference for creating a [discoverable credential](linktofundamentalsection). It's important to remember that a passkey MUST be a discoverable credential (but remember that non-discoverable credentials are still valid WebAuthn credentials)
 
 - required
 - preferred (default)
@@ -138,11 +138,11 @@ Using the example above, you may be able to identify the options that we set in 
 
 `rp.id`, `timeout` and `publicKeyCredParams` are typically defaults provided by the relying party.
 
-The `challenge` should be randomly generated. This random number generated should be based on the RNG requirements set by your security policy. In our example, this challenge is randomly generated using Java's random number generator.
+The `challenge` should be randomly generated. This random number should be based on the RNG requirements set by your security policy. In our example, this challenge is randomly generated using Java's random number generator.
 
-`excludeCredentials` is a mechanism that will prevent your user from attempting to generate endless passkeys on a device. If a credential on your authenticator includes an ID that matches to one found in this list, then the authenticator will not be allowed to generate a new passkey.
+`excludeCredentials` is a mechanism that will prevent your user from attempting to generate endless passkeys on a device. If a credential on your authenticator includes an ID that matches one found in this list, then the authenticator will not be allowed to generate a new passkey.
 
-`requestId` is a best practice field that we include in our API. This helps to ensure that the user leveraging a valid request, and is used to prevent replay attacks (attempting to register a credential without a users knowledge).
+`requestId` is a best practice field that we include in our API. This helps to ensure that the user is leveraging a valid request, and is used to prevent replay attacks (attempting to register a credential without a users knowledge).
 
 ### Implementation
 
@@ -295,7 +295,7 @@ In this case, the result is simple. We include a property, `status`, that denote
 
 ### Implementation
 
-Below is a sample implementation of the /attestation/result method. Note that `request` should correlate to the request body mentioned in the previous section, and `response` should correlate to the request response mentioned in the previous section.
+Below is a sample implementation of the `/attestation/result` method. Note that `request` should correlate to the request body mentioned in the previous section, and `response` should correlate to the request response mentioned in the previous section.
 
 ```java
  public AttestationResultResponse attestationResult(AttestationResultRequest response) throws Exception {

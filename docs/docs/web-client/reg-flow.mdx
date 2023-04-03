@@ -1,0 +1,96 @@
+---
+sidebar_position: 3
+---
+
+import ReactPlayer from "react-player";
+
+# Registration flows
+
+This section will cover the registration flow for a new passkey. Note that the use of the term registration refers to the creation of a passkey, not the initial registration of a user (which is an entirely different subject).
+
+By the end of this section you will understand how to use both of the `/attestation/options` and `/attestation/result` methods (as defined by our [API](relying-party/api-def)) to implement a webpage that allows a user to create a passkey.
+
+## Flow overview
+
+The diagram below demonstrates how the relying party works with the client, and authenticator to register a new passkey. When interacting with the relying party, the client will leverage both of the `/attestation` methods.
+
+![Passkey registration flow](/img/reg-flow.jpg)
+
+The first call ([`/attestation/options`](http://localhost:8080/swagger-ui/index.html#/v1/serverPublicKeyCredentialCreationOptionsRequest)) is used to receive an object that includes the options/configurations that should be used when creating a new credential.
+
+The second call ([`/attestation/result`](http://localhost:8080/swagger-ui/index.html#/v1/serverAuthenticatorAttestationResponse)) is used to send the newly created passkey to be stored in the relying party.
+
+The video below will demonstrate the registration flow implemented on this page.
+
+<ReactPlayer
+  controls
+  width="75%"
+  height="75%"
+  url="/videos/reg-sec-key.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+## Event handler
+
+The method below will be used to facilitate the passkey registration ceremony. Note that this method will utilize the methods that were defined in the previous section on the [API client](/docs/web-client/api-client).
+
+```javascript
+/**
+ * The API client described in the previous section
+ */
+import PasskeyServices from "../../services/PasskeyServices";
+import { create } from "@github/webauthn-json";
+
+const [username, setUsername] = useState("");
+
+const addNewPasskey = async (e) => {
+  try {
+    e.preventDefault();
+
+    /**
+     * Assume the username was set by a global variable
+     * when the user authenticated into their account
+     */
+    const attestationOptions = await PasskeyServices.getAttestationOptions(
+      username
+    );
+
+    /**
+     * This method is typically referred to as
+     * `navigator.credentials.create` but we are
+     * leveraging the @github/webauthn-json package
+     * to help with readability and encoding
+     */
+    const makeCredentialResult = await create(attestationOptions);
+
+    const credentialCreateResult = await PasskeyServices.sendAttestationResult(
+      attestationOptions.requestId,
+      makeCredentialResult
+    );
+
+    if (credentialCreateResult.status === "created") {
+      /**
+       * Do something
+       */
+    } else {
+      throw new Error("Error with creating result");
+    }
+  } catch (e) {
+    throw new Error("Error with creating result");
+  }
+};
+```
+
+## User interface elements
+
+The user interface items for passkey registration is fairly simple; it's just a single button!
+
+The user will click this button to begin the registration ceremony. The button will trigger an 'onClick' event that will handle the registration ceremony.
+
+Note the exclusion of a username field. In our example the username is assumed from the user that is currently authenticated into the service, using an OpenID Connect token.
+
+Below is an example of the button that can be used to trigger the registration ceremony.
+
+```html
+<button onClick="{addNewPasskey}">Add a new passkey</button>
+```
