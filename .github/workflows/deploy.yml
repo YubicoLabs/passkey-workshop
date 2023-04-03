@@ -8,12 +8,12 @@ on:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
 
 jobs:
+  defaults:
+    run:
+      working-directory: ./docs
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./docs
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -21,10 +21,11 @@ jobs:
           node-version: 18
           cache: npm
       - name: Install dependencies
-        working-directory: docs
-        run: |
-          npm ci
-          npm run build
+        run: yarn install --frozen-lockfile
+        working-directory: ./docs
+      - name: Build website
+        run: yarn build
+        working-directory: ./docs
 
       # Popular action to deploy to GitHub Pages:
       # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
