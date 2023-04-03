@@ -13,7 +13,7 @@ The methods, and their associated flows will be covered in detail in the followi
 If you are following along with this guide, the URL for the API is as follows
 
 ```javascript
-const baseURl = "http://localhost:8080/v1";
+const baseURL = "http://localhost:8080/v1";
 ```
 
 This URL is hardcoded, so ensure that you utilize something like an environment variable for your production deployment.
@@ -57,7 +57,7 @@ async function getAttestationOptions(
     };
 
     const response = await fetch(
-      `${baseURl}/attestation/options`,
+      `${baseURL}/attestation/options`,
       requestOptions
     );
     const responseJSON = await response.json();
@@ -97,7 +97,7 @@ async function sendAttestationResult(requestID, makeCredentialResponse) {
     };
 
     const response = await fetch(
-      `${baseURl}/attestation/result`,
+      `${baseURL}/attestation/result`,
       requestOptions
     );
     const responseJSON = await response.json();
@@ -140,7 +140,7 @@ async function getAssertionOptions(username) {
     };
 
     const response = await fetch(
-      `${baseURl}/assertion/options`,
+      `${baseURL}/assertion/options`,
       requestOptions
     );
     const responseJSON = await response.json();
@@ -179,7 +179,7 @@ async function sendAssertionResult(requestID, assertionResult) {
       body: JSON.stringify(reqData),
     };
 
-    const response = await fetch(`${baseURl}/assertion/result`, requestOptions);
+    const response = await fetch(`${baseURL}/assertion/result`, requestOptions);
     const responseJSON = await response.json();
 
     console.info("Printing authentication result");
@@ -213,7 +213,7 @@ async function getCredentials(username) {
     };
 
     const response = await fetch(
-      `${baseURl}/user/credentials/${username}`,
+      `${baseURL}/user/credentials/${username}`,
       requestOptions
     );
     const responseJSON = await response.json();
@@ -249,7 +249,7 @@ async function deleteCredential(credentialId) {
       body: JSON.stringify(reqData),
     };
 
-    const response = await fetch(`${baseURl}/user/credentials`, requestOptions);
+    const response = await fetch(`${baseURL}/user/credentials`, requestOptions);
     const responseJSON = await response.json();
 
     return responseJSON;
@@ -283,7 +283,7 @@ async function updateCredential(credentialId, newNickname) {
       body: JSON.stringify(reqData),
     };
 
-    const response = await fetch(`${baseURl}/user/credentials`, requestOptions);
+    const response = await fetch(`${baseURL}/user/credentials`, requestOptions);
     const responseJSON = await response.json();
 
     return responseJSON;

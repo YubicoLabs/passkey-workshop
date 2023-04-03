@@ -64,10 +64,10 @@ const authenticateUser = async () => {
     if (authenticationResult.status === "ok") {
       console.info("Authentication successful");
     } else {
-      console.info("Auth failed");
+      throw new Error("Auth failed");
     }
   } catch (e) {
-    console.info("Auth failed");
+    console.error(e.getMessage());
   }
 };
 ```
@@ -76,7 +76,7 @@ const authenticateUser = async () => {
 
 This flow will allow a user to authenticate with a passkey, without providing an identifier/username. This flow is commonly referred to as usernameless.
 
-The video below will provide a demonstrate this flow.
+The video below will demonstrate this flow.
 
 <ReactPlayer
   controls
@@ -100,7 +100,7 @@ Because the global username has been set to empty by default, the call to `authe
 
 We will continue to expand the flow above to account for users with non-discoverable credentials.
 
-The video below will provide a demonstrate this flow.
+The video below will demonstrate this flow.
 
 <ReactPlayer
   controls
@@ -154,7 +154,7 @@ Keep in mind, non-discoverable credentials cannot be used from discoverable cred
 
 Autofill introduces a new paradigm into the traditional "modal" flows that we have demonstrated in previous sections. This allows a user to select a passkey from a dropdown list on the username field, similar to what is done currently with passkeys.
 
-The video below will provide a demonstrate this flow.
+The video below will demonstrate this flow.
 
 <ReactPlayer
   controls
@@ -164,7 +164,7 @@ The video below will provide a demonstrate this flow.
   style={{ marginBottom: "2em" }}
 />
 
-:::tip This flow also supports security keys
+:::tip This flow also supports passkeys stored on security keys
 The flow we demonstrated above was done using Touch ID on a MacBook. This flow is not only specific for platform authenticators, and can allow for the use of passkeys on security keys (as supported by the platform)
 :::
 
@@ -206,10 +206,10 @@ const mediationAvailable = async () => {
 
 ### Handle autofill request
 
-When using autofill there are properties in the `get` method parameters that deviate from the standard modal experience. We need to take four additional actions when using an autofill request.
+When using autofill there are properties in the `get` method parameters that deviate from the standard modal experience. We need to:
 
-1. We need to invoke the WebAuthn `get` ceremony as soon as the user enters the webpage
-2. Need to append additional information to the object that is passed into the `get` method.
+1. Invoke the WebAuthn `get` ceremony as soon as the user enters the webpage
+2. Append additional information to the object that is passed into the `get` method.
 3. Create an abort controller object that can terminate the autofill request (more on this below)
 4. Add the autofill property to the username input field
 
