@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - gh-pages
     # Review gh actions docs if you want to further define triggers, paths, etc
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
 
@@ -18,8 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: gh-pages
       - uses: actions/setup-node@v3
         with:
           node-version: 18
