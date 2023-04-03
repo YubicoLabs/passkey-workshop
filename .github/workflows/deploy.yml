@@ -21,10 +21,10 @@ jobs:
           node-version: 18
           cache: npm
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
         working-directory: ./docs
       - name: Build website
-        run: yarn build
+        run: npm run build
         working-directory: ./docs
 
       # Popular action to deploy to GitHub Pages:
