@@ -17,7 +17,7 @@ Write-Host "****************************************"
 Write-Host "`n****************************************"
 Write-Host "Copying source folder to local directory"
 Write-Host "****************************************"
-Copy-Item -Path "../../../examples/java-spring" -Destination "./source" -Recurse
+Copy-Item -Path "../../examples/relyingParties/java-spring" -Destination "./source" -Recurse
 
 # Check if there is an ENV file
 # If no ENV file, generate an env file
