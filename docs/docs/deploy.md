@@ -34,20 +34,6 @@ Once the repository is cloned, navigate into the scripts folder.
 cd passkey-workshop/scripts
 ```
 
-The scripts folder contains two options: Mac-Linux (using bash), and for Windows (using Powershell). Choose your applicable folder, and navigate to it.
-
-**For Windows**
-
-```bash
-cd Windows
-```
-
-**For Mac or Linux**
-
-```bash
-cd Mac-Linux
-```
-
 ## Deployment configurations
 
 Regardless of environment, both folders contain a file that will allow you to configure certain aspects of your passkey application.
@@ -60,112 +46,88 @@ If this is your first time deploying this application, or you are unfamiliar wit
 
 Below is an overview of the configurations file, along with the acceptable parameters
 
-```json
-{
-  /**
-   * Denotes the valid domain that identifies the relying party
-   * Reference: https://www.w3.org/TR/webauthn-2/#relying-party-identifier
-   * Note - If you do not have a dedicated custom domain, then it is best
-   * to use the default localhost value.
-   * Default: localhost
-   * Options: free text
-   */
-  "RP_ID": "",
+```bash
+# Denotes the valid domain that identifies the relying party
+# Reference: https://www.w3.org/TR/webauthn-2/#relying-party-identifier
+# Note - If you do not have a dedicated custom domain, then it is best
+# to use the default localhost value.
+# Default: localhost
+# Options: free text
+RP_ID=
 
-  /**
-   * Human readable name that relates to the name of the site listed from the RP_ID
-   * Default: "My app"
-   * Options: free text
-   */
-  "RP_NAME": "",
+# Human readable name that relates to the name of the site listed from the RP_ID
+# Default: "My app"
+# Options: free text
+RP_NAME=
 
-  /**
-   * Requirement from the java-webauthn-server library. Denotes the origins that can generate a credential that
-   * will be accepted by the relying party.
-   * This should closely correspond to the domain denoted in the RP_ID. Note that unlike the RP_ID, this
-   * value will require the port number
-   * DO NOT include the protocol header (http/https), the relying party automatically allows for both
-   * Multiple domains can be listed through comma delimitation
-   * Default: localhost:3000
-   * Options: free text
-   * Example (single domain): localhost:3000
-   * Example (multiple domains): localhost:3000,localhost:3002,my.domain.com
-   */
-  "RP_ALLOWED_ORIGINS": "",
+# Requirement from the java-webauthn-server library. Denotes the origins that can generate a credential that
+# will be accepted by the relying party.
+# This should closely correspond to the domain denoted in the RP_ID. Note that unlike the RP_ID, this
+# value will require the port number
+# DO NOT include the protocol header (http/https), the relying party automatically allows for both
+# Multiple domains can be listed through comma delimitation
+# Default: localhost:3000
+# Options: free text
+# Example (single domain): localhost:3000
+# Example (multiple domains): localhost:3000,localhost:3002,my.domain.com
+RP_ALLOWED_ORIGINS=
 
-  /**
-   * Requirement from the Spring-Boot framework, this denotes the allowed cross-origins domains that are allowed to
-   * interact with the API.
-   * For the most part, this field should correspond to what is listed in the RP_ALLOWED_ORIGINS property
-   * Default: localhost:3000
-   * Options: free text
-   * Example (single domain): localhost:3000
-   * Example (multiple domains): localhost:3000,localhost:3002,my.domain.com
-   */
-  "RP_ALLOWED_CROSS_ORIGINS": "",
+# Requirement from the Spring-Boot framework, this denotes the allowed cross-origins domains that are allowed to
+# interact with the API.
+# For the most part, this field should correspond to what is listed in the RP_ALLOWED_ORIGINS property
+# Default: localhost:3000
+# Options: free text
+# Example (single domain): localhost:3000
+# Example (multiple domains): localhost:3000,localhost:3002,my.domain.com
+RP_ALLOWED_CROSS_ORIGINS=
 
-  /**
-   * Sets the webauthn applications attestation preference
-   * Reference: https://www.w3.org/TR/webauthn-2/#enumdef-attestationconveyancepreference
-   * Default: DIRECT
-   * Options: DIRECT, INDIRECT, ENTERPRISE, NONE
-   */
-  "RP_ATTESTATION_PREFERENCE": "",
+# Sets the webauthn applications attestation preference
+# Reference: https://www.w3.org/TR/webauthn-2/#enumdef-attestationconveyancepreference
+# Default: DIRECT
+# Options: DIRECT, INDIRECT, ENTERPRISE, NONE
+RP_ATTESTATION_PREFERENCE=
 
-  /**
-   * Allows you to configure your application to reject registrations that don't include
-   * some form of trusted attestation
-   * Default: false
-   * Options: true, false
-   */
-  "RP_ALLOW_UNTRUSTED_ATTESTATION": "",
+# Allows you to configure your application to reject registrations that don't include
+# some form of trusted attestation
+# Default: false
+# Options: true, false
+RP_ALLOW_UNTRUSTED_ATTESTATION=
 
-  /**
-   * Allows you to deploy the application to different environments
-   * At this moment, the only option that is configured is for a local deployment, but this example will be
-   * extended to allow new environments, such as cloud deployments
-   * some form of trusted attestation
-   * Default: local
-   * Options: local
-   */
-  "DEPLOYMENT_ENVIRONMENT": "",
+# Allows you to deploy the application to different environments
+# At this moment, the only option that is configured is for a local deployment, but this example will be
+# extended to allow new environments, such as cloud deployments
+# some form of trusted attestation
+# Default: local
+# Options: local
+DEPLOYMENT_ENVIRONMENT=
 
-  /**
-   * Allows you to select the data source used by the application
-   * The default option is to deploy a full MySQL server in Docker
-   * in-mem will not deploy a MySQL instance, and instead rely on in-memory storage in the Java application.
-   * Note that the in-mem option will not persist data if the Java container is stopped
-   * Default: mysql
-   * Options: mysql, in-mem
-   */
-  "DATABASE_TYPE": "",
+# Allows you to select the data source used by the application
+# The default option is to deploy a full MySQL server in Docker
+# in-mem will not deploy a MySQL instance, and instead rely on in-memory storage in the Java application.
+# Note that the in-mem option will not persist data if the Java container is stopped
+# Default: mysql
+# Options: mysql, in-mem
+DATABASE_TYPE=
 
-  /**
-   * Allows you to set your desired password for the root account in the MySQL server.
-   * In the case that this field is left empty, the deploy script will generate a random one for you
-   * Default: randomly generated string
-   * Options: free text
-   */
-  "DATABASE_ROOT_PASSWORD": "",
+# Allows you to set your desired password for the root account in the MySQL server.
+# In the case that this field is left empty, the deploy script will generate a random one for you
+# Default: randomly generated string
+# Options: free text
+DATABASE_ROOT_PASSWORD=
 
-  /**
-   * Allows you to set the client application that you wish to deploy
-   * At this moment, the only option that is configured is a react based deployment.
-   * You may set this option as none, if you are only leveraging the relying party aspect of this example
-   * Default: react
-   * Options: react, none
-   */
-  "CLIENT_TYPE": "",
+# Allows you to set the client application that you wish to deploy
+# At this moment, the only option that is configured is a react based deployment.
+# You may set this option as none, if you are only leveraging the relying party aspect of this example
+# Default: react
+# Options: react, none
+CLIENT_TYPE=
 
-  /**
-   * Allows you to set the identity provider and authorization server for the application
-   * At this moment, the only option that is configured is a keycloak based deployment.
-   * You may set this option as none, if you are leveraging another identity provider
-   * Default: keycloak
-   * Options: keycloak, none
-   */
-  "IDP_TYPE": ""
-}
+# Allows you to set the identity provider and authorization server for the application
+# At this moment, the only option that is configured is a keycloak based deployment.
+# You may set this option as none, if you are leveraging another identity provider
+# Default: keycloak
+# Options: keycloak, none
+IDP_TYPE=
 ```
 
 ## Deploying the project
@@ -180,8 +142,8 @@ To deploy the application, run the following command:
 
 **For Windows**
 
-```bash
-@TODO - Add
+```powershell
+\DeployProject.ps1
 ```
 
 As noted in the previous section, all "arguments" come in the form of the configurations set in the `DeployProject_Settings.json` file.
@@ -221,8 +183,8 @@ To stop the application containers, run the following command:
 
 **For Windows**
 
-```bash
-@TODO - Add
+```powershell
+\StopProject.ps1
 ```
 
 This will look for any instance of the containers set by our deploy script, and stop them from running.
@@ -241,8 +203,8 @@ To remove the application containers, run the following command:
 
 **For Windows**
 
-```bash
-@TODO - Add
+```powershell
+\RemoveProject.ps1
 ```
 
 This will look for any instance of the containers and images set by our deploy script, and remove them from Docker instance.

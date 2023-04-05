@@ -1,4 +1,4 @@
-# macOS and Linux deployment
+# Project deployment
 
 This folder will allow you to deploy the sample passkey application from your environment to Docker. The following sections will outline options that you can set for your deployment, along with an overview on how to use the different scripts to manage your deployment.
 
@@ -100,8 +100,16 @@ Below is an overview of the various scripts used to manage the application.
 
 To deploy the application, run the following command:
 
+**For Mac-Linux**
+
 ```bash
 ./DeployProject.sh
+```
+
+**For Windows**
+
+```powershell
+\DeployProject.ps1
 ```
 
 As noted in the previous section, all "arguments" come in the form of the configurations set in the `DeployProject_Settings.json` file.
@@ -112,8 +120,16 @@ As noted in the previous section, all "arguments" come in the form of the config
 
 To stop the application containers, run the following command:
 
+**For Mac-Linux**
+
 ```bash
 ./StopProject.sh
+```
+
+**For Windows**
+
+```powershell
+\StopProject.ps1
 ```
 
 This will look for any instance of the containers set by our deploy script, and stop them from running.
@@ -124,8 +140,16 @@ If the application has been stopped, run the deployment script to restart your a
 
 To remove the application containers, run the following command:
 
+**For Mac-Linux**
+
 ```bash
 ./RemoveProject.sh
+```
+
+**For Windows**
+
+```powershell
+\RemoveProject.ps1
 ```
 
 This will look for any instance of the containers and images set by our deploy script, and remove them from Docker instance.
