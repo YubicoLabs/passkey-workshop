@@ -86,6 +86,11 @@
         </dependency>
         <dependency>
             <groupId>com.yubico</groupId>
+            <artifactId>webauthn-server-attestation</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yubico</groupId>
             <artifactId>yubico-util</artifactId>
             <version>2.2.0</version>
             <scope>compile</scope>

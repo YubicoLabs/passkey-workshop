@@ -1,6 +1,8 @@
 package com.yubicolabs.passkey_rp.services.passkey;
 
+import java.io.File;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -9,7 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import com.yubico.fido.metadata.FidoMetadataDownloader;
+import com.yubico.fido.metadata.FidoMetadataService;
+import com.yubico.fido.metadata.MetadataBLOB;
 import com.yubico.webauthn.RelyingParty;
+import com.yubico.webauthn.attestation.AttestationTrustSource;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubicolabs.passkey_rp.services.storage.StorageInstance;
@@ -39,6 +45,7 @@ public class RelyingPartyInstance {
         .attestationConveyancePreference(
             AttestationConveyancePreference.valueOf(System.getenv("RP_ATTESTATION_PREFERENCE")))
         .allowUntrustedAttestation(Boolean.parseBoolean(System.getenv("RP_ALLOW_UNTRUSTED_ATTESTATION")))
+        .attestationTrustSource(resolveAttestationTrustSource())
         .validateSignatureCounter(true)
         .build();
 
@@ -83,6 +90,38 @@ public class RelyingPartyInstance {
     }
 
     return allowedOrigins;
+  }
+
+  private Optional<AttestationTrustSource> resolveAttestationTrustSource() {
+    String attestationTrustStoreType = System.getenv("RP_ATTESTATION_TRUST_STORE");
+
+    if (attestationTrustStoreType.equals("mds")) {
+      try {
+        System.setProperty("com.sun.security.enableCRLDP", "true");
+        FidoMetadataDownloader downloader = FidoMetadataDownloader.builder()
+            .expectLegalHeader(
+                "Retrieval and use of this BLOB indicates acceptance of the appropriate agreement located at https://fidoalliance.org/metadata/metadata-legal-terms/")
+            .useDefaultTrustRoot()
+            .useTrustRootCacheFile(new File("/tmp/fido-mds-trust-root-cache.bin"))
+            .useDefaultBlob()
+            .useBlobCacheFile(new File("/tmp/fido-mds-blob.bin"))
+            .build();
+
+        FidoMetadataService mds = FidoMetadataService.builder()
+            .useBlob(downloader.loadCachedBlob())
+            .build();
+
+        return Optional.ofNullable(mds);
+      } catch (Exception e) {
+        e.printStackTrace();
+        System.out.println("There was an issue resolving the FIDO MDS");
+        System.out.println("Opting to continue without the use of the MDS");
+
+        return Optional.ofNullable(null);
+      }
+    } else {
+      return Optional.ofNullable(null);
+    }
   }
 
 }

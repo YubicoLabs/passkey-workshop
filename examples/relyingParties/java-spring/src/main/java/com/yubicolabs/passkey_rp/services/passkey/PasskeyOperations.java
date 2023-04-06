@@ -159,6 +159,8 @@ public class PasskeyOperations {
               .response(parseRegistrationResponse(response.getMakeCredentialResult()))
               .build());
 
+      System.out.println("Is trusted: " + newCred.isAttestationTrusted());
+
       CredentialRegistration toStore = buildCredentialDBO(options.getAttestationRequest(), newCred);
 
       if (relyingPartyInstance.getStorageInstance().getCredentialStorage().addRegistration(toStore)) {

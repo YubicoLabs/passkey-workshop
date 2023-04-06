@@ -72,6 +72,13 @@ if(!$RP_ATTESTATION_PREFERENCE) {$RP_ATTESTATION_PREFERENCE="DIRECT"}
 if(!$RP_ALLOW_UNTRUSTED_ATTESTATION) {$RP_ALLOW_UNTRUSTED_ATTESTATION="true"}
 
 # ------------------------------------------------
+# Options: mds, none
+# Will denote if your application will leverage attestation
+# Through the FIDO MDS
+# ------------------------------------------------
+if(!$RP_ATTESTATION_TRUST_STORE) {$RP_ATTESTATION_TRUST_STORE="mds"}
+
+# ------------------------------------------------
 # Options: local
 # Currently local is the only option, this can be used
 # to create logic that will change based on your
@@ -116,6 +123,7 @@ Write-Host RP_ALLOWED_ORIGINS=$RP_ALLOWED_ORIGINS
 Write-Host RP_ALLOWED_CROSS_ORIGINS=$RP_ALLOWED_CROSS_ORIGINS
 Write-Host RP_ATTESTATION_PREFERENCE=$RP_ATTESTATION_PREFERENCE
 Write-Host RP_ALLOW_UNTRUSTED_ATTESTATION=$RP_ALLOW_UNTRUSTED_ATTESTATION
+Write-Host RP_ATTESTATION_TRUST_STORE=$RP_ATTESTATION_TRUST_STORE
 Write-Host DEPLOYMENT_ENVIRONMENT=$DEPLOYMENT_ENVIRONMENT
 Write-Host DATABASE_TYPE=$DATABASE_TYPE
 Write-Host DATABASE_ROOT_PASSWORD=$DATABASE_ROOT_PASSWORD
@@ -138,7 +146,7 @@ if($DEPLOYMENT_ENVIRONMENT -eq "local") {
   Write-Host "Deploying java application in Docker"
 
   Set-Location -Path java-app
-  ./deploy_java_app.ps1 "$RP_ID" "$RP_NAME" "$RP_ALLOWED_ORIGINS" "$RP_ALLOWED_CROSS_ORIGINS" "$RP_ATTESTATION_PREFERENCE" "$RP_ALLOW_UNTRUSTED_ATTESTATION" "$DEPLOYMENT_ENVIRONMENT" "$DATABASE_TYPE" "$DATABASE_ROOT_PASSWORD"
+  ./deploy_java_app.ps1 "$RP_ID" "$RP_NAME" "$RP_ALLOWED_ORIGINS" "$RP_ALLOWED_CROSS_ORIGINS" "$RP_ATTESTATION_PREFERENCE" "$RP_ALLOW_UNTRUSTED_ATTESTATION" "$DEPLOYMENT_ENVIRONMENT" "$DATABASE_TYPE" "$DATABASE_ROOT_PASSWORD" "$RP_ATTESTATION_TRUST_STORE"
   Set-Location -Path ..
   Write-Host "Java application deployed"
   Write-Host "****************************************"
