@@ -39,8 +39,8 @@ build/
 .openapi-generator
 
 ### ENV Files ###
-scripts/*/mysql/.env
-scripts/*/java-app/.env
-scripts/*/java-app/com.yubicolabs.passkey_rp.jar
-scripts/*/java-app/source
-scripts/*/react-app/source
+scripts/mysql/.env
+scripts/java-app/.env
+scripts/java-app/com.yubicolabs.passkey_rp.jar
+scripts/java-app/source
+scripts/react-app/source

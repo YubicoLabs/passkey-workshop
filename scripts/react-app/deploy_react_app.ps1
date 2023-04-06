@@ -5,7 +5,7 @@ Write-Host "****************************************"
 Write-Host "`n****************************************"
 Write-Host "Copying source folder to local directory"
 Write-Host "****************************************"
-Copy-Item -Path "../../../examples/clients/web/react/passkey-client" -Destination "./source" -Recurse
+Copy-Item -Path "../../examples/clients/web/react/passkey-client" -Destination "./source" -Recurse
 
 Write-Host "`n****************************************"
 Write-Host "Composing new docker container"
