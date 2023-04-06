@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Passkey workshop',
-  tagline: 'Deploy your own passkey application',
+  tagline: 'Learn all of the concepts that will help you to enable strong multi-factor authentication through the use of passkeys. This will help to keep your user\'s accounts safe and secure, without additional friction',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -82,11 +82,19 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Docs',
+            title: 'Passkey resources',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/intro',
+                label: 'Passkey.org',
+                to: 'https://passkey.org',
+              },
+              {
+                label: 'Passkeys.dev',
+                to: 'https://passkeys.dev',
+              },
+              {
+                label: 'developers.yubico.com',
+                to: 'https://developers.yubico.com/Passkeys',
               },
             ],
           },
@@ -95,33 +103,12 @@ const config = {
             items: [
               {
                 label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
-              },
-            ],
-          },
-          {
-            title: 'More',
-            items: [
-              {
-                label: 'Blog',
-                to: '/blog',
-              },
-              {
-                label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
-              },
+                href: 'https://stackoverflow.com/questions/tagged/passkey',
+              }
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright Yubico © ${new Date().getFullYear()}. Built with Docusaurus.`,
       },
       prism: {
         theme: lightCodeTheme,
