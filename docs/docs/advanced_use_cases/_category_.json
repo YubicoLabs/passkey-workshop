@@ -1,0 +1,8 @@
+{
+  "label": "Advanced use cases",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "These are advanced topics that will help you to enhance your passkey application based on your unique use case."
+  }
+}

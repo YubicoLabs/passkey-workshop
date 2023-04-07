@@ -403,6 +403,7 @@ public class RelyingPartyInstance {
         .attestationConveyancePreference(
             AttestationConveyancePreference.valueOf(System.getenv("RP_ATTESTATION_PREFERENCE")))
         .allowUntrustedAttestation(Boolean.parseBoolean(System.getenv("RP_ALLOW_UNTRUSTED_ATTESTATION")))
+        .attestationTrustSource(null) // Set this field to null, we will cover this in detail in the section on attestation
         .validateSignatureCounter(true)
         .build();
   }

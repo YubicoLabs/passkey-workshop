@@ -58,8 +58,6 @@ public class RelyingPartyInstance {
         .attestationTrustSource(Optional.ofNullable((AttestationTrustSource) initMDS))
         .validateSignatureCounter(true)
         .build();
-
-    System.out.println("Size of origins list: " + this.relyingParty.getOrigins().size());
   }
 
   private RelyingPartyIdentity generateIdentity() {

@@ -428,7 +428,7 @@ public class PasskeyOperations {
    *         null otherwise
    */
   private Optional<MetadataStatement> resolveAttestation(RegistrationResult result) {
-    if (result.isAttestationTrusted()) {
+    if (relyingPartyInstance.getMds().isPresent() && result.isAttestationTrusted()) {
       Set<MetadataBLOBPayloadEntry> entries = relyingPartyInstance.getMds().get().findEntries(result);
 
       if (entries.size() != 0) {
