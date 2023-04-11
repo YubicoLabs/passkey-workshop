@@ -89,7 +89,7 @@ RP_ATTESTATION_PREFERENCE=
 
 # Allows you to configure your application to reject registrations that don't include
 # some form of trusted attestation
-# Default: false
+# Default: true
 # Options: true, false
 RP_ALLOW_UNTRUSTED_ATTESTATION=
 
