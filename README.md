@@ -140,7 +140,7 @@ Still curious about passkey development? The resources below may help to strengt
 - [passkeys.dev](https://passkeys.dev)
 - [Passkey guidance for web and mobile apps - Yubico webinar](https://www.brighttalk.com/webcast/15793/553636)
 
-Do you have a working solution? Share it with the community! The links below are resources where you can share your deployment, have it reviewed, and a have it known to the world that your solution supports passkeys.
+Do you have a working solution? Share it with the community! The links below are resources where you can share your deployment, and have it reviewed to tell the world that your solution supports passkeys.
 
 - [Works with Yubikey](https://www.yubico.com/works-with-yubikey/)
 - [Known passkey support](https://github.com/passkeydeveloper/discussions/wiki/Known-Passkey-Support)

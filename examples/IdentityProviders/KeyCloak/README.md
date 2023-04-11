@@ -1,6 +1,6 @@
 # Getting started
 
-These are items to help to configure keycloak to reg/auth using a custom Authenticator SPI to handle Passkey transactions with our custom WebAuthn server
+These are items to help to configure keycloak to perform registration and authentication using a custom Authenticator SPI to handle Passkey transactions with our custom WebAuthn server
 
 It is highly recommend that you deploy keycloak through our deploy script, by following the instructions on our [deployment page](https://yubicolabs.github.io/passkey-workshop/docs/deploy).
 
