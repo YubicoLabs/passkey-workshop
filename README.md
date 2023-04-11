@@ -58,7 +58,6 @@
       <a href="#getting-started">Getting started</a>
     </li>
     <li><a href="#next-steps">Next steps</a></li>
-    <li><a href="#faqs-and-common-issues">FAQs and common issues</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -69,23 +68,22 @@
 
 ## About The Project
 
-This project provides a sample relying party that supports passkeys. The objective is to provide samples that demonstrate to developers how to build a custom passkey enabled applications.
+Passkeys are the long awaited replacement for passwords. While passwords have been the primary standard in securing user accounts, they are not without issues. Passwords are easy to forget, and easily phishable; which has led to security breaches in various industries such as energy, healthcare, and technology.
+
+What does this mean for your application, and your users? As adoption continues to increase, your users will expect that your application allows them to leverage their passkey supported devices to securely and seamlessly authenticate into their accounts.
+
+This project provides a sample application that demonstrates a full end-to-end passkey solution. The objective is to demonstrate a working prototype to help remove some uncertainty that your development team may encounter on your road to adopting passkeys in your application.
 
 Our example is architected in a way for a developer to take advantage of multiple interfaces so that they may use the database, identity provider, and cloud environment in which they operate in. While the architectural components may differ from app to app, the fundamental logic remains fairly consistent between passkey applications.
 
-Some of the features included in this project are:
+Some of the features included in this project are a:
 
-- Examples of the primary registration and authentication methods used by passkey applications
-- Defined REST API schema that can be leveraged across web and native applications
-- Interfaces for plugging in your own database and identity provider
-- Leveraging attestation and the FIDO Metadata Service
+- Working web and mobile client applications to test different passkey user flows
+- Working backend application with APIs that can process, store, and validate passkeys sent by any of your clients
+- Demonstration on how to enable passkey with an OpenID-Connect identity provider
+- Set of best practices for storing passkeys in a database
 
-<!-- For insight on how to build your own relying party from scratch, please visit Yubico's passkey workshop for step-by-step instructions on how to build the sample shown in this project + more.
-
-@TODO - Uncomment this once we have a repo for our guide
--->
-
-**Disclaimer** - This project is not meant to act as a production ready solution for **all** organizations. Please review the code, and make any modifications, so that it matches up to your security stack and policies.
+**Disclaimer** - This project is not meant to act as a production ready solution. Please review and understand the code, then integrate the needed components, and make any modifications based on your security requirements.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -94,57 +92,58 @@ Some of the features included in this project are:
 - [Java](<https://en.wikipedia.org/wiki/Java_(programming_language)>)
 - [Spring Boot](https://spring.io/projects/spring-boot)
 - [Yubico's java-webauthn-server library](https://github.com/Yubico/java-webauthn-server)
+- [React](https://react.dev/)
+- [Swift](https://developer.apple.com/swift/)
+- [MySQL](https://www.mysql.com/)
+- [Keycloak](https://www.keycloak.org/)
+- [Docker](https://www.docker.com/)
 - [FIDO Metadata Service](https://fidoalliance.org/metadata/)
-- [AWS SAM](https://aws.amazon.com/serverless/sam/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Getting Started
 
-The project, as-is, supports two forms of deployments:
+To begin your journey, click the link below for our full walkthrough on our passkey application.
 
-- locally
-- To AWS
+[Link to Yubico's passkey workshop](https://yubicolabs.github.io/passkey-workshop/)
 
-### Local deployment
+Follow the steps below for a quick deployment.
 
-Run the command below to deploy the application locally. The application/API will be accessible from localhost:8080
-
-```bash
-./mvnw spring-boot:run
-```
-
-### AWS deployment
-
-Our sample uses AWS SAM to deploy the application to AWS. For this deployment you will need to ensure that you have downloaded the AWS CLI, and that the CLI has the correct credentials to deploy the various resources used in the project.
-
-Once you are ready un the commands below to deploy the application locally.
+1. Clone the repository
 
 ```bash
-sam build
-
-sam deploy
+git clone https://github.com/YubicoLabs/passkey-workshop.git
 ```
 
-### Note about data storage
+2. Navigate to the scripts folder
 
-Unless configured otherwise, this application will store data in-memory. Meaning, if the application is terminated, then all credentials will be lost. This application is meant to act as a demonstration, and not a production ready solution.
+```bash
+cd passkey-workshop/scripts
+```
 
-You may follow these steps to configure [REST OF THE CONTENT TO BE ADDED] <!-- Add additional blurb here for the different examples we are going to highlight, and to the workshop for creating your own data store -->
+3. Run the deployment script
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+```bash
+# For Mac and Linux
+./DeployProject.sh
+
+# For Windows (Powershell)
+\DeployProject.ps1
+```
+
+4. Open the client app at [localhost:3000](http://localhost:3000)
 
 ## Next steps
 
-@TODO - To add content later
+Still curious about passkey development? The resources below may help to strengthen your understanding
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+- [passkeys.dev](https://passkeys.dev)
+- [Passkey guidance for web and mobile apps - Yubico webinar](https://www.brighttalk.com/webcast/15793/553636)
 
-## FAQs and Common Issues
+Do you have a working solution? Share it with the community! The links below are resources where you can share your deployment, have it reviewed, and a have it known to the world that your solution supports passkeys.
 
-@TODO - To add content later
-
-<p align="right">(<a href="#top">back to top</a>)</p>
+- [Works with Yubikey](https://www.yubico.com/works-with-yubikey/)
+- [Known passkey support](https://github.com/passkeydeveloper/discussions/wiki/Known-Passkey-Support)
 
 ## Contributing
 
@@ -175,7 +174,7 @@ Distributed under the Apache-2.0 License. See `LICENSE` for more information.
 
 [Yubico Developer Program](https://developers.yubico.com/)
 
-Project Link: [https://github.com/YubicoLabs/yed-spoke-example](https://github.com/YubicoLabs/passkey-relying-party-example)
+[Report an issue](https://github.com/YubicoLabs/passkey-workshop/issues)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
