@@ -1,0 +1,8 @@
+{
+  "label": "Attestation",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "This section will cover attestation, which will allow you to detect the make/model of the authenticators being used in your environment. This will help you enhance the user experience by denoting to users the passkeys registered in their accounts. The concepts in this section will help you to understand the following topic on how to leverage passkeys in high assurance scenarios."
+  }
+}

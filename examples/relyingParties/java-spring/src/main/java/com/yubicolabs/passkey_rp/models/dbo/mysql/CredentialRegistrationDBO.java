@@ -50,6 +50,13 @@ public class CredentialRegistrationDBO {
   @Column(columnDefinition = "text")
   String credential;
 
+  /**
+   * Denotes an icon given by the FIDO MDS
+   */
+  @Getter
+  @Column(columnDefinition = "text")
+  String iconURI;
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;

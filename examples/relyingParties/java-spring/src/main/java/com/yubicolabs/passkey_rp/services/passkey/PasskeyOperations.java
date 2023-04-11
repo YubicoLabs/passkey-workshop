@@ -6,6 +6,7 @@ import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yubico.fido.metadata.MetadataBLOBPayloadEntry;
+import com.yubico.fido.metadata.MetadataStatement;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;
@@ -291,6 +294,7 @@ public class PasskeyOperations {
               .nickName(cred.getCredentialNickname().get())
               .registrationTime(cred.getRegistrationTime().atOffset(ZoneOffset.UTC))
               .lastUsedTime(cred.getLastUsedTime().atOffset(ZoneOffset.UTC))
+              .iconURI((cred.getIconURI().isPresent() ? cred.getIconURI().get() : null))
               .build())
           .collect(Collectors.toList());
 
@@ -383,9 +387,26 @@ public class PasskeyOperations {
 
   private CredentialRegistration buildCredentialDBO(PublicKeyCredentialCreationOptions request,
       RegistrationResult result) {
+    Optional<MetadataStatement> maybeMetadataEntry = resolveAttestation(result);
+
+    String credentialName;
+    String iconURI;
+
+    if (maybeMetadataEntry.isPresent()) {
+      credentialName = maybeMetadataEntry.get().getDescription().isPresent()
+          ? maybeMetadataEntry.get().getDescription().get()
+          : "My new passkey";
+      iconURI = maybeMetadataEntry.get().getIcon().isPresent()
+          ? maybeMetadataEntry.get().getIcon().get()
+          : null;
+    } else {
+      credentialName = "My new passkey";
+      iconURI = null;
+    }
+
     return CredentialRegistration.builder()
         .userIdentity(request.getUser())
-        .credentialNickname(Optional.of("My new credential"))
+        .credentialNickname(Optional.of(credentialName))
         .registrationTime(clock.instant())
         .lastUpdateTime(clock.instant())
         .lastUsedTime(clock.instant())
@@ -395,7 +416,31 @@ public class PasskeyOperations {
             .publicKeyCose(result.getPublicKeyCose())
             .signatureCount(result.getSignatureCount())
             .build())
+        .iconURI(Optional.ofNullable(iconURI))
         .build();
+  }
+
+  /**
+   * Determine if the registration result can resolve to a entry in the MDS
+   * 
+   * @param result newly created passkey for the user
+   * @return Optional MetadataStatement object if present
+   *         null otherwise
+   */
+  private Optional<MetadataStatement> resolveAttestation(RegistrationResult result) {
+    if (relyingPartyInstance.getMds().isPresent() && result.isAttestationTrusted()) {
+      Set<MetadataBLOBPayloadEntry> entries = relyingPartyInstance.getMds().get().findEntries(result);
+
+      if (entries.size() != 0) {
+        Optional<MetadataStatement> entry = entries.stream().findFirst()
+            .flatMap(MetadataBLOBPayloadEntry::getMetadataStatement);
+
+        return entry;
+      }
+      return Optional.ofNullable(null);
+    } else {
+      return Optional.ofNullable(null);
+    }
   }
 
   public UserCredentialDeleteResponse deleteCredential(UserCredentialDelete credential) throws Exception {

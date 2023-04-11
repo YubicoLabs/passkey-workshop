@@ -58,6 +58,13 @@ RP_ATTESTATION_PREFERENCE="${RP_ATTESTATION_PREFERENCE:-DIRECT}"
 RP_ALLOW_UNTRUSTED_ATTESTATION="${RP_ALLOW_UNTRUSTED_ATTESTATION:-true}"
 
 # ------------------------------------------------
+# Options: mds, none
+# Will denote if your application will leverage attestation
+# Through the FIDO MDS
+# ------------------------------------------------
+RP_ATTESTATION_TRUST_STORE="${RP_ATTESTATION_TRUST_STORE:-mds}"
+
+# ------------------------------------------------
 # Options: local
 # Currently local is the only option, this can be used
 # to create logic that will change based on your
@@ -118,6 +125,7 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "local" ]; then
     "$DEPLOYMENT_ENVIRONMENT" \
     "$DATABASE_TYPE" \
     "$DATABASE_ROOT_PASSWORD" \
+    "$RP_ATTESTATION_TRUST_STORE" \
   )
   echo -e "\n Java application deployed"
   echo "****************************************"

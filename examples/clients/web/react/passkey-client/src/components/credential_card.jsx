@@ -6,6 +6,7 @@ import Button from "react-bootstrap/esm/Button";
 import Row from "react-bootstrap/Row";
 import Stack from "react-bootstrap/Stack";
 import Form from "react-bootstrap/Form";
+import Image from "react-bootstrap/Image";
 
 import Utils from "../services/Utils";
 import PasskeyServices from "../services/PasskeyServices";
@@ -78,7 +79,17 @@ export default function CredentialCard({ credential, refreshCallback }) {
           style={{ padding: "1em 0 0 0" }}>
           <Col sm={2} xs={12}>
             <div className="svg-container">
-              <KeyFill className="svg-1" size={48} />
+              {credential.iconURI !== null ? (
+                <Image
+                  className="test-center"
+                  roundedCircle
+                  fluid
+                  src={credential.iconURI}
+                  rounded
+                />
+              ) : (
+                <KeyFill className="svg-1" size={48} />
+              )}
             </div>
           </Col>
           <Col sm={7} xs={12}>

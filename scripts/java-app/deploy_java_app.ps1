@@ -7,7 +7,8 @@ param (
   [Parameter(Mandatory=$true)][string]$rp_allow_untrusted_attestation,
   [Parameter(Mandatory=$true)][string]$deployment_environment,
   [Parameter(Mandatory=$true)][string]$database_type,
-  [Parameter(Mandatory=$true)][string]$database_root_password
+  [Parameter(Mandatory=$true)][string]$database_root_password,
+  [Parameter(Mandatory=$true)[string]]$rp_attestation_trust_store
   )
 
 Write-Host "`n****************************************"
@@ -34,6 +35,7 @@ RP_ALLOW_UNTRUSTED_ATTESTATION=$rp_allow_untrusted_attestation
 DEPLOYMENT_ENVIRONMENT=$deployment_environment
 DATABASE_TYPE=$database_type
 DATABASE_PASSWORD=$database_root_password
+RP_ATTESTATION_TRUST_STORE=$rp_attestation_trust_store
 "@
   $content | Out-File -encoding ASCII .\.env
   Write-Host ".env file created"
