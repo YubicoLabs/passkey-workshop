@@ -6,7 +6,7 @@
     ],
     "target" : {
       "namespace" : "web",
-      "site" : "https://example.com"
+      "site" : "https://passkey.fyi"
     }
   },
   {
@@ -16,7 +16,7 @@
     ],
     "target" : {
       "namespace" : "android_app",
-      "package_name" : "com.example.android",
+      "package_name" : "fyi.passkey.android",
       "sha256_cert_fingerprints" : [
          "DE:AD:BE:EF"
       ]
