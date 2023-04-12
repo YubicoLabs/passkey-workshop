@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.yubico.webauthn.RelyingParty;
@@ -27,6 +28,9 @@ public class RelyingPartyInstance {
   @Getter
   private RelyingParty relyingParty;
 
+  @Autowired
+  private Environment env;
+
   // @TODO - Read these value from ENV
 
   @PostConstruct
@@ -37,8 +41,8 @@ public class RelyingPartyInstance {
         .credentialRepository(storageInstance.getCredentialStorage())
         .origins(generateOrigins())
         .attestationConveyancePreference(
-            AttestationConveyancePreference.valueOf(System.getenv("RP_ATTESTATION_PREFERENCE")))
-        .allowUntrustedAttestation(Boolean.parseBoolean(System.getenv("RP_ALLOW_UNTRUSTED_ATTESTATION")))
+            AttestationConveyancePreference.valueOf(env.getProperty("RP_ATTESTATION_PREFERENCE")))
+        .allowUntrustedAttestation(Boolean.parseBoolean(env.getProperty("RP_ALLOW_UNTRUSTED_ATTESTATION")))
         .validateSignatureCounter(true)
         .build();
 
@@ -49,8 +53,8 @@ public class RelyingPartyInstance {
     /*
      * Get RP ID and Name from env variables
      */
-    String rpID = System.getenv("RP_ID");
-    String rpName = System.getenv("RP_NAME");
+    String rpID = env.getProperty("RP_ID");
+    String rpName = env.getProperty("RP_NAME");
 
     return RelyingPartyIdentity.builder()
         .id(rpID)
@@ -63,7 +67,7 @@ public class RelyingPartyInstance {
      * Get origins list value from env variables
      */
 
-    String originsVal = System.getenv("RP_ALLOWED_ORIGINS");
+    String originsVal = env.getProperty("RP_ALLOWED_ORIGINS");
 
     /*
      * Split the origins list by comma (as noted by the shell script)

@@ -37,6 +37,9 @@ DATABASE_PASSWORD=$database_root_password
 "@
   $content | Out-File -encoding ASCII .\.env
   Write-Host ".env file created"
+
+  Write-Host "Writting to application.properties"
+  Get-Content ./source/src/main/resources/application.properties, .env | Set-Content ./source/src/main/resources/application.properties 
   Write-Host "****************************************"
 }
 

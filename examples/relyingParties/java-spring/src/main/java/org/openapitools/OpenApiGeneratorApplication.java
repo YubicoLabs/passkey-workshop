@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.Module;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.context.ApplicationContext;
@@ -19,6 +20,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -33,21 +35,23 @@ public class OpenApiGeneratorApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
 
-        setStorageProperties();
+        try {
+            Properties props = loadPropertyFile();
+            setStorageProperties(props);
 
-        SpringApplication.run(OpenApiGeneratorApplication.class, args);
-
+            SpringApplication.run(OpenApiGeneratorApplication.class, args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private static void setStorageProperties() {
+    private static void setStorageProperties(Properties props) {
         // Determine if using in-mem or mysql
-        String storageType = System.getenv("DATABASE_TYPE");
+        String storageType = props.getProperty("DATABASE_TYPE");
 
         System.out.println(storageType);
 
         if (storageType.equals("local")) {
-            System.out.println("Here");
-
             System.setProperty("datasource.type", "local");
 
             // Used to prevent the application from attempting to establish a DB connection
@@ -67,7 +71,7 @@ public class OpenApiGeneratorApplication implements CommandLineRunner {
              * Please ensure that you have a robust secret management process that is not
              * exposed on the app server
              */
-            System.setProperty("spring.datasource.password", System.getenv("DATABASE_PASSWORD"));
+            System.setProperty("spring.datasource.password", props.getProperty("DATABASE_PASSWORD"));
 
             System.setProperty("spring.datasource.driver-class-name", "com.mysql.cj.jdbc.Driver");
         } else {
@@ -77,6 +81,27 @@ public class OpenApiGeneratorApplication implements CommandLineRunner {
             // Used to prevent the application from attempting to establish a DB connection
             System.setProperty("spring.autoconfigure.exclude",
                     "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration");
+        }
+    }
+
+    private static Properties loadPropertyFile() throws Exception {
+        try {
+            InputStream inputStream;
+            // Class path is found under WEB-INF/classes
+            Properties prop = new Properties();
+            String propFileName = "application.properties";
+
+            inputStream = OpenApiGeneratorApplication.class.getClassLoader().getResourceAsStream(propFileName);
+            // read the file
+            if (inputStream != null) {
+                prop.load(inputStream);
+            } else {
+                throw new Exception("property file '" + propFileName + "' not found in the classpath");
+            }
+            return prop;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -100,13 +125,16 @@ public class OpenApiGeneratorApplication implements CommandLineRunner {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
+            @Autowired
+            Environment env;
+
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 /*
                  * Get origins list value from env variables
                  */
 
-                String originsVal = System.getenv("RP_ALLOWED_CROSS_ORIGINS");
+                String originsVal = env.getProperty("RP_ALLOWED_CROSS_ORIGINS");
 
                 /*
                  * Split the origins list by comma (as noted by the shell script)

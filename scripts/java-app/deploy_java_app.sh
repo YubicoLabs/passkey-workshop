@@ -31,6 +31,8 @@ EOL
 cat .env > /dev/null
 
 echo ".env file created"
+echo "Writting to application.properties"
+cat .env >> ./source/src/main/resources/application.properties
 echo "****************************************"
 
 fi
