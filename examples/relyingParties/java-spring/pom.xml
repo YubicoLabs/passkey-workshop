@@ -106,5 +106,11 @@
 			<scope>runtime</scope>
             <version>8.0.32</version>
 		</dependency>
+        <!-- Unit testing aids -->
+        <dependency>
+            <groupId>io.github.adessose</groupId>
+            <artifactId>softauthn</artifactId>
+            <version>0.1.2</version>
+        </dependency>
     </dependencies>
 </project>
