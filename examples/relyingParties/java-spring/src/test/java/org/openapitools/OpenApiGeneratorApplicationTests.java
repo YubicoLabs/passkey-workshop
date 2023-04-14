@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yubico.webauthn.data.AuthenticatorAttachment;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
+import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
@@ -497,6 +498,11 @@ class OpenApiGeneratorApplicationTests {
    * a new credential can be registered
    */
 
+  /**
+   * Control test for credential registration
+   * Ensure that a credential, created with valid attestation options, can be
+   * registered to the RP
+   */
   @Test
   void attestationResult_Control() {
     CredentialsContainer credentials = createCredentialContainer();
@@ -525,14 +531,140 @@ class OpenApiGeneratorApplicationTests {
        * Convert the requestId and the newly created credential to JSON then to an
        * AttestationResultRequest
        * This is meant to mimic the real world where a credential will be returned
-       * from a `create`
-       * call as a JSON object, then encoded by the ObjectMapper used by our API
+       * from a `create` call as a JSON object, then encoded by the ObjectMapper used
+       * by our API
        */
       AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
 
       AttestationResultResponse attestationResultResponse = passkeyOperations.attestationResult(attestationResult);
 
       assertEquals("created", attestationResultResponse.getStatus());
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+      fail("Failed to register the credential");
+    }
+  }
+
+  /**
+   * Inactive attestation request
+   * Ensure that a credential cannot be registered if an attestation request has
+   * already been used / marked as inactive
+   */
+
+  @Test
+  void attestationResult_inactiveRequest() {
+    /**
+     * Create a valid credential
+     */
+    CredentialsContainer credentials = createCredentialContainer();
+
+    AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
+        "csalas",
+        "csalas",
+        "direct",
+        "preferred",
+        "preferred",
+        "");
+
+    try {
+      /**
+       * Preserve this request, as you will use it to generate a second credential
+       */
+      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
+      String jsonString = mapper.writeValueAsString(response.getPublicKey());
+      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
+
+      /**
+       * Generate the first credential
+       */
+      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
+          .create(options);
+
+      /**
+       * Assert failure for a valid credential if a request ID is not present
+       */
+
+      AttestationResultRequest attestationResult_invalidID = buildAttestationResultResponse(
+          ByteArray.fromBase64Url("randomString").getBase64Url(),
+          pkc);
+      assertThrows(Exception.class, () -> passkeyOperations.attestationResult(attestationResult_invalidID));
+
+      /*
+       * Successfully register a valid passkey
+       */
+      AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
+      passkeyOperations.attestationResult(attestationResult);
+
+      /**
+       * Attempt to generate the second credential
+       */
+      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc_invalid = credentials
+          .create(options);
+      AttestationResultRequest attestationResult_invalid = buildAttestationResultResponse(response.getRequestId(),
+          pkc_invalid);
+      assertThrows(Exception.class, () -> passkeyOperations.attestationResult(attestationResult_invalid));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+      fail("Failed to register the credential");
+    }
+  }
+
+  /**
+   * Ensure that a credential cannot register if it mimics a requestID, but
+   * without the correct attestation options
+   */
+  @Test
+  void attestationResult_nonMatchingOptions() {
+    /**
+     * Create a valid credential
+     */
+    CredentialsContainer credentials = createCredentialContainer();
+
+    /**
+     * We will use these options to generate a credential
+     */
+    AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
+        "csalas",
+        "csalas",
+        "direct",
+        "preferred",
+        "preferred",
+        "");
+
+    /**
+     * We will use the ID of this request
+     */
+    AttestationOptionsRequest attestationOptionsRequest_spoof = attestationOptionsRequestGenerator(
+        "csalas",
+        "csalas",
+        "direct",
+        "preferred",
+        "preferred",
+        "platform");
+
+    try {
+      /**
+       * Preserve this request, as you will use it to generate a second credential
+       */
+      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
+      AttestationOptionsResponse response_spoof = passkeyOperations.attestationOptions(attestationOptionsRequest_spoof);
+      String jsonString = mapper.writeValueAsString(response.getPublicKey());
+
+      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
+
+      /**
+       * Generate the first credential
+       */
+      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
+          .create(options);
+
+      AttestationResultRequest attestationResult = buildAttestationResultResponse(response_spoof.getRequestId(),
+          pkc);
+      assertThrows(Exception.class, () -> passkeyOperations.attestationResult(attestationResult));
+
     } catch (Exception e) {
       e.printStackTrace();
       System.out.println(e.getMessage());
