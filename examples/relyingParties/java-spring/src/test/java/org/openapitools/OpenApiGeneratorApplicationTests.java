@@ -22,6 +22,8 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
+import com.yubicolabs.passkey_rp.models.api.AssertionOptionsRequest;
+import com.yubicolabs.passkey_rp.models.api.AssertionOptionsResponse;
 import com.yubicolabs.passkey_rp.models.api.AttestationOptionsRequest;
 import com.yubicolabs.passkey_rp.models.api.AttestationOptionsResponse;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultRequest;
@@ -96,6 +98,10 @@ class OpenApiGeneratorApplicationTests {
       AttestationOptionsResponse response = passkeyOperations.attestationOptions(request);
       assertInstanceOf(AttestationOptionsResponse.class, response);
 
+      /**
+       * Ensure the correct RP ID is conveyed
+       */
+      assertEquals("localhost", response.getPublicKey().getRp().getId());
     } catch (Exception e) {
       e.printStackTrace();
       System.out.println(e.getMessage());
@@ -177,8 +183,8 @@ class OpenApiGeneratorApplicationTests {
   void testAttestationOptions_ResidentKey() {
     try {
       AttestationOptionsRequest request_rkDiscouraged = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_1",
+          "attestation_options_1",
           "direct",
           "discouraged",
           "preferred",
@@ -192,8 +198,8 @@ class OpenApiGeneratorApplicationTests {
               .getResidentKey().getValue());
 
       AttestationOptionsRequest request_rkPreferred = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_1",
+          "attestation_options_1",
           "direct",
           "preferred",
           "preferred",
@@ -207,8 +213,8 @@ class OpenApiGeneratorApplicationTests {
               .getValue());
 
       AttestationOptionsRequest request_rkRequired = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_1",
+          "attestation_options_1",
           "direct",
           "required",
           "preferred",
@@ -222,8 +228,8 @@ class OpenApiGeneratorApplicationTests {
               .getValue());
 
       AttestationOptionsRequest request_rkEmpty = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_1",
+          "attestation_options_1",
           "direct",
           "",
           "preferred",
@@ -237,8 +243,8 @@ class OpenApiGeneratorApplicationTests {
               .getValue());
 
       AttestationOptionsRequest request_rkNull = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_1",
+          "attestation_options_1",
           "direct",
           null,
           "preferred",
@@ -257,8 +263,8 @@ class OpenApiGeneratorApplicationTests {
        * enum of residentKey
        */
       assertThrows(Exception.class, () -> attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_1",
+          "attestation_options_1",
           "direct",
           "test_string",
           "preferred",
@@ -281,8 +287,8 @@ class OpenApiGeneratorApplicationTests {
   void testAttestationOptions_AuthAttachment() {
     try {
       AttestationOptionsRequest request_aaCrossPlatform = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_2",
+          "attestation_options_2",
           "direct",
           "preferred",
           "preferred",
@@ -297,8 +303,8 @@ class OpenApiGeneratorApplicationTests {
               .getValue());
 
       AttestationOptionsRequest request_aaPlatform = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_2",
+          "attestation_options_2",
           "direct",
           "preferred",
           "preferred",
@@ -313,8 +319,8 @@ class OpenApiGeneratorApplicationTests {
               .getValue());
 
       AttestationOptionsRequest request_aaEmpty = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_2",
+          "attestation_options_2",
           "direct",
           "preferred",
           "preferred",
@@ -328,8 +334,8 @@ class OpenApiGeneratorApplicationTests {
               .getAuthenticatorAttachment());
 
       AttestationOptionsRequest request_aaNull = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_2",
+          "attestation_options_2",
           "direct",
           "preferred",
           "preferred",
@@ -348,8 +354,8 @@ class OpenApiGeneratorApplicationTests {
        * enum of residentKey
        */
       assertThrows(Exception.class, () -> attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_2",
+          "attestation_options_2",
           "direct",
           "preferred",
           "preferred",
@@ -372,8 +378,8 @@ class OpenApiGeneratorApplicationTests {
   void testAttestationOptions_UV() {
     try {
       AttestationOptionsRequest request_uvDiscouraged = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_3",
+          "attestation_options_3",
           "direct",
           "preferred",
           "discouraged",
@@ -387,8 +393,8 @@ class OpenApiGeneratorApplicationTests {
               .getUserVerification().getValue());
 
       AttestationOptionsRequest request_uvPreferred = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_3",
+          "attestation_options_3",
           "direct",
           "preferred",
           "preferred",
@@ -402,8 +408,8 @@ class OpenApiGeneratorApplicationTests {
               .getUserVerification().getValue());
 
       AttestationOptionsRequest request_uvRequired = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_3",
+          "attestation_options_3",
           "direct",
           "preferred",
           "required",
@@ -417,8 +423,8 @@ class OpenApiGeneratorApplicationTests {
               .getUserVerification().getValue());
 
       AttestationOptionsRequest request_uvEmpty = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_3",
+          "attestation_options_3",
           "direct",
           "preferred",
           "",
@@ -432,8 +438,8 @@ class OpenApiGeneratorApplicationTests {
               .getUserVerification().getValue());
 
       AttestationOptionsRequest request_uvNull = attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_3",
+          "attestation_options_3",
           "direct",
           "preferred",
           null,
@@ -452,8 +458,8 @@ class OpenApiGeneratorApplicationTests {
        * enum of residentKey
        */
       assertThrows(Exception.class, () -> attestationOptionsRequestGenerator(
-          "csalas",
-          "csalas",
+          "attestation_options_3",
+          "attestation_options_3",
           "direct",
           "preferred",
           "test_string",
@@ -508,8 +514,8 @@ class OpenApiGeneratorApplicationTests {
     CredentialsContainer credentials = createCredentialContainer();
 
     AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
-        "csalas",
-        "csalas",
+        "attestation_result_1",
+        "attestation_result_1",
         "direct",
         "preferred",
         "preferred",
@@ -536,7 +542,8 @@ class OpenApiGeneratorApplicationTests {
        */
       AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
 
-      AttestationResultResponse attestationResultResponse = passkeyOperations.attestationResult(attestationResult);
+      AttestationResultResponse attestationResultResponse = passkeyOperations
+          .attestationResult(attestationResult);
 
       assertEquals("created", attestationResultResponse.getStatus());
     } catch (Exception e) {
@@ -560,8 +567,8 @@ class OpenApiGeneratorApplicationTests {
     CredentialsContainer credentials = createCredentialContainer();
 
     AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
-        "csalas",
-        "csalas",
+        "attestation_result_2",
+        "attestation_result_1",
         "direct",
         "preferred",
         "preferred",
@@ -627,8 +634,8 @@ class OpenApiGeneratorApplicationTests {
      * We will use these options to generate a credential
      */
     AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
-        "csalas",
-        "csalas",
+        "attestation_result_3",
+        "attestation_result_3",
         "direct",
         "preferred",
         "preferred",
@@ -638,8 +645,8 @@ class OpenApiGeneratorApplicationTests {
      * We will use the ID of this request
      */
     AttestationOptionsRequest attestationOptionsRequest_spoof = attestationOptionsRequestGenerator(
-        "csalas",
-        "csalas",
+        "attestation_result_3",
+        "attestation_result_3",
         "direct",
         "preferred",
         "preferred",
@@ -650,7 +657,8 @@ class OpenApiGeneratorApplicationTests {
        * Preserve this request, as you will use it to generate a second credential
        */
       AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
-      AttestationOptionsResponse response_spoof = passkeyOperations.attestationOptions(attestationOptionsRequest_spoof);
+      AttestationOptionsResponse response_spoof = passkeyOperations
+          .attestationOptions(attestationOptionsRequest_spoof);
       String jsonString = mapper.writeValueAsString(response.getPublicKey());
 
       PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
@@ -745,4 +753,117 @@ class OpenApiGeneratorApplicationTests {
     return rootNode;
 
   }
+
+  /**
+   * ##################################################
+   * ASSERTION OPTIONS
+   * ##################################################
+   * 
+   * This section contains the different test cases for generating assertion
+   * options
+   */
+
+  /**
+   * Discoverable credentials
+   * Ensure that assertion options can be generated for discoverable credential
+   * flows
+   * 
+   * No credential creation needed, as the service should not populate the
+   * `allowCredentials` list
+   * 
+   * We will also ensure that even when a credential is added to this user, that
+   * the list will remain null
+   */
+
+  @Test
+  void assertionOptions_DiscoverableCredentials() {
+    try {
+      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("");
+
+      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
+      assertInstanceOf(AssertionOptionsResponse.class, assertionOptionsResponse);
+
+      /**
+       * Ensure the correct RP ID is conveyed
+       */
+      assertEquals("localhost", assertionOptionsResponse.getPublicKey().getRpId());
+
+      assertEquals(null, assertionOptionsResponse.getPublicKey().getAllowCredentials());
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+      fail("Failed to create authentication options");
+    }
+  }
+
+  /**
+   * Non-discoverable credentials
+   * Ensure that assertion options can be generated for non-discoverable
+   * credential flows
+   * 
+   * Need to register a credential first in order to validate that the
+   * `allowCredentials` list is populated with the credential ID of the created
+   * credential
+   */
+
+  @Test
+  void assertionOptions_NonDiscoverableCredentials() {
+    try {
+      CredentialsContainer credentials = createCredentialContainer();
+
+      /**
+       * Register a credential for the user
+       */
+      AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
+          "assertion_options_1",
+          "assertion_options_1",
+          "direct",
+          "preferred",
+          "preferred",
+          "");
+      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
+      String jsonString = mapper.writeValueAsString(response.getPublicKey());
+      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
+      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
+          .create(options);
+      AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
+      AttestationResultResponse attestationResultResponse = passkeyOperations
+          .attestationResult(attestationResult);
+
+      if (!attestationResultResponse.getStatus().equals("created")) {
+        /**
+         * Credential was not created, return error
+         */
+        fail();
+      }
+
+      /**
+       * Create assertionOptions for the specified user
+       */
+
+      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("assertion_options_1");
+
+      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
+      assertInstanceOf(AssertionOptionsResponse.class, assertionOptionsResponse);
+
+      /**
+       * Ensure the correct RP ID is conveyed
+       */
+      assertEquals(1, assertionOptionsResponse.getPublicKey().getAllowCredentials().size());
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+      fail("Failed to register the credential");
+    }
+  }
+
+  private AssertionOptionsRequest assertionOptionsRequestGenerator(
+      String userName) {
+    ObjectNode rootNode = mapper.createObjectNode();
+    rootNode.put("userName", userName);
+
+    return mapper.convertValue(rootNode, AssertionOptionsRequest.class);
+  }
+
 }
