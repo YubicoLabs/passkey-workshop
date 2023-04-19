@@ -1,16 +1,6 @@
 name: passkey-workshop
 services:
 
-  proxy:
-    build: proxy
-    depends_on:
-      - passkey-client
-      - passkey-services
-    ports:
-      - 9000:80
-    expose:
-      - "9000"
-
   passkey-client:
     container_name: passkey-client
     build: react-app
@@ -19,6 +9,7 @@ services:
     image: passkey_client
     ports:
       - 3000:3000
+    profiles: ["web"]
 
   passkey-services:
     container_name: passkey-services
@@ -41,6 +32,7 @@ services:
       - 8080:8080
     expose:
       - "8080"
+    profiles: ["web", "mobile"]
 
   db:
     container_name: passkey-mysql
@@ -56,6 +48,7 @@ services:
       - "3306:3306"
     expose:
       - "3306"
+    profiles: ["web", "mobile"]
 
   idp:
     container_name: passkey-keycloak
@@ -68,7 +61,25 @@ services:
       - "8081:8080"
     expose:
       - "8081"
-    profiles: ["idp"]
+    profiles: ["web"]
+
+  proxy:
+    build: proxy
+    depends_on:
+      - passkey-client
+      - passkey-services
+    ports:
+      - 9000:80
+    expose:
+      - "9000"
+    profiles: ["mobile"]
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    depends_on:
+      - proxy
+    command: tunnel --url http://proxy
+    profiles: ["tunnel"]
 
 networks:
   default:

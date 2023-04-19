@@ -23,27 +23,31 @@ To deploy the web client:
 
 - copy the default environment file
 
-    cp default.env .env
+	cp default.env .env
 
 - copy the frontend code
 
-    cp -r ../examples/clients/web/react/passkey-client/ react-app/source
+	cp -r ../examples/clients/web/react/passkey-client/ react-app/source
 
 - copy the backend code
 
-    cp -r  ../examples/relyingParties/java-spring/ java-app/source/
+	cp -r  ../examples/relyingParties/java-spring/ java-app/source/
 
 - copy the passkey authenticator for keycloack
 
-    cp ../examples/IdentityProviders/KeyCloak/pre-build/passkey_authenticator.jar keycloak/
+	cp ../examples/IdentityProviders/KeyCloak/pre-build/passkey_authenticator.jar keycloak/
 
-- run:
+- build and run all containers, including the Keycloak IdP:
 
-	docker compose up -d
+	docker compose --profile web up -d
 
 - point your browser to
 
-    http://localhost:3000
+	http://localhost:3000
+
+- when done, stop and remove all containers:
+
+	docker compose --profile web down
 
 # Deploy for mobile
 
@@ -51,7 +55,7 @@ Note that this deployment currently does not use keycloak, so only the TestPanel
 
 - copy the environment file for mobile
 
-    cp tunnel.env .env
+	cp tunnel.env .env
 
 - copy the frontend code
 
@@ -63,24 +67,26 @@ In the file `react-app/source/src/services/PasskeyServices.js`
 
 Change
 
-    const baseURl = "http://localhost:8080/v1"
+	const baseURl = "http://localhost:8080/v1"
 
 to
 
-    const baseURl = `${window.location.origin.toString()}/v1`;
+	const baseURl = `${window.location.origin.toString()}/v1`;
 
-- Edit the file `react-app/source/public/.well-known` with your AppID. For instance so it reads:
+- Edit the file `react-app/source/public/.well-known/apple-app-site-association` with your AppID. For instance so it reads:
 
 ```
 $ cat react-app/source/public/.well-known/apple-app-site-association 
 {
   "webcredentials": {
     "apps": [
-      "VFQBXPXJH6.nl.joostd.pawskey"
+      "UVWXYZ1234.com.mydomain.pawskey"
     ]
   }
 }
 ```
+
+where `UVWXYZ1234` is your Team ID and com.mydomain is unique for your organisation.
 
 - copy the backend code
 
@@ -88,18 +94,24 @@ Already done above. No changes required.
 
 - Start your tunnel:
 
-    docker run -it --rm --network workshop --name cloudflare cloudflare/cloudflared:latest tunnel --no-autoupdate --url http://proxy
+	docker compose --profile tunnel up -d
 
-- Lookup the tunnel URL in cloudflared's output, for instance `your-proxied-tunnel-endpoint.trycloudflare.com`:
+- Lookup the tunnel URL in cloudflared's output, either in Docker Desktop or using:
+
+	docker compose --profile tunnel logs
+
+For instance, the logfile shows:
 
 ```
 INF +--------------------------------------------------------------------------------------------+
 INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
-INF |  http://your-proxied-tunnel-endpoint.trycloudflare.com                                     |
+INF |  https://your-proxied-tunnel-endpoint.trycloudflare.com                                     |
 INF +--------------------------------------------------------------------------------------------+
 ```
 
-- Edit your .env file and set the values of `RP_ID`, `RP_ALLOWED_ORIGINS`, and `RP_ALLOWED_CROSS_ORIGINS` to your-proxied-tunnel-endpoint.trycloudflare.com:
+when your are assigned the tunnel hostname `your-proxied-tunnel-endpoint.trycloudflare.com`.
+
+- Edit your .env file and set the values of `RP_ID`, `RP_ALLOWED_ORIGINS`, and `RP_ALLOWED_CROSS_ORIGINS` to your assigned hostname (`your-proxied-tunnel-endpoint.trycloudflare.com` in the example):
 
 ```
 RP_ID=replace-with-your-hostname.trycloudflare.com
@@ -107,32 +119,45 @@ RP_ALLOWED_ORIGINS=replace-with-your-hostname.trycloudflare.com
 RP_ALLOWED_CROSS_ORIGINS=replace-with-your-hostname.trycloudflare.com
 ```
 
+- As the `passkey-client` source code has changed, rebuild the previously built image:
+
+	docker compose build passkey-client
+
 - run:
 
-	docker compose up -d
+	docker compose --profile mobile up -d
 
 - point your browser to
 
-    https://your-proxied-tunnel-endpoint.trycloudflare.com/
+	https://your-proxied-tunnel-endpoint.trycloudflare.com/
 
 - verify that everything works before proceeding with the iOS client code in XCode.
 
+- Start XCode with the iOS sample code in directory `../examples/clients/mobile/iOS/PawsKey`
+
 - Change the Bundle Identifier from `fyi.passkey.pawskey` to an identifier of your own
 
-- In the Associated Domains, change `webcredentials:passkey.fyi` to `webcredentials:your-proxied-tunnel-endpoint.trycloudflare.com` (use your tunnel hostname).
+- In the Associated Domains Capability settings, change `webcredentials:passkey.fyi` to `webcredentials:your-proxied-tunnel-endpoint.trycloudflare.com` (use your tunnel hostname).
 
 - In the file `examples/clients/mobile/iOS/PawsKey/Shared/AccountManager.swift`, update the domain variable accordingly. For instance:
 
-    let domain = "your-proxied-tunnel-endpoint.trycloudflare.com"
+	let domain = "your-proxied-tunnel-endpoint.trycloudflare.com"
 
 - In the file `examples/clients/mobile/iOS/PawsKey/Shared/RelyingParty.swift`, update the `API_ENDPOINT` accordingly. For instance:
 
-    static let API_ENDPOINT = "https://your-proxied-tunnel-endpoint.trycloudflare.com/v1"
+	static let API_ENDPOINT = "https://your-proxied-tunnel-endpoint.trycloudflare.com/v1"
+
+- Build and run the Pawskey application on your iOS device.
 
 # Cleaning up
 
-When done, stop and remove all containers and dispose of the images:
+When done, stop and remove all containers:
 
-	docker compose down
+	docker compose --profile mobile stop
+	docker compose --profile mobile rm
 
-Remember that if you change anything in the source code, you need to rebuild the corresponding image before running the containers.
+To also take the tunnel down, use:
+
+	docker compose --profile tunnel down
+
+Note that your assigned tunnel hostname will change when restarting the tunnel, so you will need to update your `.env` file and Paswkey code accordingly!
