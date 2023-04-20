@@ -76,18 +76,6 @@ To deploy the mobile client:
 
 Only if not already done above.
 
-- Edit front-end code (temporary patch, until [this PR](https://github.com/YubicoLabs/passkey-workshop/pull/19) is merged).
-
-In the file `react-app/source/src/services/PasskeyServices.js`
-
-Change
-
-	const baseURl = "http://localhost:8080/v1"
-
-to
-
-	const baseURl = process.env.REACT_APP_API || "http://localhost:8080/v1";
-
 - Edit the file `react-app/source/public/.well-known/apple-app-site-association` with your AppID. For instance so it reads:
 
 ```
