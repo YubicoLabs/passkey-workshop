@@ -34,7 +34,7 @@ export default function TestPanel() {
       const attestationOptions = await PasskeyServices.getAttestationOptions(
         username,
         "preferred",
-        "cross-platform",
+        "",
         "preferred",
         "direct"
       );

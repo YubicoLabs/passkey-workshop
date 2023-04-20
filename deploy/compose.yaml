@@ -1,0 +1,88 @@
+name: passkey-workshop
+services:
+
+  passkey-client:
+    container_name: passkey-client
+    build: react-app
+    depends_on:
+      - passkey-services
+    image: passkey_client
+    environment:
+      REACT_APP_API: "${REACT_APP_API}"
+    ports:
+      - 3000:3000
+    profiles: ["web", "mobile"]
+
+  passkey-services:
+    container_name: passkey-services
+    build: java-app
+    depends_on:
+      db:
+        condition: service_healthy
+    image: passkey_services
+    environment:
+      RP_ID: "${RP_ID}"
+      RP_NAME: "${RP_NAME}"
+      RP_ALLOWED_ORIGINS: "${RP_ALLOWED_ORIGINS}"
+      RP_ALLOWED_CROSS_ORIGINS: "${RP_ALLOWED_CROSS_ORIGINS}"
+      RP_ATTESTATION_PREFERENCE: "${RP_ATTESTATION_PREFERENCE}"
+      RP_ALLOW_UNTRUSTED_ATTESTATION: "${RP_ALLOW_UNTRUSTED_ATTESTATION}"
+      RP_ATTESTATION_TRUST_STORE: "${RP_ATTESTATION_TRUST_STORE}"
+      DATABASE_TYPE: "${DATABASE_TYPE}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
+    ports:
+      - 8080:8080
+    expose:
+      - "8080"
+    profiles: ["web", "mobile"]
+
+  db:
+    container_name: passkey-mysql
+    build: mysql
+    image: passkey_storage
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MASTER_PASSWORD}"
+    healthcheck:
+      test: ["CMD", "mysql" ,"-uroot", "-p$MASTER_PASSWORD", "--protocol=TCP", "-hlocalhost", "-estatus"]
+      timeout: 20s
+      retries: 10
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    profiles: ["web", "mobile"]
+
+  idp:
+    container_name: passkey-keycloak
+    build: keycloak
+    image: passkey_keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8081:8080"
+    expose:
+      - "8081"
+    profiles: ["web"]
+
+  proxy:
+    build: proxy
+    depends_on:
+      - passkey-client
+      - passkey-services
+    ports:
+      - 9000:80
+    expose:
+      - "9000"
+    profiles: ["mobile"]
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    depends_on:
+      - proxy
+    command: tunnel --url http://proxy
+    profiles: ["tunnel"]
+
+networks:
+  default:
+    name: workshop
