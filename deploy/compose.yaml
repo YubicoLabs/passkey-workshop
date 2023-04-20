@@ -7,9 +7,11 @@ services:
     depends_on:
       - passkey-services
     image: passkey_client
+    environment:
+      REACT_APP_API: "${REACT_APP_API}"
     ports:
       - 3000:3000
-    profiles: ["web"]
+    profiles: ["web", "mobile"]
 
   passkey-services:
     container_name: passkey-services

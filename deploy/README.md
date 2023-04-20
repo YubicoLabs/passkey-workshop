@@ -21,47 +21,58 @@ Note that this deployment currently does not use the proxy.
 
 To deploy the web client:
 
-- copy the default environment file
+- Copy the default environment file
 
 	cp default.env .env
 
-- copy the frontend code
+- Copy the frontend code
 
 	cp -r ../examples/clients/web/react/passkey-client/ react-app/source
 
-- copy the backend code
+- Copy the backend code
 
 	cp -r  ../examples/relyingParties/java-spring/ java-app/source/
 
-- copy the passkey authenticator for keycloack
+- Copy the passkey authenticator for keycloack
 
 	cp ../examples/IdentityProviders/KeyCloak/pre-build/passkey_authenticator.jar keycloak/
 
-- build and run all containers, including the Keycloak IdP:
+- Build and run all containers, including the Keycloak IdP:
 
 	docker compose --profile web up -d
 
-- point your browser to
+- Point your browser to
 
 	http://localhost:3000
 
-- when done, stop and remove all containers:
+- When done, stop and remove all containers:
 
 	docker compose --profile web down
 
 # Deploy for mobile
 
-Note that this deployment currently does not use keycloak, so only the TestPanel can be used on the proxy.
+For mobile we need to expose the docker containers to the Internet in order to use them from a mobile phone.
+This deployment is similar the the web-deployment, except that services are exposed on an HTTPS URL instead of localhost.
 
-- copy the environment file for mobile
+Note that this also deploys the web front-end in order to demonstrate copyable passkeys.
+
+Also note that this deployment currently does not use keycloak, so only the TestPanel can be used in the web application.
+
+To deploy the mobile client:
+
+- If applicable, stop and remove any running containers:
+
+	docker compose --profile mobile --profile web down
+
+- Copy the environment file for mobile
 
 	cp tunnel.env .env
 
-- copy the frontend code
+- Copy the frontend code
 
-Already done above.
+Only if not already done above.
 
-- edit front-end code
+- Edit front-end code (temporary patch, until [this PR](https://github.com/YubicoLabs/passkey-workshop/pull/19) is merged).
 
 In the file `react-app/source/src/services/PasskeyServices.js`
 
@@ -71,7 +82,7 @@ Change
 
 to
 
-	const baseURl = `${window.location.origin.toString()}/v1`;
+	const baseURl = process.env.REACT_APP_API || "http://localhost:8080/v1";
 
 - Edit the file `react-app/source/public/.well-known/apple-app-site-association` with your AppID. For instance so it reads:
 
@@ -86,11 +97,16 @@ $ cat react-app/source/public/.well-known/apple-app-site-association
 }
 ```
 
-where `UVWXYZ1234` is your Team ID and com.mydomain is unique for your organisation.
+where `UVWXYZ1234` is your Team ID and com.mydomain is unique for your organization.
 
-- copy the backend code
+- As the `passkey-client` source code has changed, rebuild the previously built image:
 
-Already done above. No changes required.
+	docker compose build passkey-client
+
+- Copy the backend code
+
+Only if not already done above.
+No changes are required.
 
 - Start your tunnel:
 
@@ -109,7 +125,7 @@ INF |  https://your-proxied-tunnel-endpoint.trycloudflare.com                   
 INF +--------------------------------------------------------------------------------------------+
 ```
 
-when your are assigned the tunnel hostname `your-proxied-tunnel-endpoint.trycloudflare.com`.
+when you are assigned the tunnel hostname `your-proxied-tunnel-endpoint.trycloudflare.com`.
 
 - Edit your .env file and set the values of `RP_ID`, `RP_ALLOWED_ORIGINS`, and `RP_ALLOWED_CROSS_ORIGINS` to your assigned hostname (`your-proxied-tunnel-endpoint.trycloudflare.com` in the example):
 
@@ -119,19 +135,21 @@ RP_ALLOWED_ORIGINS=replace-with-your-hostname.trycloudflare.com
 RP_ALLOWED_CROSS_ORIGINS=replace-with-your-hostname.trycloudflare.com
 ```
 
-- As the `passkey-client` source code has changed, rebuild the previously built image:
+- Also edit the URL for your RP backend API so it includes your tunnel hostname:
 
-	docker compose build passkey-client
+```
+REACT_APP_API=https://replace-with-your-hostname.trycloudflare.com/v1
+```
 
-- run:
+- Run:
 
 	docker compose --profile mobile up -d
 
-- point your browser to
+- Point your browser to
 
 	https://your-proxied-tunnel-endpoint.trycloudflare.com/
 
-- verify that everything works before proceeding with the iOS client code in XCode.
+- Verify that the testPanel works before proceeding with the iOS client code in XCode.
 
 - Start XCode with the iOS sample code in directory `../examples/clients/mobile/iOS/PawsKey`
 
