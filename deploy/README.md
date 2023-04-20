@@ -54,6 +54,10 @@ To deploy the web client:
 For mobile we need to expose the docker containers to the Internet in order to use them from a mobile phone.
 This deployment is similar the the web-deployment, except that services are exposed on an HTTPS URL instead of localhost.
 
+This is what the tunneled workshop network looks like:
+
+![Workshop network](passkey-workshop.png)
+
 Note that this also deploys the web front-end in order to demonstrate copyable passkeys.
 
 Also note that this deployment currently does not use keycloak, so only the TestPanel can be used in the web application.
