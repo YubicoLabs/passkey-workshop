@@ -3,13 +3,14 @@ package com.yubicolabs.passkey_rp.models.api;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
 import javax.annotation.Generated;
 
 /**
  * UserCredentialDelete
  */
-
+@Builder
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
 public class UserCredentialDelete {
 
