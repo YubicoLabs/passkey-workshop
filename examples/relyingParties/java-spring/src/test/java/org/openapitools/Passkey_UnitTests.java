@@ -61,10 +61,14 @@ class Passkey_UnitTests {
   ObjectMapper mapper = new ObjectMapper();
 
   /**
-   * Test the RelyingPartyInstance singleton parameters
+   * ##################################################
+   * RP CONFIGURATION
+   * ##################################################
+   * 
+   * Ensure the relying party can be configured using the provided configurations
    */
   @Test
-  void testRPInstanceConfigs() {
+  void rpInstanceConfiguration() {
     /**
      * Test the RP_ID and RP_NAME
      */
@@ -84,18 +88,20 @@ class Passkey_UnitTests {
 
   /**
    * Control test
-   * Ensure that the method triggers, and returns the expected object
+   * 
+   * Ensure that the attestation options method triggers, and returns the expected
+   * object
    */
 
   @Test
-  void testAttestationOptions_Control() {
+  void attestationOptions_Control() {
     /**
      * Check that the encoding method is working properly
      * JSON -> AttestationOptionsRequest
      */
     AttestationOptionsRequest request = attestationOptionsRequestGenerator(
-        "csalas",
-        "csalas",
+        "attestation_options_1@test.com",
+        "attestation_options_1",
         "direct",
         "preferred",
         "preferred",
@@ -108,23 +114,25 @@ class Passkey_UnitTests {
       /**
        * Ensure the correct RP ID is conveyed
        */
-      assertEquals("localhost", response.getPublicKey().getRp().getId());
+      assertEquals(env.getProperty("RP_ID"), response.getPublicKey().getRp().getId());
     } catch (Exception e) {
-      fail("Test failed to generate assertion options");
+      fail("@attestationOptions_Control failed: " + e.getMessage());
     }
   }
 
   /**
    * Test user attributes
+   * 
    * Ensure that user attributes, userName, and displayName are processed
    * correctly
+   * 
    * Ensure the correct error response is provided if either field is excluded
    */
 
   @Test
-  void testAttestationOptions_UserAttributes() {
-    String username = "myuser@acme.com";
-    String displayName = "myuser";
+  void attestationOptions_UserAttributes() {
+    String username = "assertion_options2@acme.com";
+    String displayName = "assertion_options2";
 
     /**
      * Test to ensure that the method populated the PublicKey object with the
@@ -146,7 +154,7 @@ class Passkey_UnitTests {
       assertEquals(username, response.getPublicKey().getUser().getName());
       assertEquals(displayName, response.getPublicKey().getUser().getDisplayName());
     } catch (Exception e) {
-      fail("Test failed to generate assertion options");
+      fail("@attestationOptions_UserAttributes failed: " + e.getMessage());
     }
 
     /**
@@ -178,16 +186,17 @@ class Passkey_UnitTests {
 
   /**
    * Test residentKey requirements
+   * 
    * Generate 6 different requests to test the different permutations of the
    * residentKey field
    * discouraged, preferred, required, field not included, none, non-valid enum
    */
   @Test
-  void testAttestationOptions_ResidentKey() {
+  void attestationOptions_ResidentKey() {
     try {
       AttestationOptionsRequest request_rkDiscouraged = attestationOptionsRequestGenerator(
-          "attestation_options_1",
-          "attestation_options_1",
+          "attestation_options3@test.com",
+          "attestation_options3",
           "direct",
           "discouraged",
           "preferred",
@@ -201,8 +210,8 @@ class Passkey_UnitTests {
               .getResidentKey().getValue());
 
       AttestationOptionsRequest request_rkPreferred = attestationOptionsRequestGenerator(
-          "attestation_options_1",
-          "attestation_options_1",
+          "attestation_options3@test.com",
+          "attestation_options3",
           "direct",
           "preferred",
           "preferred",
@@ -216,8 +225,8 @@ class Passkey_UnitTests {
               .getValue());
 
       AttestationOptionsRequest request_rkRequired = attestationOptionsRequestGenerator(
-          "attestation_options_1",
-          "attestation_options_1",
+          "attestation_options3@test.com",
+          "attestation_options3",
           "direct",
           "required",
           "preferred",
@@ -231,8 +240,8 @@ class Passkey_UnitTests {
               .getValue());
 
       AttestationOptionsRequest request_rkEmpty = attestationOptionsRequestGenerator(
-          "attestation_options_1",
-          "attestation_options_1",
+          "attestation_options3@test.com",
+          "attestation_options3",
           "direct",
           "",
           "preferred",
@@ -246,8 +255,8 @@ class Passkey_UnitTests {
               .getValue());
 
       AttestationOptionsRequest request_rkNull = attestationOptionsRequestGenerator(
-          "attestation_options_1",
-          "attestation_options_1",
+          "attestation_options3@test.com",
+          "attestation_options3",
           "direct",
           null,
           "preferred",
@@ -266,30 +275,31 @@ class Passkey_UnitTests {
        * enum of residentKey
        */
       assertThrows(Exception.class, () -> attestationOptionsRequestGenerator(
-          "attestation_options_1",
-          "attestation_options_1",
+          "attestation_options3@test.com",
+          "attestation_options3",
           "direct",
           "test_string",
           "preferred",
           ""));
 
     } catch (Exception e) {
-      fail("Test failed to generate assertion options");
+      fail("@attestationOptions_ResidentKey failed: " + e.getMessage());
     }
   }
 
   /**
    * Test authenticatorAttachment requirements
-   * Generate 3 different requests to test the different permutations of the
+   * 
+   * Generate 4 different requests to test the different permutations of the
    * residentKey field
-   * cross-platform, platform, field not included
+   * cross-platform, platform, field not included, field is null
    */
   @Test
-  void testAttestationOptions_AuthAttachment() {
+  void attestationOptions_AuthAttachment() {
     try {
       AttestationOptionsRequest request_aaCrossPlatform = attestationOptionsRequestGenerator(
-          "attestation_options_2",
-          "attestation_options_2",
+          "attestation_options4@test.com",
+          "attestation_options4",
           "direct",
           "preferred",
           "preferred",
@@ -304,8 +314,8 @@ class Passkey_UnitTests {
               .getValue());
 
       AttestationOptionsRequest request_aaPlatform = attestationOptionsRequestGenerator(
-          "attestation_options_2",
-          "attestation_options_2",
+          "attestation_options4@test.com",
+          "attestation_options4",
           "direct",
           "preferred",
           "preferred",
@@ -320,8 +330,8 @@ class Passkey_UnitTests {
               .getValue());
 
       AttestationOptionsRequest request_aaEmpty = attestationOptionsRequestGenerator(
-          "attestation_options_2",
-          "attestation_options_2",
+          "attestation_options4@test.com",
+          "attestation_options4",
           "direct",
           "preferred",
           "preferred",
@@ -335,8 +345,8 @@ class Passkey_UnitTests {
               .getAuthenticatorAttachment());
 
       AttestationOptionsRequest request_aaNull = attestationOptionsRequestGenerator(
-          "attestation_options_2",
-          "attestation_options_2",
+          "attestation_options4@test.com",
+          "attestation_options4",
           "direct",
           "preferred",
           "preferred",
@@ -355,30 +365,31 @@ class Passkey_UnitTests {
        * enum of residentKey
        */
       assertThrows(Exception.class, () -> attestationOptionsRequestGenerator(
-          "attestation_options_2",
-          "attestation_options_2",
+          "attestation_options4@test.com",
+          "attestation_options4",
           "direct",
           "preferred",
           "preferred",
           "test_string"));
 
     } catch (Exception e) {
-      fail("Test failed to generate assertion options");
+      fail("@attestationOptions_AuthAttachment failed: " + e.getMessage());
     }
   }
 
   /**
    * Test userVerification requirements
+   * 
    * Generate 6 different requests to test the different permutations of the
    * residentKey field
    * discouraged, preferred, required, field not included, none, non-valid enum
    */
   @Test
-  void testAttestationOptions_UV() {
+  void attestationOptions_UV() {
     try {
       AttestationOptionsRequest request_uvDiscouraged = attestationOptionsRequestGenerator(
-          "attestation_options_3",
-          "attestation_options_3",
+          "attestation_options5@test.com",
+          "attestation_options5",
           "direct",
           "preferred",
           "discouraged",
@@ -392,8 +403,8 @@ class Passkey_UnitTests {
               .getUserVerification().getValue());
 
       AttestationOptionsRequest request_uvPreferred = attestationOptionsRequestGenerator(
-          "attestation_options_3",
-          "attestation_options_3",
+          "attestation_options5@test.com",
+          "attestation_options5",
           "direct",
           "preferred",
           "preferred",
@@ -407,8 +418,8 @@ class Passkey_UnitTests {
               .getUserVerification().getValue());
 
       AttestationOptionsRequest request_uvRequired = attestationOptionsRequestGenerator(
-          "attestation_options_3",
-          "attestation_options_3",
+          "attestation_options5@test.com",
+          "attestation_options5",
           "direct",
           "preferred",
           "required",
@@ -422,8 +433,8 @@ class Passkey_UnitTests {
               .getUserVerification().getValue());
 
       AttestationOptionsRequest request_uvEmpty = attestationOptionsRequestGenerator(
-          "attestation_options_3",
-          "attestation_options_3",
+          "attestation_options5@test.com",
+          "attestation_options5",
           "direct",
           "preferred",
           "",
@@ -437,8 +448,8 @@ class Passkey_UnitTests {
               .getUserVerification().getValue());
 
       AttestationOptionsRequest request_uvNull = attestationOptionsRequestGenerator(
-          "attestation_options_3",
-          "attestation_options_3",
+          "attestation_options5@test.com",
+          "attestation_options5",
           "direct",
           "preferred",
           null,
@@ -457,39 +468,16 @@ class Passkey_UnitTests {
        * enum of residentKey
        */
       assertThrows(Exception.class, () -> attestationOptionsRequestGenerator(
-          "attestation_options_3",
-          "attestation_options_3",
+          "attestation_options5@test.com",
+          "attestation_options5",
           "direct",
           "preferred",
           "test_string",
           ""));
 
     } catch (Exception e) {
-      fail("Test failed to generate assertion options");
+      fail("@attestationOptions_UV failed: " + e.getMessage());
     }
-  }
-
-  private AttestationOptionsRequest attestationOptionsRequestGenerator(
-      String userName,
-      String displayName,
-      String attestation,
-      String residentKey,
-      String userVerification,
-      String authenticatorAttachment) {
-    ObjectNode rootNode = mapper.createObjectNode();
-
-    ObjectNode authenticatorSelection = mapper.createObjectNode();
-    authenticatorSelection.put("residentKey", residentKey);
-    authenticatorSelection.put("userVerification", userVerification);
-    authenticatorSelection.put("authenticatorAttachment", authenticatorAttachment);
-
-    rootNode.set("authenticatorSelection", authenticatorSelection);
-
-    rootNode.put("userName", userName);
-    rootNode.put("displayName", displayName);
-    rootNode.put("attestation", attestation);
-
-    return mapper.convertValue(rootNode, AttestationOptionsRequest.class);
   }
 
   /**
@@ -503,6 +491,7 @@ class Passkey_UnitTests {
 
   /**
    * Control test for credential registration
+   * 
    * Ensure that a credential, created with valid attestation options, can be
    * registered to the RP
    */
@@ -511,16 +500,18 @@ class Passkey_UnitTests {
     CredentialsContainer credentials = createCredentialContainer();
 
     AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
-        "attestation_result_1",
-        "attestation_result_1",
+        "attestation_result1@test.com",
+        "attestation_result1",
         "direct",
         "preferred",
         "preferred",
         "");
 
     try {
-      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
-      String jsonString = mapper.writeValueAsString(response.getPublicKey());
+      AttestationOptionsResponse attestationOptionsResponse = passkeyOperations
+          .attestationOptions(attestationOptionsRequest);
+      String jsonString = mapper.writeValueAsString(attestationOptionsResponse.getPublicKey());
+
       PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
 
       /**
@@ -537,19 +528,21 @@ class Passkey_UnitTests {
        * from a `create` call as a JSON object, then encoded by the ObjectMapper used
        * by our API
        */
-      AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
+      AttestationResultRequest attestationResult = buildAttestationResultResponse(
+          attestationOptionsResponse.getRequestId(), pkc);
 
       AttestationResultResponse attestationResultResponse = passkeyOperations
           .attestationResult(attestationResult);
 
       assertEquals("created", attestationResultResponse.getStatus());
     } catch (Exception e) {
-      fail("Failed to register the credential");
+      fail("@attestationResult_Control failed: " + e.getMessage());
     }
   }
 
   /**
    * Inactive attestation request
+   * 
    * Ensure that a credential cannot be registered if an attestation request has
    * already been used / marked as inactive
    */
@@ -608,7 +601,7 @@ class Passkey_UnitTests {
       assertThrows(Exception.class, () -> passkeyOperations.attestationResult(attestationResult_invalid));
 
     } catch (Exception e) {
-      fail("Failed to register the credential");
+      fail("@attestationResult_inactiveRequest failed: " + e.getMessage());
     }
   }
 
@@ -618,9 +611,6 @@ class Passkey_UnitTests {
    */
   @Test
   void attestationResult_nonMatchingOptions() {
-    /**
-     * Create a valid credential
-     */
     CredentialsContainer credentials = createCredentialContainer();
 
     /**
@@ -649,10 +639,11 @@ class Passkey_UnitTests {
       /**
        * Preserve this request, as you will use it to generate a second credential
        */
-      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
-      AttestationOptionsResponse response_spoof = passkeyOperations
+      AttestationOptionsResponse attestationOptionsResponse = passkeyOperations
+          .attestationOptions(attestationOptionsRequest);
+      AttestationOptionsResponse attestationOptionsResponse_spoof = passkeyOperations
           .attestationOptions(attestationOptionsRequest_spoof);
-      String jsonString = mapper.writeValueAsString(response.getPublicKey());
+      String jsonString = mapper.writeValueAsString(attestationOptionsResponse.getPublicKey());
 
       PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
 
@@ -662,13 +653,428 @@ class Passkey_UnitTests {
       PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
           .create(options);
 
-      AttestationResultRequest attestationResult = buildAttestationResultResponse(response_spoof.getRequestId(),
+      AttestationResultRequest attestationResult = buildAttestationResultResponse(
+          attestationOptionsResponse_spoof.getRequestId(),
           pkc);
       assertThrows(Exception.class, () -> passkeyOperations.attestationResult(attestationResult));
 
     } catch (Exception e) {
-      fail("Failed to register the credential");
+      fail("@attestationResult_nonMatchingOptions failed: " + e.getMessage());
     }
+  }
+
+  /**
+   * ##################################################
+   * ASSERTION OPTIONS
+   * ##################################################
+   * 
+   * This section contains the different test cases for generating assertion
+   * options
+   */
+
+  /**
+   * Discoverable credentials
+   * Ensure that assertion options can be generated for discoverable credential
+   * flows
+   * 
+   * No credential creation needed, as the service should not populate the
+   * `allowCredentials` list
+   * 
+   * We will also ensure that even when a credential is added to this user, that
+   * the list will remain null
+   */
+
+  @Test
+  void assertionOptions_DiscoverableCredentials() {
+    try {
+      /**
+       * Discoverable credential flow, so we will pass an empty username
+       */
+      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("");
+
+      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
+      assertInstanceOf(AssertionOptionsResponse.class, assertionOptionsResponse);
+
+      /**
+       * Ensure the correct RP ID is conveyed
+       */
+      assertEquals(env.getProperty("RP_ID"), assertionOptionsResponse.getPublicKey().getRpId());
+
+      /**
+       * Ensure the allowCredentials list is not present
+       */
+      assertEquals(null, assertionOptionsResponse.getPublicKey().getAllowCredentials());
+
+    } catch (Exception e) {
+      fail("@assertionOptions_DiscoverableCredentials failed: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Non-discoverable credentials
+   * Ensure that assertion options can be generated for non-discoverable
+   * credential flows
+   * 
+   * Need to register a credential first in order to validate that the
+   * `allowCredentials` list is populated with the credential ID of the created
+   * credential
+   */
+
+  @Test
+  void assertionOptions_NonDiscoverableCredentials() {
+    try {
+      CredentialsContainer credentials = createCredentialContainer();
+
+      /**
+       * Register a credential for the user
+       * 
+       * Need to ensure that the assertionOptions contains an allowCredentials list
+       * populated with a credential
+       */
+      AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
+          "assertion_options1@test.com",
+          "assertion_options1",
+          "direct",
+          "preferred",
+          "preferred",
+          "");
+      AttestationOptionsResponse attestationOptionsResponse = passkeyOperations
+          .attestationOptions(attestationOptionsRequest);
+      String jsonString = mapper.writeValueAsString(attestationOptionsResponse.getPublicKey());
+      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
+      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
+          .create(options);
+      AttestationResultRequest attestationResult = buildAttestationResultResponse(
+          attestationOptionsResponse.getRequestId(), pkc);
+      AttestationResultResponse attestationResultResponse = passkeyOperations
+          .attestationResult(attestationResult);
+
+      /**
+       * Ensure the credential was created
+       */
+      if (!attestationResultResponse.getStatus().equals("created")) {
+        /**
+         * Credential was not created, return error
+         */
+        fail("@assertionOptions_NonDiscoverableCredentials failed: The credential could not be created");
+      }
+
+      /**
+       * Create assertionOptions for the specified user
+       */
+      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("assertion_options1@test.com");
+
+      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
+      assertInstanceOf(AssertionOptionsResponse.class, assertionOptionsResponse);
+
+      /**
+       * Ensure the correct RP ID is conveyed
+       */
+      /**
+       * Ensure the correct RP ID is conveyed
+       */
+      assertEquals(env.getProperty("RP_ID"), assertionOptionsResponse.getPublicKey().getRpId());
+
+      /**
+       * Ensure the allowCredentials list is not present
+       */
+      assertEquals(1, assertionOptionsResponse.getPublicKey().getAllowCredentials().size());
+    } catch (Exception e) {
+      fail("@assertionOptions_NonDiscoverableCredentials failed: " + e.getMessage());
+    }
+  }
+
+  /**
+   * ##################################################
+   * ASSERTION RESULT
+   * ##################################################
+   * 
+   * This section contains the different test cases for ensuring that a passkey
+   * can be used to authenticate
+   */
+
+  /**
+   * Control - Discoverable credential
+   * 
+   * Ensure that a user, with a registered passkey, can authenticate into an
+   * account using a discoverable credential flow
+   */
+  @Test
+  void assertionResult_DiscoverableCredentials() {
+    try {
+      CredentialsContainer credentials = createCredentialContainer();
+
+      /**
+       * Register a credential for the user
+       */
+      AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
+          "assertion_result1@text.com",
+          "assertion_result1",
+          "direct",
+          "preferred",
+          "preferred",
+          "");
+      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
+      String jsonString = mapper.writeValueAsString(response.getPublicKey());
+      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
+      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
+          .create(options);
+      AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
+      AttestationResultResponse attestationResultResponse = passkeyOperations
+          .attestationResult(attestationResult);
+
+      if (!attestationResultResponse.getStatus().equals("created")) {
+        /**
+         * Credential was not created, return error
+         */
+        fail("@assertionResult_DiscoverableCredentials failed: The credential could not be created");
+      }
+
+      /**
+       * Create assertionOptions for the specified user
+       * 
+       * Empty username for the discoverable credential flow
+       */
+      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("");
+      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
+
+      /**
+       * Perform a mock get ceremony to authenticate using the softauthn Java library
+       * https://github.com/adessoSE/softauthn
+       */
+
+      String assertionOptionsResponse_json = mapper.writeValueAsString(assertionOptionsResponse.getPublicKey());
+      PublicKeyCredentialRequestOptions pkc_assertionOptions = assertionOptionstoPKC(assertionOptionsResponse_json);
+
+      /**
+       * assertionResult provided by the WebAuthn GET ceremony
+       */
+      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential = credentials
+          .get(pkc_assertionOptions);
+
+      /**
+       * Package the assertionResult, and requestID into a format that can be used by
+       * our RP
+       * 
+       * This will mimic the JSON encoded string that will be sent by our client
+       */
+      AssertionResultRequest assertionResultRequest = buildAssertionResultResponse(
+          assertionOptionsResponse.getRequestId(), credential);
+
+      AssertionResultResponse assertionResultResponse = passkeyOperations.assertionResponse(assertionResultRequest);
+
+      /**
+       * Ensure the status property returned by the API denotes "ok"
+       * 
+       * This means that a successful auth ceremony was completed
+       */
+      assertTrue(assertionResultResponse.getStatus().equals("ok"));
+
+    } catch (Exception e) {
+      fail("@assertionResult_DiscoverableCredentials failed: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Control - Non-discoverable credential
+   * 
+   * Ensure that a user, with a registered passkey, can authenticate into an
+   * account using a non-discoverable credential flow
+   */
+  @Test
+  void assertionResult_NonDiscoverableCredentials() {
+    try {
+      CredentialsContainer credentials = createCredentialContainer();
+
+      /**
+       * Register a credential for the user
+       */
+      AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
+          "assertion_result2@test.com",
+          "assertion_result2",
+          "direct",
+          "preferred",
+          "preferred",
+          "");
+      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
+      String jsonString = mapper.writeValueAsString(response.getPublicKey());
+      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
+      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
+          .create(options);
+      AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
+      AttestationResultResponse attestationResultResponse = passkeyOperations
+          .attestationResult(attestationResult);
+
+      if (!attestationResultResponse.getStatus().equals("created")) {
+        /**
+         * Credential was not created, return error
+         */
+        fail("@assertionResult_NonDiscoverableCredentials failed: The credential could not be created");
+      }
+
+      /**
+       * Create assertionOptions for the specified user
+       */
+
+      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("assertion_result2@test.com");
+      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
+
+      /**
+       * Perform a mock get ceremony to authenticate a user
+       */
+      String assertionOptionsResponse_json = mapper.writeValueAsString(assertionOptionsResponse.getPublicKey());
+      PublicKeyCredentialRequestOptions options_assertion = assertionOptionstoPKC(assertionOptionsResponse_json);
+
+      /**
+       * assertionResult provided by the WebAuthn GET ceremony
+       */
+      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential = credentials
+          .get(options_assertion);
+
+      /**
+       * Package the assertionResult, and requestID into a format that can be used by
+       * our RP
+       * 
+       * This will mimic the JSON encoded string that will be sent by our client
+       */
+      AssertionResultRequest assertionResultRequest = buildAssertionResultResponse(
+          assertionOptionsResponse.getRequestId(), credential);
+
+      AssertionResultResponse assertionResultResponse = passkeyOperations.assertionResponse(assertionResultRequest);
+
+      /**
+       * Ensure the status property returned by the API denotes "ok"
+       * 
+       * This means that a successful auth ceremony was completed
+       */
+      assertTrue(assertionResultResponse.getStatus().equals("ok"));
+
+    } catch (Exception e) {
+      fail("@assertionResult_NonDiscoverableCredentials failed: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Passkey deleted
+   * 
+   * Ensure that a user cannot authenticate with a passkey once it has been
+   * deleted from their account
+   */
+  @Test
+  void assertionResult_Deleted() {
+    try {
+      CredentialsContainer credentials = createCredentialContainer();
+
+      /**
+       * Register a credential for the user
+       */
+      AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
+          "assertion_result3@test.com",
+          "assertion_result3",
+          "direct",
+          "preferred",
+          "preferred",
+          "");
+      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
+      String jsonString = mapper.writeValueAsString(response.getPublicKey());
+      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
+      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
+          .create(options);
+      AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
+      AttestationResultResponse attestationResultResponse = passkeyOperations
+          .attestationResult(attestationResult);
+
+      if (!attestationResultResponse.getStatus().equals("created")) {
+        /**
+         * Credential was not created, return error
+         */
+        fail("assertionResult_Deleted failed: The credential could not be completed");
+      }
+
+      /**
+       * Ensure a successful auth request was processed
+       */
+
+      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("assertion_result3@test.com");
+      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
+      String assertionOptionsResponse_json = mapper.writeValueAsString(assertionOptionsResponse.getPublicKey());
+      PublicKeyCredentialRequestOptions options_assertion = assertionOptionstoPKC(assertionOptionsResponse_json);
+      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential = credentials
+          .get(options_assertion);
+      AssertionResultRequest assertionResultRequest = buildAssertionResultResponse(
+          assertionOptionsResponse.getRequestId(), credential);
+      AssertionResultResponse assertionResultResponse = passkeyOperations.assertionResponse(assertionResultRequest);
+
+      if (!assertionResultResponse.getStatus().equals("ok")) {
+        fail("@assertionResult_Deleted failed: The initial auth ceremony could not be completed");
+      }
+
+      /**
+       * Delete the credential
+       * 
+       * Will also test the ability of the delete method
+       */
+      UserCredentialDeleteResponse deleteResponse = passkeyOperations
+          .deleteCredential(UserCredentialDelete.builder().id(credential.getId().getBase64Url()).build());
+      assertTrue(deleteResponse.getResult().equals("deleted"));
+
+      /**
+       * Attempt to authenticate with the same credential
+       */
+
+      AssertionOptionsRequest assertionOptionsRequest_2 = assertionOptionsRequestGenerator(
+          "assertion_result3@test.com");
+      AssertionOptionsResponse assertionOptionsResponse_2 = passkeyOperations
+          .assertionOptions(assertionOptionsRequest_2);
+      String assertionOptionsResponse_json_2 = mapper.writeValueAsString(assertionOptionsResponse_2.getPublicKey());
+      PublicKeyCredentialRequestOptions options_assertion_2 = assertionOptionstoPKC(assertionOptionsResponse_json_2);
+      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential_2 = credentials
+          .get(options_assertion_2);
+      AssertionResultRequest assertionResultRequest_2 = buildAssertionResultResponse(
+          assertionOptionsResponse_2.getRequestId(), credential_2);
+      assertThrows(Exception.class, () -> passkeyOperations.assertionResponse(assertionResultRequest_2));
+
+    } catch (Exception e) {
+      fail("@assertionResult_Deleted failed: " + e.getMessage());
+    }
+  }
+
+  /**
+   * ##################################################
+   * HELPER METHODS
+   * ##################################################
+   * 
+   * This section contains various helper methods that are used throughout the
+   * test cases above
+   */
+
+  /**
+   * Used to construct an AttestationOptionsRequest object to be processed by our
+   * passkeyServices instance
+   * 
+   * This is meant to mimic a JSON encoded request that will be sent to the API
+   */
+  private AttestationOptionsRequest attestationOptionsRequestGenerator(
+      String userName,
+      String displayName,
+      String attestation,
+      String residentKey,
+      String userVerification,
+      String authenticatorAttachment) {
+    ObjectNode rootNode = mapper.createObjectNode();
+
+    ObjectNode authenticatorSelection = mapper.createObjectNode();
+    authenticatorSelection.put("residentKey", residentKey);
+    authenticatorSelection.put("userVerification", userVerification);
+    authenticatorSelection.put("authenticatorAttachment", authenticatorAttachment);
+
+    rootNode.set("authenticatorSelection", authenticatorSelection);
+
+    rootNode.put("userName", userName);
+    rootNode.put("displayName", displayName);
+    rootNode.put("attestation", attestation);
+
+    return mapper.convertValue(rootNode, AttestationOptionsRequest.class);
   }
 
   /**
@@ -746,336 +1152,17 @@ class Passkey_UnitTests {
   }
 
   /**
-   * ##################################################
-   * ASSERTION OPTIONS
-   * ##################################################
+   * Builds an AssertionOptionsRequest to be processed by the passkeyServices
+   * instance
    * 
-   * This section contains the different test cases for generating assertion
-   * options
+   * Meant to mimic a JSON encoded object that will be sent to the API
    */
-
-  /**
-   * Discoverable credentials
-   * Ensure that assertion options can be generated for discoverable credential
-   * flows
-   * 
-   * No credential creation needed, as the service should not populate the
-   * `allowCredentials` list
-   * 
-   * We will also ensure that even when a credential is added to this user, that
-   * the list will remain null
-   */
-
-  @Test
-  void assertionOptions_DiscoverableCredentials() {
-    try {
-      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("");
-
-      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
-      assertInstanceOf(AssertionOptionsResponse.class, assertionOptionsResponse);
-
-      /**
-       * Ensure the correct RP ID is conveyed
-       */
-      assertEquals("localhost", assertionOptionsResponse.getPublicKey().getRpId());
-
-      assertEquals(null, assertionOptionsResponse.getPublicKey().getAllowCredentials());
-
-    } catch (Exception e) {
-      fail("Failed to create authentication options");
-    }
-  }
-
-  /**
-   * Non-discoverable credentials
-   * Ensure that assertion options can be generated for non-discoverable
-   * credential flows
-   * 
-   * Need to register a credential first in order to validate that the
-   * `allowCredentials` list is populated with the credential ID of the created
-   * credential
-   */
-
-  @Test
-  void assertionOptions_NonDiscoverableCredentials() {
-    try {
-      CredentialsContainer credentials = createCredentialContainer();
-
-      /**
-       * Register a credential for the user
-       */
-      AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
-          "assertion_options_1",
-          "assertion_options_1",
-          "direct",
-          "preferred",
-          "preferred",
-          "");
-      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
-      String jsonString = mapper.writeValueAsString(response.getPublicKey());
-      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
-      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
-          .create(options);
-      AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
-      AttestationResultResponse attestationResultResponse = passkeyOperations
-          .attestationResult(attestationResult);
-
-      if (!attestationResultResponse.getStatus().equals("created")) {
-        /**
-         * Credential was not created, return error
-         */
-        fail();
-      }
-
-      /**
-       * Create assertionOptions for the specified user
-       */
-
-      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("assertion_options_1");
-
-      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
-      assertInstanceOf(AssertionOptionsResponse.class, assertionOptionsResponse);
-
-      /**
-       * Ensure the correct RP ID is conveyed
-       */
-      assertEquals(1, assertionOptionsResponse.getPublicKey().getAllowCredentials().size());
-    } catch (Exception e) {
-      fail("Failed to register the credential");
-    }
-  }
-
   private AssertionOptionsRequest assertionOptionsRequestGenerator(
       String userName) {
     ObjectNode rootNode = mapper.createObjectNode();
     rootNode.put("userName", userName);
 
     return mapper.convertValue(rootNode, AssertionOptionsRequest.class);
-  }
-
-  /**
-   * ##################################################
-   * ASSERTION RESULT
-   * ##################################################
-   * 
-   * This section contains the different test cases for ensuring that a passkey
-   * can be used to authenticate
-   */
-
-  /**
-   * Control - Discoverable credential
-   * 
-   * Ensure that a user, with a registered passkey, can authenticate into an
-   * account using a discoverable credential flow
-   */
-  @Test
-  void assertionResult_DiscoverableCredentials() {
-    try {
-      CredentialsContainer credentials = createCredentialContainer();
-
-      /**
-       * Register a credential for the user
-       */
-      AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
-          "assertion_result_1",
-          "assertion_result_1",
-          "direct",
-          "preferred",
-          "preferred",
-          "");
-      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
-      String jsonString = mapper.writeValueAsString(response.getPublicKey());
-      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
-      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
-          .create(options);
-      AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
-      AttestationResultResponse attestationResultResponse = passkeyOperations
-          .attestationResult(attestationResult);
-
-      if (!attestationResultResponse.getStatus().equals("created")) {
-        /**
-         * Credential was not created, return error
-         */
-        fail();
-      }
-
-      /**
-       * Create assertionOptions for the specified user
-       */
-
-      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("");
-      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
-
-      /**
-       * Perform a mock get ceremony to authenticate a user
-       */
-
-      String jsonString_assertion = mapper.writeValueAsString(assertionOptionsResponse.getPublicKey());
-      PublicKeyCredentialRequestOptions options_assertion = assertionOptionstoPKC(jsonString_assertion);
-      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential = credentials
-          .get(options_assertion);
-
-      AssertionResultRequest assertionResultRequest = buildAssertionResultResponse(
-          assertionOptionsResponse.getRequestId(), credential);
-
-      AssertionResultResponse assertionResultResponse = passkeyOperations.assertionResponse(assertionResultRequest);
-
-      assertTrue(assertionResultResponse.getStatus().equals("ok"));
-
-    } catch (Exception e) {
-      fail("Failed to authenticate with credential");
-    }
-  }
-
-  /**
-   * Control - Non-discoverable credential
-   * 
-   * Ensure that a user, with a registered passkey, can authenticate into an
-   * account using a non-discoverable credential flow
-   */
-  @Test
-  void assertionResult_NonDiscoverableCredentials() {
-    try {
-      CredentialsContainer credentials = createCredentialContainer();
-
-      /**
-       * Register a credential for the user
-       */
-      AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
-          "assertion_result_2",
-          "assertion_result_2",
-          "direct",
-          "preferred",
-          "preferred",
-          "");
-      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
-      String jsonString = mapper.writeValueAsString(response.getPublicKey());
-      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
-      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
-          .create(options);
-      AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
-      AttestationResultResponse attestationResultResponse = passkeyOperations
-          .attestationResult(attestationResult);
-
-      if (!attestationResultResponse.getStatus().equals("created")) {
-        /**
-         * Credential was not created, return error
-         */
-        fail();
-      }
-
-      /**
-       * Create assertionOptions for the specified user
-       */
-
-      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("assertion_result_2");
-      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
-
-      /**
-       * Perform a mock get ceremony to authenticate a user
-       */
-
-      String jsonString_assertion = mapper.writeValueAsString(assertionOptionsResponse.getPublicKey());
-      PublicKeyCredentialRequestOptions options_assertion = assertionOptionstoPKC(jsonString_assertion);
-      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential = credentials
-          .get(options_assertion);
-
-      AssertionResultRequest assertionResultRequest = buildAssertionResultResponse(
-          assertionOptionsResponse.getRequestId(), credential);
-
-      AssertionResultResponse assertionResultResponse = passkeyOperations.assertionResponse(assertionResultRequest);
-
-      assertTrue(assertionResultResponse.getStatus().equals("ok"));
-
-    } catch (Exception e) {
-      fail("Failed to authenticate with credential");
-    }
-  }
-
-  /**
-   * Passkey deleted
-   * 
-   * Ensure that a user cannot authenticate with a passkey once it has been
-   * deleted from their account
-   */
-  /**
-   * Control - Non-discoverable credential
-   * 
-   * Ensure that a user, with a registered passkey, can authenticate into an
-   * account using a non-discoverable credential flow
-   */
-  @Test
-  void assertionResult_Deleted() {
-    try {
-      CredentialsContainer credentials = createCredentialContainer();
-
-      /**
-       * Register a credential for the user
-       */
-      AttestationOptionsRequest attestationOptionsRequest = attestationOptionsRequestGenerator(
-          "assertion_result_3",
-          "assertion_result_3",
-          "direct",
-          "preferred",
-          "preferred",
-          "");
-      AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
-      String jsonString = mapper.writeValueAsString(response.getPublicKey());
-      PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.fromJson(jsonString);
-      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = credentials
-          .create(options);
-      AttestationResultRequest attestationResult = buildAttestationResultResponse(response.getRequestId(), pkc);
-      AttestationResultResponse attestationResultResponse = passkeyOperations
-          .attestationResult(attestationResult);
-
-      if (!attestationResultResponse.getStatus().equals("created")) {
-        /**
-         * Credential was not created, return error
-         */
-        fail();
-      }
-
-      /**
-       * Ensure a successful auth request was processed
-       */
-
-      AssertionOptionsRequest assertionOptionsRequest = assertionOptionsRequestGenerator("assertion_result_3");
-      AssertionOptionsResponse assertionOptionsResponse = passkeyOperations.assertionOptions(assertionOptionsRequest);
-      String jsonString_assertion = mapper.writeValueAsString(assertionOptionsResponse.getPublicKey());
-      PublicKeyCredentialRequestOptions options_assertion = assertionOptionstoPKC(jsonString_assertion);
-      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential = credentials
-          .get(options_assertion);
-      AssertionResultRequest assertionResultRequest = buildAssertionResultResponse(
-          assertionOptionsResponse.getRequestId(), credential);
-      AssertionResultResponse assertionResultResponse = passkeyOperations.assertionResponse(assertionResultRequest);
-
-      /**
-       * Delete the credential
-       * 
-       * Will also test the ability of the delete method
-       */
-      UserCredentialDeleteResponse deleteResponse = passkeyOperations
-          .deleteCredential(UserCredentialDelete.builder().id(credential.getId().getBase64Url()).build());
-      assertTrue(deleteResponse.getResult().equals("deleted"));
-
-      /**
-       * Attempt to authenticate with the same credential
-       */
-
-      AssertionOptionsRequest assertionOptionsRequest_2 = assertionOptionsRequestGenerator("assertion_result_3");
-      AssertionOptionsResponse assertionOptionsResponse_2 = passkeyOperations
-          .assertionOptions(assertionOptionsRequest_2);
-      String jsonString_assertion_2 = mapper.writeValueAsString(assertionOptionsResponse_2.getPublicKey());
-      PublicKeyCredentialRequestOptions options_assertion_2 = assertionOptionstoPKC(jsonString_assertion_2);
-      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential_2 = credentials
-          .get(options_assertion_2);
-      AssertionResultRequest assertionResultRequest_2 = buildAssertionResultResponse(
-          assertionOptionsResponse_2.getRequestId(), credential_2);
-      assertThrows(Exception.class, () -> passkeyOperations.assertionResponse(assertionResultRequest_2));
-
-    } catch (Exception e) {
-      fail("Failed to authenticate with credential");
-    }
   }
 
   /**
