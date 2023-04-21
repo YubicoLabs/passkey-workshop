@@ -42,7 +42,7 @@ fi
 
 # modify and rebuild the web app
 rebuild=$(grep A6586UA84V react-app/source/public/.well-known/apple-app-site-association)
-if [[ -z "$rebuild" ]] ; then
+if [[ ! -z "$rebuild" ]] ; then
   echo "### rebuilding passkey-client image"
   sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/" react-app/source/public/.well-known/apple-app-site-association
   docker compose build passkey-client
