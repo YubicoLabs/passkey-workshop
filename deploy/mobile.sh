@@ -44,7 +44,7 @@ fi
 rebuild=$(grep A6586UA84V react-app/source/public/.well-known/apple-app-site-association)
 if [[ ! -z "$rebuild" ]] ; then
   echo "### rebuilding passkey-client image"
-  sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/" react-app/source/public/.well-known/apple-app-site-association
+  sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/g" react-app/source/public/.well-known/apple-app-site-association
   docker compose build passkey-client
 fi
 
@@ -70,10 +70,11 @@ sed -i '' "s/[a-z-]*\.trycloudflare\.com/$hostname/"	".env"
 
 echo "### editing Pawskey sources"
 sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/"	../examples/clients/mobile/iOS/PawsKey/PawsKey.xcodeproj/project.pbxproj
-sed -i '' "s#http://localhost:8080#https://$hostname#"	../examples/clients/mobile//iOS/PawsKey/Shared/RelyingParty.swift 
-sed -i '' "s/passkey.fyi/$hostname/"	../examples/clients/mobile/iOS/PawsKey/Shared/AccountManager.swift
-sed -i '' "s/passkey.fyi/$hostname/"	../examples/clients/mobile/iOS/PawsKey/Shared/PawsKey.entitlements
-sed -i '' "s/passkey.fyi/$hostname/"	../examples/clients/mobile/iOS/PawsKey/PawsKeyDebug.entitlements
+sed -i '' "s/replace-with-your-hostname.trycloudflare.com/$hostname/" \
+	../examples/clients/mobile//iOS/PawsKey/Shared/RelyingParty.swift \
+	../examples/clients/mobile/iOS/PawsKey/Shared/AccountManager.swift \
+	../examples/clients/mobile/iOS/PawsKey/Shared/PawsKey.entitlements \
+	../examples/clients/mobile/iOS/PawsKey/PawsKeyDebug.entitlements
 
 echo "### launching containers"
 docker compose --profile mobile up -d
