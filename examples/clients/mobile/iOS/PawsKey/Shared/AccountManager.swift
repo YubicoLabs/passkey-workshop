@@ -13,7 +13,7 @@ extension NSNotification.Name {
 }
 
 class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProviding, ASAuthorizationControllerDelegate {
-    let domain = "passkey.fyi" // This needs to match your RP Id
+    let domain = "replace-with-your-hostname.trycloudflare.com" // This needs to match your RP Id
     
     var authenticationAnchor: ASPresentationAnchor?
     var isPerformingModalReqest = false
@@ -43,20 +43,23 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         // Apple's AuthenticationServices Framework
         Task {
             
-            // Await Attestation Options from relying party
-            try await self.attestationOptionsResponse = rp.fetchRegistrationOptions(optionsRequest: AttestationOptionsRequest(userName: self.userName!))
+            do {
+                try await self.attestationOptionsResponse = rp.fetchAttestationOptions(optionsRequest: AttestationOptionsRequest(userName: self.userName!))
+            } catch {
+                throw error
+            }
             
             // Capture relying party attestation options
             self.requestId = self.attestationOptionsResponse?.requestId
             
             let challenge = Data(base64urlEncoded: (self.attestationOptionsResponse?.publicKey.challenge)!)
-            let userID = Data((self.attestationOptionsResponse?.publicKey.user.id.utf8)!)
+            let userID = Data(base64urlEncoded: (self.attestationOptionsResponse?.publicKey.user.id)!)
             let displayName = self.attestationOptionsResponse?.publicKey.user.displayName
             let publicKeyAlgorithms = getPublicKeyAlgorithms((self.attestationOptionsResponse?.publicKey.pubKeyCredParams)!)
            
             // Initialize an ASAuthorizationSecurityKeyPublicKeyCredentialRegistrationRequest
             let securityKeyRegistrationRequest =
-                securityKeyCredentialProvider.createCredentialRegistrationRequest(challenge: challenge!, displayName: displayName!, name: userName, userID: userID)
+                securityKeyCredentialProvider.createCredentialRegistrationRequest(challenge: challenge!, displayName: displayName!, name: userName, userID: userID!)
             
             // Set request options to the Security Key provider
             securityKeyRegistrationRequest.credentialParameters = publicKeyAlgorithms
@@ -100,16 +103,20 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
 
         // Fetch the registration options from the server and then make a passkey registration request
         Task {
-            try await self.attestationOptionsResponse = rp.fetchRegistrationOptions(optionsRequest: AttestationOptionsRequest(userName: self.userName!))
+            do {
+                try await self.attestationOptionsResponse = rp.fetchAttestationOptions(optionsRequest: AttestationOptionsRequest(userName: self.userName!))
+            } catch {
+                throw error
+            }
             
             // Capture relying party requestId
             self.requestId = self.attestationOptionsResponse?.requestId
             
             let challenge = Data(base64urlEncoded: (self.attestationOptionsResponse?.publicKey.challenge)!) // Base64URL Encoded
-            let userID = Data((self.attestationOptionsResponse?.publicKey.user.id.utf8)!) // UTF-8 Encoded?
+            let userID = Data(base64urlEncoded: (self.attestationOptionsResponse?.publicKey.user.id)!) // Base64URL Encoded
             
             let platformRegistrationRequest = publicKeyPlatformCredentialProvider.createCredentialRegistrationRequest(
-                challenge: challenge!, name: userName, userID: userID)
+                challenge: challenge!, name: userName, userID: userID!)
 
             // Use only ASAuthorizationPlatformPublicKeyCredentialRegistrationRequests or
             // ASAuthorizationSecurityKeyPublicKeyCredentialRegistrationRequests here. NOT BOTH?
@@ -131,8 +138,11 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         let rp = RelyingParty()
         
         Task {
-
-            try await self.assertionOptionsResponse = rp.fetchAssertionOptions(optionsRequest: AssertionOptionsRequest(userName: self.userName))
+            do {
+                try await self.assertionOptionsResponse = rp.fetchAssertionOptions(optionsRequest: AssertionOptionsRequest(userName: self.userName))
+            } catch {
+                throw error
+            }
             
             // Capture relying party requestId
             self.requestId = self.assertionOptionsResponse?.requestId
@@ -167,8 +177,11 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         let rp = RelyingParty()
 
         Task {
-
-            try await self.assertionOptionsResponse = rp.fetchAssertionOptions(optionsRequest: AssertionOptionsRequest(userName: self.userName!))
+            do {
+                try await self.assertionOptionsResponse = rp.fetchAssertionOptions(optionsRequest: AssertionOptionsRequest(userName: self.userName!))
+            } catch {
+                throw error
+            }
 
             // Capture relying party requestId
             self.requestId = self.assertionOptionsResponse?.requestId
@@ -196,7 +209,11 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         let rp = RelyingParty()
 
         Task {
-            try await self.assertionOptionsResponse = rp.fetchAssertionOptions(optionsRequest: AssertionOptionsRequest(userName: self.userName))
+            do {
+                try await self.assertionOptionsResponse = rp.fetchAssertionOptions(optionsRequest: AssertionOptionsRequest(userName: self.userName))
+            } catch {
+                throw error
+            }
 
             // Capture relying party requestId
             self.requestId = self.assertionOptionsResponse?.requestId
@@ -244,11 +261,24 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             let rp = RelyingParty()
             
             Task {
-                let registrationAttestationResultsStatus = try await rp.sendAttestationResults(attestationResults: self.attestationResultsRequest!)
+                do {
+                    let registrationAttestationResultsStatus = try await rp.sendAttestationResults(attestationResults: self.attestationResultsRequest!)
+                    if(registrationAttestationResultsStatus?.status == "error") {
+                        DispatchQueue.main.async {
+                            self.didFailSignIn()
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.didFinishSignIn()
+                        }
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        self.didFailSignIn()
+                    }
+                }
             }
             
-            didFinishSignIn()
-        
         // [REGISTRATION] [Security Key]
         case let securityKeyRegistration as ASAuthorizationSecurityKeyPublicKeyCredentialRegistration:
             logger.log("A new [Security Key] passkey was registered: \(securityKeyRegistration)")
@@ -266,24 +296,37 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             let rp = RelyingParty()
             
             Task {
-                let registrationAttestationResultsStatus = try await rp.sendAttestationResults(attestationResults: self.attestationResultsRequest!)
+                do {
+                    let registrationAttestationResultsStatus = try await rp.sendAttestationResults(attestationResults: self.attestationResultsRequest!)
+                    if(registrationAttestationResultsStatus?.status == "error") {
+                        DispatchQueue.main.async {
+                            self.didFailSignIn()
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.didFinishSignIn()
+                        }
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        self.didFailSignIn()
+                    }
+                }
             }
-            
-            didFinishSignIn()
             
         // [ASSERTION] [Platform]
         case let platformAssertionRequest as ASAuthorizationPlatformPublicKeyCredentialAssertion:
             logger.log("A PLATFORM passkey was used to sign in\n[CredentialId]: \(platformAssertionRequest.credentialID.toBase64urlEncodedString())\n")
             
             // Prepare response objects in the format the RP expects: Base64URLString
-            let userID = String(data: platformAssertionRequest.userID, encoding: .utf8) // UTF-8 encoded
+            let userID = platformAssertionRequest.userID.toBase64urlEncodedString()
             let authenticatorData = platformAssertionRequest.rawAuthenticatorData.toBase64urlEncodedString()
             let signature = platformAssertionRequest.signature.toBase64urlEncodedString()
             let clientDataJSON = platformAssertionRequest.rawClientDataJSON.toBase64urlEncodedString()
             let credentialId = platformAssertionRequest.credentialID.toBase64urlEncodedString()
             
             // Build authenticator response object
-            let authenticatorResponse = AssertionResults.Response(authenticatorData: authenticatorData, signature: signature, userHandle: userID!, clientDataJSON: clientDataJSON)
+            let authenticatorResponse = AssertionResults.Response(authenticatorData: authenticatorData, signature: signature, userHandle: userID, clientDataJSON: clientDataJSON)
             
             // Build final assertion result object for sending to relying party
             let assertionResult = AssertionResults.AssertionResult(id: credentialId, response: authenticatorResponse)
@@ -292,16 +335,22 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             self.assertionResults = AssertionResults(requestId: self.requestId!, assertionResult: assertionResult)
             
             let rp = RelyingParty()
-        
+            
             Task {
-                let assertionResultStatus = try await rp.sendAssertionResults(assertionResults: self.assertionResults!)!
-                if(assertionResultStatus.status == "error") {
+                do {
+                    let assertionResultStatus = try await rp.sendAssertionResults(assertionResults: self.assertionResults!)!
+                    if(assertionResultStatus.status == "error") {
+                        DispatchQueue.main.async {
+                            self.didFailSignIn()
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.didFinishSignIn()
+                        }
+                    }
+                } catch {
                     DispatchQueue.main.async {
                         self.didFailSignIn()
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.didFinishSignIn()
                     }
                 }
             }
@@ -311,14 +360,14 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             logger.log("A Security Key was used to sign in\n[CredentialId]: \(securityKeyAssertionRequest.credentialID.toBase64urlEncodedString())\n")
             
             // Prepare response objects in the format the RP expects: Base64URLString
-            let userID = String(data: securityKeyAssertionRequest.userID, encoding: .utf8) // UTF-8 encoded
+            let userID = securityKeyAssertionRequest.userID.toBase64urlEncodedString()
             let authenticatorData = securityKeyAssertionRequest.rawAuthenticatorData.toBase64urlEncodedString()
             let signature = securityKeyAssertionRequest.signature.toBase64urlEncodedString()
             let clientDataJSON = securityKeyAssertionRequest.rawClientDataJSON.toBase64urlEncodedString()
             let credentialId = securityKeyAssertionRequest.credentialID.toBase64urlEncodedString()
             
             // Build authenticator response object
-            let authenticatorResponse = AssertionResults.Response(authenticatorData: authenticatorData, signature: signature, userHandle: userID!, clientDataJSON: clientDataJSON)
+            let authenticatorResponse = AssertionResults.Response(authenticatorData: authenticatorData, signature: signature, userHandle: userID, clientDataJSON: clientDataJSON)
             
             // Build final assertion result object for sending to relying party
             let assertionResult = AssertionResults.AssertionResult(id: credentialId, response: authenticatorResponse)
@@ -327,16 +376,22 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             self.assertionResults = AssertionResults(requestId: self.requestId!, assertionResult: assertionResult)
             
             let rp = RelyingParty()
-        
+            
             Task {
-                let assertionResultStatus = try await rp.sendAssertionResults(assertionResults: self.assertionResults!)!
-                if(assertionResultStatus.status == "error") {
+                do {
+                    let assertionResultStatus = try await rp.sendAssertionResults(assertionResults: self.assertionResults!)!
+                    if(assertionResultStatus.status == "error") {
+                        DispatchQueue.main.async {
+                            self.didFailSignIn()
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.didFinishSignIn()
+                        }
+                    }
+                } catch {
                     DispatchQueue.main.async {
                         self.didFailSignIn()
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.didFinishSignIn()
                     }
                 }
             }
