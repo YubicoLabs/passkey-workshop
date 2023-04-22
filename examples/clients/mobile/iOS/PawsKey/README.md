@@ -21,6 +21,6 @@ Build upon this app to allow users to authenticate using passkeys (Touch & Face 
 6. Build/Run app from Xcode on a physical iOS/iPadOS device 
 
 # Demo
-TBD
+![Demo - iPhone Xr iOS 16.1](/assets/PawsKeyDemo.gif)
 
 
