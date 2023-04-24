@@ -8,7 +8,7 @@ const PasskeyServices = {
   updateCredential
 }
 
-const baseURl = "http://localhost:8080/v1"
+const baseURL = process.env.REACT_APP_API || "http://localhost:8080/v1";
 
 async function getAttestationOptions(username, residentKeyReq, authAttachment, uvReq, attestation) {
   try {
@@ -31,7 +31,7 @@ async function getAttestationOptions(username, residentKeyReq, authAttachment, u
       body: JSON.stringify(reqData)
     };
 
-    const response = await fetch(`${baseURl}/attestation/options`, requestOptions);
+    const response = await fetch(`${baseURL}/attestation/options`, requestOptions);
     const responseJSON = await response.json();
 
     console.info("Printing registration options");
@@ -60,7 +60,7 @@ async function sendAttestationResult(requestID, makeCredentialResponse) {
       body: JSON.stringify(reqData)
     }
 
-    const response = await fetch(`${baseURl}/attestation/result`, requestOptions);
+    const response = await fetch(`${baseURL}/attestation/result`, requestOptions);
     const responseJSON = await response.json();
 
     console.info("Printing registration result");
@@ -89,7 +89,7 @@ async function getAssertionOptions(username) {
       body: JSON.stringify(reqData)
     }
 
-    const response = await fetch(`${baseURl}/assertion/options`, requestOptions);
+    const response = await fetch(`${baseURL}/assertion/options`, requestOptions);
     const responseJSON = await response.json();
 
     console.info("Printing authentication options");
@@ -119,7 +119,7 @@ async function sendAssertionResult(requestID, assertionResult) {
       body: JSON.stringify(reqData)
     }
 
-    const response = await fetch(`${baseURl}/assertion/result`, requestOptions);
+    const response = await fetch(`${baseURL}/assertion/result`, requestOptions);
     const responseJSON = await response.json();
 
     console.info("Printing authentication result");
@@ -143,7 +143,7 @@ async function getCredentials(username) {
       }
     }
 
-    const response = await fetch(`${baseURl}/user/credentials/${username}`, requestOptions);
+    const response = await fetch(`${baseURL}/user/credentials/${username}`, requestOptions);
     const responseJSON = await response.json();
 
     console.info(`Printing credentials list for ${username}`);
@@ -174,7 +174,7 @@ async function deleteCredential(credentialId) {
 
     console.warn(requestOptions)
 
-    const response = await fetch(`${baseURl}/user/credentials`, requestOptions);
+    const response = await fetch(`${baseURL}/user/credentials`, requestOptions);
     const responseJSON = await response.json();
 
     return responseJSON;
@@ -203,7 +203,7 @@ async function updateCredential(credentialId, newNickname) {
 
     console.warn(requestOptions)
 
-    const response = await fetch(`${baseURl}/user/credentials`, requestOptions);
+    const response = await fetch(`${baseURL}/user/credentials`, requestOptions);
     const responseJSON = await response.json();
 
     return responseJSON;

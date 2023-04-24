@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yubico.webauthn.RegisteredCredential;
+import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import com.yubico.webauthn.data.UserIdentity;
@@ -82,6 +83,7 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
           .lastUpdateTime(registration.getLastUpdateTime().toEpochMilli())
           .lastUsedTime(registration.getLastUsedTime().toEpochMilli())
           .credential(mapper.writeValueAsString(registration.getCredential()))
+          .iconURI(registration.getIconURI().isPresent() ? registration.getIconURI().get() : null)
           .build();
 
       credentialRegistrationRepositoryMySql.save(newItem);
@@ -143,6 +145,7 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
           .lastUsedTime(Instant.ofEpochMilli(regDBO.getLastUpdateTime()))
           .lastUpdateTime(Instant.ofEpochMilli(regDBO.getLastUpdateTime()))
           .credential(mapper.readValue(regDBO.getCredential(), RegisteredCredential.class))
+          .iconURI(Optional.ofNullable(regDBO.getIconURI()))
           .build();
     } catch (Exception e) {
       e.printStackTrace();

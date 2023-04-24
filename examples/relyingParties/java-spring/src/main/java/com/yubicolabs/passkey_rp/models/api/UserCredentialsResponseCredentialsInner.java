@@ -42,6 +42,9 @@ public class UserCredentialsResponseCredentialsInner {
     return this;
   }
 
+  @JsonProperty("iconURI")
+  private String iconURI;
+
   /**
    * Get id
    * 
@@ -137,6 +140,21 @@ public class UserCredentialsResponseCredentialsInner {
     this.lastUsedTime = lastUsedTime;
   }
 
+  /**
+   * Get iconURI
+   * 
+   * @return iconURI
+   */
+
+  @Schema(name = "iconURI", example = "YubiKey 5Ci", required = false)
+  public String getIconURI() {
+    return iconURI;
+  }
+
+  public void setIconURI(String iconURI) {
+    this.iconURI = iconURI;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -167,6 +185,7 @@ public class UserCredentialsResponseCredentialsInner {
     sb.append("    nickName: ").append(toIndentedString(nickName)).append("\n");
     sb.append("    registrationTime: ").append(toIndentedString(registrationTime)).append("\n");
     sb.append("    lastUsedTime: ").append(toIndentedString(lastUsedTime)).append("\n");
+    sb.append("    iconURI: ").append(toIndentedString(iconURI)).append("\n");
     sb.append("}");
     return sb.toString();
   }

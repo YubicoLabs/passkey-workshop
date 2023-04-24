@@ -1,15 +1,17 @@
 # Getting started
 
-These are items to help to configure keycloak to reg/auth using a custom Authenticator SPI to handle Passkey transactions with our custom WebAuthn server
+These are items to help to configure keycloak to perform registration and authentication using a custom Authenticator SPI to handle Passkey transactions with our custom WebAuthn server
 
-This is a multi-part process, which requires:
+It is highly recommend that you deploy keycloak through our deploy script, by following the instructions on our [deployment page](https://yubicolabs.github.io/passkey-workshop/docs/deploy).
+
+Once the application is deployed, you may access the web client at [localhost:8081](http://localhost:8081)
+
+If you wish to deploy the items manually, the steps are below.
 
 1. Deploying a Docker container running Keycloak
 2. Building this Java project, and dropping it into the Keycloak providers folder
 3. Restarting the Keycloak server to add the custom SPI
 4. Going into Keycloak to make the necessary configurations
-
-Overall, we need a way to automate as many of the configurations as possible. I'll outline the steps below, then we can determine if these can be automated, or need to be done manually by a developer using this project
 
 ## Start the project
 

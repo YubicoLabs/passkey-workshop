@@ -11,38 +11,43 @@ import Foundation
 
 class RelyingParty {
     
-    static let API_ENDPOINT = "http://localhost:8080/v1"
+    static let API_ENDPOINT = "https://replace-with-your-hostname.trycloudflare.com/v1"
     
     // #ATTESTATION OPTIONS
+    
     // Get Attestation Options for user - /v1/attestation/options (POST)
-    func fetchRegistrationOptions(optionsRequest: AttestationOptionsRequest) async throws -> AttestationOptionsResponse? {
+    func fetchAttestationOptions(optionsRequest: AttestationOptionsRequest) async throws -> AttestationOptionsResponse? {
         var attestationOptionsResponse: AttestationOptionsResponse? = nil
-        
+        let session = URLSession.shared
+
         // Encode optionsRequest model to JSON data to send as our body payload
-        guard let jsonBodyData = try? JSONEncoder().encode(optionsRequest) else {
-            return nil
-        }
-        
+        guard let jsonBodyData = try? JSONEncoder().encode(optionsRequest) else { return nil }
+
         jsonBodyData.printPrettyJSON("Sending AttestationOptions request to RP")
-        
+
         var request = URLRequest(url: getURLEndpoint(endpoint: Endpoint.attestationOptions)!)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.httpBody = jsonBodyData
-        
+
         do {
-            let (data, error) = try await URLSession.shared.data(for: request)
-            do{
-                data.printPrettyJSON("Received AttestationOptions from RP")
-                attestationOptionsResponse = try JSONDecoder().decode(AttestationOptionsResponse.self, from: data)
-                
-            } catch {
-                print("fetchRegistrationOptions: failed to parse:\(error.localizedDescription)")
+            let (data, response) = try await session.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
+                data.printPrettyJSON("fetchAttestationOptions invalidResponse")
+                throw RelyingPartyError.invalidResponse
             }
             
+            do {
+                data.printPrettyJSON("Received AttestationOptions from RP")
+                attestationOptionsResponse = try JSONDecoder().decode(AttestationOptionsResponse.self, from: data)
+            } catch {
+                throw RelyingPartyError.parsingFailed
+            }
+
         } catch {
-            print("fetchRegistrationOptions error:\(error)")
+            throw RelyingPartyError.requestFailed
         }
         return attestationOptionsResponse
     }
@@ -51,11 +56,9 @@ class RelyingParty {
     // Get Attestation Options - /v1/attestation/result (POST)
     func sendAttestationResults(attestationResults: AttestationResultsRequest) async throws -> AttestationResultsStatus? {
         var attestationResultStatus: AttestationResultsStatus?
-        
+        let session = URLSession.shared
         // Convert model to JSON to send as body
-        guard let jsonBodyData = try? JSONEncoder().encode(attestationResults) else {
-            return nil
-        }
+        guard let jsonBodyData = try? JSONEncoder().encode(attestationResults) else { return nil }
         
         jsonBodyData.printPrettyJSON("Sending AttestationResult to RP")
         
@@ -66,22 +69,28 @@ class RelyingParty {
         request.httpBody = jsonBodyData
         
         do {
-            let (data, error) = try await URLSession.shared.data(for: request)
-            do{
+            let (data, response) = try await session.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
+                data.printPrettyJSON("sendAttestationResults invalidResponse")
+                throw RelyingPartyError.invalidResponse
+            }
+            
+            do {
                 data.printPrettyJSON("Received AttestationResult from RP")
                 attestationResultStatus = try JSONDecoder().decode(AttestationResultsStatus.self, from: data)
             } catch {
-                print("sendAttestationResults: failed to parse:\(error.localizedDescription)")
+                throw RelyingPartyError.parsingFailed
             }
         } catch {
-            print("sendAttestationResults error:\(error)")
+            throw RelyingPartyError.requestFailed
         }
         return attestationResultStatus
     }
     
     func fetchAssertionOptions(optionsRequest: AssertionOptionsRequest) async throws -> AssertionOptionsResponse? {
-        
         var assertionOptionsResponse: AssertionOptionsResponse? = nil
+        let session = URLSession.shared
         
         // Convert model to JSON to send as body
         guard let jsonBodyData = try? JSONEncoder().encode(optionsRequest) else {
@@ -97,15 +106,21 @@ class RelyingParty {
         request.httpBody = jsonBodyData
     
         do {
-            let (data, error) = try await URLSession.shared.data(for: request)
-            do{
+            let (data, response) = try await session.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
+                data.printPrettyJSON("fetchAssertionOptions invalidResponse")
+                throw RelyingPartyError.invalidResponse
+            }
+            
+            do {
                 data.printPrettyJSON("Received AssertionOptions response from RP")
                 assertionOptionsResponse = try JSONDecoder().decode(AssertionOptionsResponse.self, from: data)
             } catch {
-                print("fetchAssertionOptions: failed to parse:\(error.localizedDescription)")
+                throw RelyingPartyError.parsingFailed
             }
         } catch {
-            print("fetchAssertionOptions error:\(error)")
+            throw RelyingPartyError.requestFailed
         }
         return assertionOptionsResponse
     }
@@ -113,8 +128,8 @@ class RelyingParty {
     // #ASSERTION RESULTS
     // Send public-key assertion response to relying party
     func sendAssertionResults(assertionResults: AssertionResults) async throws -> AssertionResultsStatus? {
-        
         var assertionResultsStatus: AssertionResultsStatus? = nil
+        let session = URLSession.shared
         
         // Convert model to JSON to send as body
         guard let jsonBodyData = try? JSONEncoder().encode(assertionResults) else {
@@ -129,15 +144,20 @@ class RelyingParty {
         request.httpBody = jsonBodyData
         
         do {
-            let (data, error) = try await URLSession.shared.data(for: request)
+            let (data, response) = try await session.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
+                data.printPrettyJSON("sendAssertionResults invalidResponse")
+                throw RelyingPartyError.invalidResponse
+            }
             do {
-                assertionResultsStatus = try? JSONDecoder().decode(AssertionResultsStatus.self, from: data)
                 data.printPrettyJSON("Received AssertionResult Status from RP:")
+                assertionResultsStatus = try JSONDecoder().decode(AssertionResultsStatus.self, from: data)
             } catch {
-                return AssertionResultsStatus.init(status: "error", error: "\(error.localizedDescription)")
+                throw RelyingPartyError.parsingFailed
             }
         } catch {
-            print("sendAssertionResults error:\(error)")
+            throw RelyingPartyError.requestFailed
         }
         return assertionResultsStatus
     }
@@ -180,10 +200,11 @@ enum Endpoint {
     case assertionResult
 }
 
-enum NetworkError: Error {
+enum RelyingPartyError: Error {
     case invalidURL
     case requestFailed
     case invalidResponse
+    case parsingFailed
 }
 
 // Response to a new credential creation

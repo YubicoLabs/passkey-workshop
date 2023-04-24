@@ -75,6 +75,7 @@
   height: 85px;
   border-radius: 50%;
   margin: auto;
+  justify-content: center;
 }
 
 @media screen and (max-width: 576px) {

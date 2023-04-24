@@ -54,6 +54,7 @@ CREATE TABLE credential_registrations (
   last_used_time BIGINT,
   registration_time BIGINT,
   user_handle TEXT --base64url string denoting the ID of the user
+  iconURI TEXT
 );
 ```
 
