@@ -1,7 +1,5 @@
 # Passkey workshop Docker Deployments
 
-NOTE: WORK IN PROGRESS
-
 This directory is an alternative to the ../scripts directory and can be used to deploy the passkey workshop environment.
 
 Differences with ../scripts (power)shell scripts:
@@ -10,10 +8,10 @@ Differences with ../scripts (power)shell scripts:
 - cloudflared is used to expose local docker containers to mobile clients
 - a proxy is used so that all traffic between client and RP can be routed over a single tunnel
 
-Please note that:
+This document describes how to manually deploy the web and mobile environments, but this can be done automatically with the deploy scripts:
 
-- Some code changes are required as the current code often hardcodes endpoint URLs to `localhost`.
-- Deployment is now partially a manual process but can be automated later.
+- web.sh - for a simple web deployment running on localhost
+- mobile.sh - for a proxied web and mobile deployment running over a cloud tunnel
 
 # Deploy for web
 
