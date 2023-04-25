@@ -776,7 +776,7 @@ class Passkey_UnitTests {
       assertEquals(env.getProperty("RP_ID"), assertionOptionsResponse.getPublicKey().getRpId());
 
       /**
-       * Ensure the allowCredentials list is not present
+       * Ensure the allowCredentials list contains one entry
        */
       assertEquals(1, assertionOptionsResponse.getPublicKey().getAllowCredentials().size());
     } catch (Exception e) {
