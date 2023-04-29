@@ -11,6 +11,6 @@ cp -r ../../examples/clients/web/react/passkey-client ./source/
 
 echo -e "\n****************************************"
 echo "Composing new docker container"
-docker compose up -d
+docker-compose up -d
 echo "Docker container composed"
 echo "****************************************"

@@ -14,7 +14,7 @@ if [ ! -e .env ]; then
 
 fi
 
-docker compose up -d
+docker-compose up -d
 
 MY_CURRENT_PASSWORD=$(cat .env | xargs | sed 's/[^=]*=//')
 

@@ -8,7 +8,7 @@ const PasskeyServices = {
   updateCredential
 }
 
-const baseURL = process.env.REACT_APP_API || "http://localhost:8080/v1";
+const baseURL = process.env.REACT_APP_API || "https://api.pawskey.co/v1";
 
 async function getAttestationOptions(username, residentKeyReq, authAttachment, uvReq, attestation) {
   try {

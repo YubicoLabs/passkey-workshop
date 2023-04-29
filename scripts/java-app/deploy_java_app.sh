@@ -38,6 +38,6 @@ fi
 
 echo -e "\n****************************************"
 echo "Composing new docker container"
-docker compose up -d
+docker-compose up -d
 echo "Docker container composed"
 echo "****************************************"

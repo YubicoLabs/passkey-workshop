@@ -13,5 +13,4 @@ services:
       RP_ATTESTATION_TRUST_STORE: "${RP_ATTESTATION_TRUST_STORE}"
       DATABASE_TYPE: "${DATABASE_TYPE}"
       DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
-    ports:
-      - 8080:8080
+    network_mode: 'host'

@@ -7,7 +7,7 @@ source $CONFIG_FILE
 
 # Create a random number for repeated automated deployment
 function getRandomValue {
-    echo $(ping -c 1 yubico.com |md5 | head -c$1; echo)
+    echo $(ping -c 1 yubico.com |md5sum | head -c 1; echo)
 }
 
 echo -e "\n****************************************"
