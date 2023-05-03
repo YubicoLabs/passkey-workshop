@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+.button {
+  color: white;
+  background-color: teal;
+  padding: 15px 15px;
+  margin: 4px 2px;
+}
+</style>
+</head>
+<body>
+
+<script>
+
+var createOptions = {
+    publicKey: {
+        rp: {
+            name: "Example Relying Party"
+        },
+        user: {	// user details, set by server
+            id: new ArrayBuffer(16),	// opaque user handle
+            name: "johnny",
+            displayName: "John Doe"
+        },
+        pubKeyCredParams: [ ],
+        authenticatorSelection: {
+          residentKey: "required"
+        },
+        challenge: new ArrayBuffer(16)	// random nonce set by server
+    }
+};
+
+var getOptions = {
+    publicKey: {
+        challenge: new ArrayBuffer(16)	// random nonce set by server
+    },
+};
+
+function create() {
+    navigator.credentials.create(createOptions)
+        .then( console.log )
+}
+
+function get() {
+    navigator.credentials.get(getOptions)
+        .then( console.log )
+}
+
+</script>
+
+<div>
+    <button class="button" id="create" onClick="create()">navigator.credentials.create</button>
+    <button class="button" id="get"    onClick="get()">navigator.credentials.get</button>
+</div>
+
+Open your JavaScript Console to view responses from your authenticator.
+
+</body>
+</html>
