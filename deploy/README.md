@@ -27,19 +27,21 @@ Also note that this deployment currently does not use keycloak, so only the Test
 
 To deploy the mobile client:
 
-- If applicable, stop and remove any running containers:
+1. From a terminal window, change into de deploy directory
+
+2. If applicable, stop and remove any running containers:
 
 	docker compose --profile mobile --profile web down
 
-- Copy the environment file
+3. Copy the environment file
 
 	cp tunnel.env .env
 
-- Copy the frontend code
+4. Copy the frontend code
 
 	cp -r ../examples/clients/web/react/passkey-client/ react-app/source
 
-- Edit the file `react-app/source/public/.well-known/apple-app-site-association` with your AppID. For instance so it reads:
+5. Edit the file `react-app/source/public/.well-known/apple-app-site-association` with your AppID. For instance so it reads:
 
 ```
 $ cat react-app/source/public/.well-known/apple-app-site-association 
@@ -55,21 +57,21 @@ $ cat react-app/source/public/.well-known/apple-app-site-association
 where `UVWXYZ1234` is your Team ID.
 Read [here](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/) how to locate your Team ID.
 
-- As the `passkey-client` source code has changed, rebuild the previously built image:
+6. As the `passkey-client` source code has changed, rebuild the previously built image:
 
 	docker compose build passkey-client
 
-- Copy the backend code
+7. Copy the backend code
 
 	cp -r  ../examples/relyingParties/java-spring/ java-app/source/
 
 No changes are required.
 
-- Start your tunnel:
+8. Start your tunnel:
 
 	docker compose --profile tunnel up -d
 
-- Lookup the tunnel URL in cloudflared's output, either in Docker Desktop or using:
+9. Lookup the tunnel URL in cloudflared's output, either in Docker Desktop or using:
 
 	docker compose --profile tunnel logs
 
@@ -84,7 +86,7 @@ INF +---------------------------------------------------------------------------
 
 when you are assigned the tunnel hostname `your-proxied-tunnel-endpoint.trycloudflare.com`.
 
-- Edit your .env file and set the values of `RP_ID`, `RP_ALLOWED_ORIGINS`, and `RP_ALLOWED_CROSS_ORIGINS` to your assigned hostname (`your-proxied-tunnel-endpoint.trycloudflare.com` in the example):
+10. Edit your .env file and set the values of `RP_ID`, `RP_ALLOWED_ORIGINS`, and `RP_ALLOWED_CROSS_ORIGINS` to your assigned hostname (`your-proxied-tunnel-endpoint.trycloudflare.com` in the example):
 
 ```
 RP_ID=replace-with-your-hostname.trycloudflare.com
@@ -92,25 +94,25 @@ RP_ALLOWED_ORIGINS=replace-with-your-hostname.trycloudflare.com
 RP_ALLOWED_CROSS_ORIGINS=replace-with-your-hostname.trycloudflare.com
 ```
 
-- Also edit the URL for your RP backend API so it includes your tunnel hostname:
+Also edit the URL for your RP backend API so it includes your tunnel hostname:
 
 ```
 REACT_APP_API=https://replace-with-your-hostname.trycloudflare.com/v1
 ```
 
-- Run:
+11. Run:
 
 	docker compose --profile mobile up -d
 
-- Point your browser to
+12. Point your browser to
 
 	https://your-proxied-tunnel-endpoint.trycloudflare.com/
 
-- Verify that the testPanel works before proceeding with the iOS client code in XCode.
+13. Verify that the testPanel works before proceeding with the iOS client code in XCode.
 
-- Start XCode with the iOS sample code in directory `../examples/clients/mobile/iOS/PawsKey`
+14. Start XCode with the iOS sample code in directory `../examples/clients/mobile/iOS/PawsKey`
 
-- Change the Bundle Identifier from `fyi.passkey.pawskey` to an identifier of your own
+Make the following changes to the sources:
 
 - In the Associated Domains Capability settings, change `webcredentials:passkey.fyi` to `webcredentials:your-proxied-tunnel-endpoint.trycloudflare.com` (use your tunnel hostname).
 
@@ -122,7 +124,7 @@ REACT_APP_API=https://replace-with-your-hostname.trycloudflare.com/v1
 
 	static let API_ENDPOINT = "https://your-proxied-tunnel-endpoint.trycloudflare.com/v1"
 
-- Build and run the Pawskey application on your iOS device.
+15. Build and run the Pawskey application on your iOS device.
 
 # Cleaning up
 
