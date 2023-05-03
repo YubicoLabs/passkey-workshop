@@ -46,13 +46,13 @@ $ cat react-app/source/public/.well-known/apple-app-site-association
 {
   "webcredentials": {
     "apps": [
-      "UVWXYZ1234.com.mydomain.pawskeyUVWXYZ1234"
+      "UVWXYZ1234.fyi.passkey.pawskeyUVWXYZ1234"
     ]
   }
 }
 ```
 
-where `UVWXYZ1234` is your Team ID and com.mydomain is unique for your organization.
+where `UVWXYZ1234` is your Team ID.
 Read [here](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/) how to locate your Team ID.
 
 - As the `passkey-client` source code has changed, rebuild the previously built image:
