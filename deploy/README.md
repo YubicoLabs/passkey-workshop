@@ -25,9 +25,9 @@ Note that this also deploys the web front-end in order to demonstrate copyable p
 
 Also note that this deployment currently does not use keycloak, so only the TestPanel can be used in the web application.
 
-To deploy the mobile client:
+To deploy the workshop environment using docker:
 
-1. From a terminal window, change into de deploy directory
+1. From a terminal window, change into the deploy directory
 
 2. If applicable, stop and remove any running containers:
 
@@ -57,7 +57,7 @@ $ cat react-app/source/public/.well-known/apple-app-site-association
 where `UVWXYZ1234` is your Team ID.
 Read [here](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/) how to locate your Team ID.
 
-6. As the `passkey-client` source code has changed, rebuild the previously built image:
+6. As the `passkey-client` source code has changed, (re)build the docker image:
 
 	docker compose build passkey-client
 
