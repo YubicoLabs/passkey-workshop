@@ -31,15 +31,15 @@ To deploy the workshop environment using docker:
 
 2. If applicable, stop and remove any running containers:
 
-	docker compose --profile mobile --profile web down
+    docker compose --profile mobile --profile web down
 
 3. Copy the environment file
 
-	cp tunnel.env .env
+    cp tunnel.env .env
 
 4. Copy the frontend code
 
-	cp -r ../examples/clients/web/react/passkey-client/ react-app/source
+    cp -r ../examples/clients/web/react/passkey-client/ react-app/source
 
 5. Edit the file `react-app/source/public/.well-known/apple-app-site-association` with your AppID. For instance so it reads:
 
@@ -59,21 +59,21 @@ Read [here](https://developer.apple.com/help/account/manage-your-team/locate-you
 
 6. As the `passkey-client` source code has changed, (re)build the docker image:
 
-	docker compose build passkey-client
+    docker compose build passkey-client
 
 7. Copy the backend code
 
-	cp -r  ../examples/relyingParties/java-spring/ java-app/source/
+    cp -r  ../examples/relyingParties/java-spring/ java-app/source/
 
 No changes are required.
 
 8. Start your tunnel:
 
-	docker compose --profile tunnel up -d
+    docker compose --profile tunnel up -d
 
 9. Lookup the tunnel URL in cloudflared's output, either in Docker Desktop or using:
 
-	docker compose --profile tunnel logs
+    docker compose --profile tunnel logs
 
 For instance, the logfile shows:
 
@@ -102,11 +102,11 @@ REACT_APP_API=https://replace-with-your-hostname.trycloudflare.com/v1
 
 11. Run:
 
-	docker compose --profile mobile up -d
+    docker compose --profile mobile up -d
 
 12. Point your browser to
 
-	https://your-proxied-tunnel-endpoint.trycloudflare.com/
+    https://your-proxied-tunnel-endpoint.trycloudflare.com/
 
 13. Verify that the testPanel works before proceeding with the iOS client code in XCode.
 
@@ -118,11 +118,11 @@ Make the following changes to the sources:
 
 - In the file `examples/clients/mobile/iOS/PawsKey/Shared/AccountManager.swift`, update the domain variable accordingly. For instance:
 
-	let domain = "your-proxied-tunnel-endpoint.trycloudflare.com"
+    let domain = "your-proxied-tunnel-endpoint.trycloudflare.com"
 
 - In the file `examples/clients/mobile/iOS/PawsKey/Shared/RelyingParty.swift`, update the `API_ENDPOINT` accordingly. For instance:
 
-	static let API_ENDPOINT = "https://your-proxied-tunnel-endpoint.trycloudflare.com/v1"
+    static let API_ENDPOINT = "https://your-proxied-tunnel-endpoint.trycloudflare.com/v1"
 
 15. Build and run the Pawskey application on your iOS device.
 
@@ -130,11 +130,11 @@ Make the following changes to the sources:
 
 When done, stop and remove all containers:
 
-	docker compose --profile mobile stop
-	docker compose --profile mobile rm
+    docker compose --profile mobile stop
+    docker compose --profile mobile rm
 
 To also take the tunnel down, use:
 
-	docker compose --profile tunnel down
+    docker compose --profile tunnel down
 
 Note that your assigned tunnel hostname will change when restarting the tunnel, so you will need to update your `.env` file and Paswkey code accordingly!
