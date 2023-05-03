@@ -8,44 +8,9 @@ Differences with ../scripts (power)shell scripts:
 - cloudflared is used to expose local docker containers to mobile clients
 - a proxy is used so that all traffic between client and RP can be routed over a single tunnel
 
-This document describes how to manually deploy the web and mobile environments, but this can be done automatically with the deploy scripts:
+This document describes how to manually deploy the web and mobile environments, but this can be done automatically with the deploy script:
 
-- web.sh - for a simple web deployment running on localhost
 - mobile.sh - for a proxied web and mobile deployment running over a cloud tunnel
-
-# Deploy for web
-
-Note that this deployment currently does not use the proxy.
-
-To deploy the web client:
-
-- Copy the default environment file
-
-	cp default.env .env
-
-- Copy the frontend code
-
-	cp -r ../examples/clients/web/react/passkey-client/ react-app/source
-
-- Copy the backend code
-
-	cp -r  ../examples/relyingParties/java-spring/ java-app/source/
-
-- Copy the passkey authenticator for keycloack
-
-	cp ../examples/IdentityProviders/KeyCloak/pre-build/passkey_authenticator.jar keycloak/
-
-- Build and run all containers, including the Keycloak IdP:
-
-	docker compose --profile web up -d
-
-- Point your browser to
-
-	http://localhost:3000
-
-- When done, stop and remove all containers:
-
-	docker compose --profile web down
 
 # Deploy for mobile
 
@@ -66,13 +31,13 @@ To deploy the mobile client:
 
 	docker compose --profile mobile --profile web down
 
-- Copy the environment file for mobile
+- Copy the environment file
 
 	cp tunnel.env .env
 
 - Copy the frontend code
 
-Only if not already done above.
+	cp -r ../examples/clients/web/react/passkey-client/ react-app/source
 
 - Edit the file `react-app/source/public/.well-known/apple-app-site-association` with your AppID. For instance so it reads:
 
@@ -81,13 +46,14 @@ $ cat react-app/source/public/.well-known/apple-app-site-association
 {
   "webcredentials": {
     "apps": [
-      "UVWXYZ1234.com.mydomain.pawskey"
+      "UVWXYZ1234.com.mydomain.pawskeyUVWXYZ1234"
     ]
   }
 }
 ```
 
 where `UVWXYZ1234` is your Team ID and com.mydomain is unique for your organization.
+Read [here](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/) how to locate your Team ID.
 
 - As the `passkey-client` source code has changed, rebuild the previously built image:
 
@@ -95,7 +61,8 @@ where `UVWXYZ1234` is your Team ID and com.mydomain is unique for your organizat
 
 - Copy the backend code
 
-Only if not already done above.
+	cp -r  ../examples/relyingParties/java-spring/ java-app/source/
+
 No changes are required.
 
 - Start your tunnel:
