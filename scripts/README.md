@@ -71,10 +71,10 @@ DEPLOYMENT_ENVIRONMENT=
 
 # Allows you to select the data source used by the application
 # The default option is to deploy a full MySQL server in Docker
-# in-mem will not deploy a MySQL instance, and instead rely on in-memory storage in the Java application.
-# Note that the in-mem option will not persist data if the Java container is stopped
+# local will not deploy a MySQL instance, and instead rely on in-memory storage in the Java application.
+# Note that the local option will not persist data if the Java container is stopped
 # Default: mysql
-# Options: mysql, in-mem
+# Options: mysql, local
 DATABASE_TYPE=
 
 # Allows you to set your desired password for the root account in the MySQL server.

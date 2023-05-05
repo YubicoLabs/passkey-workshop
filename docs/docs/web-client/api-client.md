@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # API client
 
-To begin our client implementation we will create an interface that will connect to our [relying party API](http://localhost:3002/docs/relying-party/api-def). This interface will allow our React application to make calls to our relying party API, without having to create duplicate code.
+To begin our client implementation we will create an interface that will connect to our [relying party API](/docs/relying-party/api-def). This interface will allow our React application to make calls to our relying party API, without having to create duplicate code.
 
 The methods, and their associated flows will be covered in detail in the following pages, so for now don't get caught up in the details.
 

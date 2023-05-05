@@ -87,7 +87,7 @@ if(!$RP_ATTESTATION_TRUST_STORE) {$RP_ATTESTATION_TRUST_STORE="mds"}
 if(!$DEPLOYMENT_ENVIRONMENT) {$DEPLOYMENT_ENVIRONMENT="local"}
 
 # ------------------------------------------------
-# Options: in-mem, mysql
+# Options: local, mysql
 # local will leverage in memory data storage, all registrations will be lost when the application is shut down
 # mysql will deploy a local instance of mysql through Docker
 # ------------------------------------------------
