@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Passkey workshop',
-  tagline: 'Learn all of the concepts that will help you to enable strong multi-factor authentication through the use of passkeys. This will help to keep your user\'s accounts safe and secure, without additional friction',
+  tagline: 'Learn the concepts to enable strong multi-factor authentication through the use of passkeys. This will help to keep your user\'s accounts safe and secure, without additional friction',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -43,7 +43,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/YubicoLabs/passkey-workshop/tree/main/docs',
         },
         blog: false,
         theme: {

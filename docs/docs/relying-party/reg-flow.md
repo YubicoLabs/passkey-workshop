@@ -57,7 +57,7 @@ The other properties will instruct your client, specifically your ecosystem (pla
 - enterprise
 - none
 
-`residentKey` defines the [ResidentKeyRequirement](https://www.w3.org/TR/webauthn-2/#enum-residentKeyRequirement), or the relying party's preference for creating a [discoverable credential](linktofundamentalsection). It's important to remember that a passkey MUST be a discoverable credential (but remember that non-discoverable credentials are still valid WebAuthn credentials)
+`residentKey` defines the [ResidentKeyRequirement](https://www.w3.org/TR/webauthn-2/#enum-residentKeyRequirement), or the relying party's preference for creating a [discoverable credential](https://developers.yubico.com/Passkeys/Passkey_concepts/Discoverable_vs_non-discoverable_credentials.html). It's important to remember that a passkey MUST be a discoverable credential (but remember that non-discoverable credentials are still valid WebAuthn credentials)
 
 - required
 - preferred (default)

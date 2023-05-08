@@ -36,8 +36,6 @@ cd passkey-workshop/scripts
 
 ## Deployment configurations
 
-Regardless of environment, both folders contain a file that will allow you to configure certain aspects of your passkey application.
-
 The file `DeployProject.conf` will allow you to set specific parameters for use in the application (if no values are provided, our deploy script will apply default values based on our best practices).
 
 ::::danger Ensure you understand the configurations before changing them
@@ -109,10 +107,10 @@ DEPLOYMENT_ENVIRONMENT=
 
 # Allows you to select the data source used by the application
 # The default option is to deploy a full MySQL server in Docker
-# in-mem will not deploy a MySQL instance, and instead rely on in-memory storage in the Java application.
-# Note that the in-mem option will not persist data if the Java container is stopped
+# local will not deploy a MySQL instance, and instead rely on in-memory storage in the Java application.
+# Note that the local option will not persist data if the Java container is stopped
 # Default: mysql
-# Options: mysql, in-mem
+# Options: mysql, local
 DATABASE_TYPE=
 
 # Allows you to set your desired password for the root account in the MySQL server.
