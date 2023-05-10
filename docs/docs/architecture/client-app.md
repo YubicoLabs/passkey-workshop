@@ -33,5 +33,5 @@ The client portion of our application is the only component that requires target
 
 This workshop currently provides two examples of client applications:
 
-- A web based example (leveraging React) //@TODO - Add links when the sections are ready
+- [A web based example (leveraging React)](/docs/category/web-client)
 - A native [iOS example](../category/mobile-client/).
