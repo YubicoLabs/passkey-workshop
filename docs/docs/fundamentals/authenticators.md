@@ -34,7 +34,3 @@ Security keys have a limited amount of storage available for passkeys. This mean
 The maximum number of passkeys that can be stored on a security key depends on the specific security key make and model.
 
 Examples of FIDO security keys are the YubiKey 5 or the Solo key, but there are many other vendors of security keys.
-
-## Hybrid
-
-TODO: explain cross-device authentication

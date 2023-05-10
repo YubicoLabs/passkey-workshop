@@ -173,7 +173,7 @@ Once the application has been deployed, your resources will be available through
 
 ### Deploying a native iOS example
 
-@TODO - Dennis to add this section
+Follow the specific instructions found in the [mobile-client: getting started](/docs/mobile-client/getting-started) section.
 
 ## Stopping the project
 

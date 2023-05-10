@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Getting Started
 
-TBD
+Instructions for making the local environment available for testing from your mobile client
 
 ## Prerequisites
 
@@ -17,10 +17,13 @@ TBD
 ## PawsKey iOS app
 
 Once you have [cloned](../deploy#clone-the-repository) the passkey workshop, navigate into the Pawskey iOS project folder
+
 ```javascript
 cd passkey-workshop/clients/mobile/iOS/Pawskey
 ```
+
 Launch the project into Xcode:
+
 ```javascript
 xed .
 ```
@@ -36,12 +39,13 @@ To set up the entitlement in your app, open the target’s Signing & Capabilitie
 
 During Development:
 
-a. Enable associated domain alternate mode: If your web server is unreachable from the public internet (running locally), you can use the *alternate mode* feature to bypass the Apple CDN and connect directly to your private domain.
+a. Enable associated domain alternate mode: If your web server is unreachable from the public internet (running locally), you can use the _alternate mode_ feature to bypass the Apple CDN and connect directly to your private domain.
 You enable an alternate mode by adding a query string to your associated domain’s entitlement as follows:
 
 ```bash
 webcredentials:<fully qualified domain>?mode=<alternate mode>
 ```
+
 ![Associated Domain - Developer Mode](/img/associated-domain.png)
 
 Tip: Create two ENTITLEMENTS for your app. One DEBUG and one RELEASE. Add the alternate mode only to the DEBUG entitlement and leave the release entitlement without any mode appended.
@@ -52,20 +56,22 @@ b. Enable Associated Domains Development under the UNIVERSAL LINKS in the Develo
 
 ![Associated Domains - Developer Mode iPhone](/img/associated-domains-devmode.png)
 
-That’s it for setting up Associated Domains for your app. 
+That’s it for setting up Associated Domains for your app.
 
 ## Backend Tunneling (Optional - During Development)
 
 Following the getting started guide above, you should have a local deployment of the passkey workshop relying party server running on your machine and accessible through `http://localhost:3000`. To make this backend endpoint reachable from the Pawskey iOS app running on an iPhone, you can either set the local IP address of your Mac workstation in the app OR you can install and deploy a tunnel service like NGROK or Cloudflared to expose your local environment to be reachable dynamic DNS endpoint. You would then put that endpoint URL into the Pawskey app.
 
-Here's an example for setting up ``Cloudflared`` service to expose your relying party localhost environment:
+Here's an example for setting up `Cloudflared` service to expose your relying party localhost environment:
 
 MacOS: Download and install cloudflared via Homebrew
+
 ```bash
 $ brew install cloudflared
 ```
 
 Start a tunnel using the following command
+
 ```bash
 $ cloudflared tunnel --url http://localhost:3000
 ```
