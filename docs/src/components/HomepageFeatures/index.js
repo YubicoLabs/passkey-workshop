@@ -7,7 +7,7 @@ import ReactPlayer from "react-player";
 const FeatureList = [
   {
     title: 'Authentication made easy',
-    video: "/videos/auth-touchid.mp4",
+    video: "/passkey-workshop/videos/auth-touchid.mp4",
     description: (
       <>
         Observe how seamless and intuitive it is to authenticate using a passkey. Your users can now increase their account security AND forgo the need to remember their login information
@@ -16,7 +16,7 @@ const FeatureList = [
   },
   {
     title: 'Remove the anxiety of creating and managing passwords',
-    video: "/videos/reg-touchid.mp4",
+    video: "/passkey-workshop/videos/reg-touchid.mp4",
     description: (
       <>
         Observe how easy it is to add a new credential to your account. No complex password 
