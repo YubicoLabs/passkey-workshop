@@ -31,19 +31,19 @@ To deploy the mobile client:
 
 2. If applicable, stop and remove any running containers:
 
-	docker compose --profile mobile --profile web down
+        docker compose --profile mobile --profile web down
 
 3. Copy the environment file
 
-	cp tunnel.env .env
+        cp tunnel.env .env
 
 4. Copy the frontend code
 
-	cp -r ../examples/clients/web/react/passkey-client/ react-app/source
+        cp -r ../examples/clients/web/react/passkey-client/ react-app/source
 
 5. Edit the file `react-app/source/public/.well-known/apple-app-site-association` with your AppID. For instance so it reads:
 
-```
+```bash
 $ cat react-app/source/public/.well-known/apple-app-site-association 
 {
   "webcredentials": {
@@ -59,21 +59,21 @@ Read [here](https://developer.apple.com/help/account/manage-your-team/locate-you
 
 6. As the `passkey-client` source code has changed, rebuild the previously built image:
 
-	docker compose build passkey-client
+        docker compose build passkey-client
 
 7. Copy the backend code
 
-	cp -r  ../examples/relyingParties/java-spring/ java-app/source/
+        cp -r  ../examples/relyingParties/java-spring/ java-app/source/
 
 No changes are required.
 
 8. Start your tunnel:
 
-	docker compose --profile tunnel up -d
+        docker compose --profile tunnel up -d
 
 9. Lookup the tunnel URL in cloudflared's output, either in Docker Desktop or using:
 
-	docker compose --profile tunnel logs
+        docker compose --profile tunnel logs
 
 For instance, the logfile shows:
 
@@ -102,7 +102,7 @@ REACT_APP_API=https://replace-with-your-hostname.trycloudflare.com/v1
 
 11. Run:
 
-	docker compose --profile mobile up -d
+        docker compose --profile mobile up -d
 
 12. Point your browser to
 
@@ -118,11 +118,11 @@ Make the following changes to the sources:
 
 - In the file `examples/clients/mobile/iOS/PawsKey/Shared/AccountManager.swift`, update the domain variable accordingly. For instance:
 
-	let domain = "your-proxied-tunnel-endpoint.trycloudflare.com"
+        let domain = "your-proxied-tunnel-endpoint.trycloudflare.com"
 
 - In the file `examples/clients/mobile/iOS/PawsKey/Shared/RelyingParty.swift`, update the `API_ENDPOINT` accordingly. For instance:
 
-	static let API_ENDPOINT = "https://your-proxied-tunnel-endpoint.trycloudflare.com/v1"
+        static let API_ENDPOINT = "https://your-proxied-tunnel-endpoint.trycloudflare.com/v1"
 
 15. Build and run the Pawskey application on your iOS device.
 
@@ -130,11 +130,24 @@ Make the following changes to the sources:
 
 When done, stop and remove all containers:
 
-	docker compose --profile mobile stop
-	docker compose --profile mobile rm
+        docker compose --profile mobile stop
+        docker compose --profile mobile rm
 
 To also take the tunnel down, use:
 
-	docker compose --profile tunnel down
+        docker compose --profile tunnel down
 
 Note that your assigned tunnel hostname will change when restarting the tunnel, so you will need to update your `.env` file and Paswkey code accordingly!
+
+## Deleting passkeys
+
+As you are unlikely to be assigned the same tunnel hostname twice, you may want to delete all passkeys generated using that hostname as the RP ID.
+
+In Chrome on MacOS, you can delete passkeys generated locally using chrome://settings/passkeys.
+Note that on MacOS, these passkeys aren't synced to your Google Account.
+
+If you used the hybrid flow to use your Android device as an authenticator however, passkeys *are* synced to your Google Account.
+To delete these passkeys using your Android device, navigate to _Settings_, _Passwords & accounts_, _Passwords_.
+You will find any synced passkeys under trycloudflare.com.
+
+Lastly, you can delete passkeys generated on your security key using chrome://settings/securityKeys (select "Sign-in data").
