@@ -1,0 +1,23 @@
+name: Yubico Security - Static Analysis
+
+on:
+    push:
+        branches: [ main ]
+
+jobs:
+    static_analysis:
+        name: "Yubico Security - Static Analysis"
+        uses: Yubico/.github/.github/workflows/yubico_security-static_analysis.yml@main
+        with:
+            snyk-enabled: true
+            # Not all langauges need to be specified. Currently, this only has an affect if you use Go
+            # The rest of the langauges supported by Snyk have tooling installed on the action runner by defualt (or no one at Yubico uses them)
+            # Reference the source workflow and/or 
+            snyk-languages: '["javascript", "java"]' # Not including Swift since that requires the use of cocoapods or Swift Package Manager
+            # This assumes that you have a repository variable with the Snyk org id/slug
+            # Reference: https://docs.github.com/en/actions/learn-github-actions/variables#defining-configuration-variables-for-multiple-workflows
+            snyk-org-id-or-slug: ${{ vars.SNYK_ORG_ID }}
+        secrets:
+            # This assumes that you have a repository secret set with the token
+            # Reference: https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository
+            snyk-token: ${{ secrets.SNYK_TOKEN }}
