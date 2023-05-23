@@ -15,7 +15,7 @@ Hardware bound passkeys are typically stored on FIDO security keys, which contai
 
 Of course, the fact that a hardware-bound passkey cannot be copied makes it a posession factor for MFA, but it also means you cannot make a backup of a hardware-bound passkey.
 
-This makes hardware-bound keys ideal for high assurance use cases typically found in an enterprise environments.
+This makes hardware-bound keys ideal for high assurance use cases typically found in enterprise environments.
 
 # Copyable passkeys
 
@@ -24,6 +24,6 @@ Copyable passkeys, also called multi-device passkeys, can be copied to multiple 
 
 Passkeys can also be syncable, meaning that they are synchronized to a user's cloud account. When a user buys a new device and logs into that device with a cloud account, the passkeys stored in that cloud account are automatically synchronized to the new device.
 
-Although copyable passkeys are less secure than hardware-bound passkeys, they still are a major security improvement over passkeys because passkeys are never reused across origins and automatically protect agains phishing.
+Although copyable passkeys are less secure than hardware-bound passkeys, they still are a major security improvement over passwords because passkeys are never reused across origins and automatically protect agains phishing.
 
 ![Copyable vs hardware-bound passkeys](/img/copyable-vs-hardwarebound.png)

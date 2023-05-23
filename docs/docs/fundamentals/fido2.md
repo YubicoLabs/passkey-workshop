@@ -9,7 +9,7 @@ The technical term for passkeys is "discoverable FIDO2 credentials".
 FIDO2 is a set of open standards for passwordless authentication.
 It describes how a user authenticates to a _relying party_ (RP) via a _client_ using an authenticator.
 The RP is typically a web site (for instance Github).
-The client can be a web browser (such as Chrome) of a platform (for instance Microsoft Windows)
+The client can be a web browser (such as Chrome) or a platform (for instance Microsoft Windows)
 
 Two important standards used in FIDO 2 are:
 
