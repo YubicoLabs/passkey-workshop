@@ -10,4 +10,7 @@
 // is derived based on the 'SAMPLE_CODE_DISAMBIGUATOR' value. Do not use this
 // approach in your own projects—it's only useful for sample code projects because
 // they are frequently downloaded and don't have a development team set.
+#include "Constants.xcconfig"
+
 SAMPLE_CODE_DISAMBIGUATOR=${DEVELOPMENT_TEAM}
+
