@@ -5,6 +5,8 @@
 //  Created by Dennis Hills on 6/5/23.
 //  Copyright © 2023 Yubico. All rights reserved.
 //
+//  See Constants.xcconfig for API and RP values
+
 import Foundation
 
 enum Constants {
@@ -30,8 +32,8 @@ enum Constants {
 }
 
 enum API {
-    static var baseURL: String {
-        return try! "https://" + Constants.value(for: "API_BASE_URL")
+    static var baseURI: String {
+        return try! Constants.value(for: "API_BASE_URI")
     }
 }
 

@@ -6,8 +6,8 @@
 //  Copyright © 2023 Yubico. All rights reserved.
 //
 
-// API Endpoint URL
-API_BASE_URL = api.pawskey.co/v1
+// API Endpoint URI
+API_BASE_URI = https:/$()/replace-with-your-hostname.trycloudflare.com/v1
 
 // Relying Party Endpoint Domain. This needs to match your RP Id
-RP_ID = pawskey.co
+RP_ID = replace-with-your-hostname.trycloudflare.com

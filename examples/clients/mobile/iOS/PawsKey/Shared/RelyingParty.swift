@@ -163,13 +163,13 @@ class RelyingParty {
     func getURLEndpoint(endpoint: Endpoint) -> URL? {
         switch endpoint {
             case .attestationOptions :
-                return URL(string: API.baseURL + "/attestation/options")
+            return URL(string: API.baseURI + "/attestation/options")
             case .attestationResult:
-                return URL(string: API.baseURL + "/attestation/result")
+                return URL(string: API.baseURI + "/attestation/result")
             case .assertionOptions:
-                return URL(string: API.baseURL + "/assertion/options")
+                return URL(string: API.baseURI + "/assertion/options")
             case .assertionResult:
-                return URL(string: API.baseURL + "/assertion/result")
+                return URL(string: API.baseURI + "/assertion/result")
         }
     }
 }
