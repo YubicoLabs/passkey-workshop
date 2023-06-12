@@ -1,1 +1,2 @@
+# don't commit env file containing password
 .env
