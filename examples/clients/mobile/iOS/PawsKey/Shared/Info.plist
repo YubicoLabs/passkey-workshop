@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>API_BASE_URI</key>
-	<string>${API_BASE_URI}</string>
+	<string>https://$(API_BASE_URI)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -25,7 +25,7 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>To access a relying party running on your local network</string>
 	<key>RP_ID</key>
-	<string>$(RP_ID)</string>
+	<string>${RP_ID}</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
