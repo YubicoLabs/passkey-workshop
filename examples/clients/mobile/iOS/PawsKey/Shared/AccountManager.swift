@@ -13,7 +13,8 @@ extension NSNotification.Name {
 }
 
 class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProviding, ASAuthorizationControllerDelegate {
-    let domain = "replace-with-your-hostname.trycloudflare.com" // This needs to match your RP Id
+    
+    let rp_id = RP.ID
     
     var authenticationAnchor: ASPresentationAnchor?
     var isPerformingModalReqest = false
@@ -35,7 +36,7 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         self.userName = userName
         
         // Initialize SecurityKey ASAuthorization provider
-        let securityKeyCredentialProvider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: domain)
+        let securityKeyCredentialProvider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: rp_id)
 
         let rp = RelyingParty()
 
@@ -97,7 +98,7 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         if(userName.isEmpty){ return }
         self.userName = userName
         
-        let publicKeyPlatformCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: domain)
+        let publicKeyPlatformCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rp_id)
 
         let rp = RelyingParty()
 
@@ -132,7 +133,7 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         self.authenticationAnchor = anchor
         self.userName = userName
         
-        let publicKeySecurityKeyCredentialProvider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: domain)
+        let publicKeySecurityKeyCredentialProvider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: rp_id)
         
         // Fetch the assertion options from the server and then make a passkey assertion request
         let rp = RelyingParty()
@@ -171,7 +172,7 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         self.authenticationAnchor = anchor
         self.userName = userName
 
-        let publicKeyPlatformCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: domain)
+        let publicKeyPlatformCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rp_id)
 
         // Fetch the assertion options from the server and then make a passkey assertion request
         let rp = RelyingParty()
@@ -202,8 +203,8 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         self.authenticationAnchor = anchor
         self.userName = userName
 
-        let publicKeyPlatformCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: domain)
-        let publicKeySecurityKeyCredentialProvider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: domain)
+        let publicKeyPlatformCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rp_id)
+        let publicKeySecurityKeyCredentialProvider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: rp_id)
         
         // Fetch the assertion options from the server and then make a passkey assertion request
         let rp = RelyingParty()
