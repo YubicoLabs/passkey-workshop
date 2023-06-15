@@ -7,7 +7,7 @@ docker compose version | grep v2 || { echo docker compose v2 is required; exit; 
 # use a default environment file unless already present
 if [[ ! -f ".env" ]] ; then
   echo "### .env file missing - copying default environment file"
-  cp tunnel.env ".env"
+  cp cloudflared.env ".env"
 fi
 
 # load current environment
@@ -87,7 +87,7 @@ sed -i '' "s/[a-z-]*\.trycloudflare\.com/$hostname/"	".env"
 
 echo "### editing Pawskey sources"
 sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/"	../examples/clients/mobile/iOS/PawsKey/PawsKey.xcodeproj/project.pbxproj
-sed -i '' "s/api.pawskey.co/$hostname/;s/pawskey.co/$hostname/" ../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
+sed -i '' "s/[a-z-]*\.trycloudflare.com/$hostname/" ../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
 
 echo "### launching containers (this may take a minute)"
 docker compose --profile mobile up -d
