@@ -18,13 +18,18 @@ if [ "$(uname)" == "Darwin" ]; then
 	# Apple dev team needs to be changed, retrieve from .env file or from keychain...
 	if [[ -z "$DEVELOPMENT_TEAM" ]] ; then
 	  # dev team is in OU field of subject DN in dev certificate
-	  DEVELOPMENT_TEAM=$(security find-certificate -a -c 'Apple Development: ' -p | awk -v cmd='openssl x509 -noout -subject' '/BEGIN/{close(cmd)}; {print | cmd}' | tr '/' '\n' | grep -e OU | cut -d= -f2)
+	  DEVELOPMENT_TEAM=$(security find-certificate -a -c 'Apple Development: ' -p | awk -v cmd='openssl x509 -noout -subject' '/BEGIN/{close(cmd)}; {print | cmd}' | egrep -o 'OU[[:blank:]]*=[[:blank:]]*[A-Z0-9]{10,}' | tr -d '[[:blank:]]' | cut -d= -f2)
 	  N=$(echo $DEVELOPMENT_TEAM | wc -w)
+	  if [[ $N -lt 1 ]] ; then
+	    echo Cannot find a DEVELOPMENT_TEAM
+	    echo "Please edit your .env file and fill in your DEVELOPMENT_TEAM"
+	    exit
+	  fi
 	  if [[ $N -gt 1 ]] ; then
 	    echo You have more than one Team ID
 	    echo "Please edit your .env file and fill in your DEVELOPMENT_TEAM"
 	    echo We found the following Team IDs in your KeyChain: $DEVELOPMENT_TEAM
-	    security find-certificate -a -c 'Apple Development:' -p | awk -v cmd='openssl x509 -noout -subject'   '/BEGIN/{close(cmd)}; {print | cmd}' | tr '/' '\n' | grep -e CN -e OU | cut -d= -f2
+	    security find-certificate -a -c 'Apple Development:' -p | awk -v cmd='openssl x509 -noout -subject'   '/BEGIN/{close(cmd)}; {print | cmd}' | tr '/,' '\n' | grep -e CN -e OU | cut -d= -f2
 	    exit
 	  fi
 	fi
