@@ -6,8 +6,8 @@ docker compose version | grep v2 || { echo docker compose v2 is required; exit; 
 
 # use a default environment file unless already present
 if [[ ! -f ".env" ]] ; then
-  echo "### .env file missing - copying default environment file"
-  cp cloudflared.env ".env"
+  echo "### .env file missing - copying example environment file"
+  cp cloudflared.env.example ".env"
 fi
 
 # load current environment

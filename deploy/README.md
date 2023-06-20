@@ -33,9 +33,9 @@ To deploy the mobile client:
 
         docker compose --profile mobile --profile web down
 
-3. Copy the environment file
+3. Copy the example environment file
 
-        cp cloudflared.env .env
+        cp cloudflared.env.example .env
 
 4. Copy the frontend code
 
