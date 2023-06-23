@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS hibernate_sequence, attestation_requests, assertion_request
 CREATE TABLE user (
     id BIGINT NOT NULL AUTO_INCREMENT,
     userName NVARCHAR(50) NOT NULL UNIQUE,
+    user_handle NVARCHAR(256) NOT NULL UNIQUE,
     displayName NVARCHAR(50),
     registrationDate DATETIME DEFAULT CURRENT_TIMESTAMP,
     lastUpdatedDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -11,9 +12,9 @@ CREATE TABLE user (
 );
 CREATE TABLE account (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    user_handle NVARCHAR(50) NOT NULL UNIQUE,
-    advanced_protection BOOL,
-    balance DECIMAL(13,2),
+    user_handle NVARCHAR(256) NOT NULL UNIQUE,
+    advanced_protection BOOL DEFAULT FALSE,
+    balance DECIMAL(13,2) NOT NULL DEFAULT 0,
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
@@ -51,10 +52,10 @@ CREATE TABLE credential_registrations (
     last_update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_used_time BIGINT,
     registration_time BIGINT,
-    user_handle TEXT, 
+    user_handle NVARCHAR(256) NOT NULL, 
     user_identity TEXT,
-    state NVARCHAR(50), 
-    isHighAssurance BOOL,
+    state NVARCHAR(50) DEFAULT 'ENABLED', 
+    isHighAssurance BOOL DEFAULT FALSE,
     PRIMARY KEY (id)
 );
 CREATE TABLE hibernate_sequence (

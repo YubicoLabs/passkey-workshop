@@ -29,7 +29,7 @@ paths:
               $ref: "#/components/schemas/AttestationOptionsRequest"
             examples:
               Default:
-                $ref: "#/components/examples/ServerPublicKeyCredentialCreationOptionsRequest-Optional"
+                $ref: "#/components/examples/ServerPublicKeyCredentialCreationOptionsRequest-Default"
               Optional:
                 $ref: "#/components/examples/ServerPublicKeyCredentialCreationOptionsRequest-Optional"
       responses:
@@ -40,7 +40,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AttestationOptionsResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
@@ -64,7 +64,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AttestationResultResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
@@ -88,7 +88,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AssertionOptionsResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
@@ -112,7 +112,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AssertionResultResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
@@ -136,7 +136,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UserDeleteResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
@@ -151,7 +151,7 @@ paths:
           schema:
             type: string
           required: true
-          description: Username used to query for credentials
+          description: userName for fetching user profile
       responses:
         "200":
           description: User profile response
@@ -215,17 +215,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/UserCredentialDeleteResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
   /v1/accounts:
     post:
-      summary: Admin API to create a new bank account when a NEW user is created
+      summary: Admin API to create a new bank account for user
       operationId: CreateAccountRequest
       requestBody:
-        description: Create a new account
+        description: Create a new account by specifying userName
         required: true
         content:
           application/json:
@@ -233,61 +233,61 @@ paths:
               $ref: "#/components/schemas/CreateAccountRequest"
       responses:
         "200":
-          description: Account creation response from server
+          description: Successful bank account creation
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateAccountResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /v1/account/{accountID}:
+  /v1/account/{accountId}:
     get:
-      summary: Get account details from accountID 
+      summary: Returns bank account details
       operationId: AccountDetails
       parameters:
         - in: path
-          name: accountID
+          name: accountId
           schema:
-            type: int
+            type: integer
           required: true
-          description: Show account details
+          description: ID of bank account to return
       responses:
         "200":
-          description: Account details
+          description: Successful account details
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccountDetailsResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /v1/account/{accountID}/transactions:
+  /v1/account/{accountId}/transactions:
     get:
-      summary: List all transactions for given accountId
+      summary: Returns transactions by account ID
       operationId: AccountTransactionList
       parameters:
         - in: path
-          name: accountID
+          name: accountId
           schema:
-            type: string
+            type: integer
           required: true
-          description: List transactions by AccountID
+          description: ID of account to fetch transactions
       responses:
         "200":
-          description: Account transactions list response
+          description: Successful array of transactions for a single account. Empty array [] if no transactions exist.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccountTransactionListResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
@@ -296,7 +296,7 @@ paths:
       summary: Create a new transaction
       operationId: TransactionCreate
       requestBody:
-        description: Create a new transaction
+        description: Create a transaction
         required: true
         content:
           application/json:
@@ -304,43 +304,43 @@ paths:
               $ref: "#/components/schemas/TransactionCreateRequest"
       responses:
         "200":
-          description: TransactionCreate response from server
+          description: Successful transaction created response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransactionCreateResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /v1/account/{accountID}/advance-protection:
+  /v1/account/{accountId}/advanced-protection:
     get:
       summary: Get advanced protection status for account
       operationId: AdvancedProtectionStatus
       parameters:
         - in: path
-          name: accountID
+          name: accountId
           schema:
-            type: string
+            type: integer
           required: true
-          description: Get advanced protection status for account
+          description: ID of account for advanced protection status
       responses:
         "200":
-          description: Advanced protection status response
+          description: Advanced protection status response is (true|false)
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AdvancedProtectionStatusResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
     put:
-      summary: Update advanced protection status
+      summary: Update/Set advanced protection status for account
       operationId: UpdateAdvancedProtectionStatus
       requestBody:
         description: Update advanced protection status for account
@@ -351,13 +351,13 @@ paths:
               $ref: "#/components/schemas/UpdateAdvancedProtectionStatusRequest"
       responses:
         "200":
-          description: UpdateAdvancedProtectionStatus response from server
+          description: Successful advanced protection status response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/UpdateAdvancedProtectionStatusResponse"
         "400":
-          description: 4xx response
+          description: Failed request response
           content:
             application/json:
               schema:
@@ -373,6 +373,10 @@ components:
           example: ok
     CreateAccountRequest:
       type: object
+      properties:
+        userName:
+          type: string
+          example: robert
     CreateAccountResponse:
       properties:
         status:
@@ -380,24 +384,30 @@ components:
           example: created
     AccountDetailsResponse:
       properties:
+        accountId:
+          type: integer
+          example: 1234
         balance:
           type: number
           example: $498.02
     AccountTransactionListResponse:
       properties:
         transactions:
-              type: array
-              items:
-                properties:
-                  type:
-                    type: string
-                    example: transfer
-                  amount:
-                    type: number
-                    example: $500
-                  transaction_create_time:
-                    type: string
-                    example: 06/20/2023 06:34pm
+          type: array
+          items:
+            properties:
+              transactionId:
+                type: integer
+                example: 49583
+              type:
+                type: string
+                example: transfer
+              amount:
+                type: number
+                example: $500
+              transactionDate:
+                type: string
+                example: 06/19/2023 04:20pm
     TransactionCreateRequest:
       type: object
       properties:
@@ -416,12 +426,15 @@ components:
         status:
           type: string
           example: complete
+        transactionId:
+          type: integer
+          example: 2938
     UpdateAdvancedProtectionStatusRequest:
       type: object
       properties:
         accountId:
           type: integer
-          example: 1234
+          example: 1349
         enabled:
           type: boolean
           example: true
@@ -430,7 +443,7 @@ components:
       properties:
         enabled:
           type: boolean
-          example: true
+          example: false
     UpdateAdvancedProtectionStatusResponse:
       type: object
       properties:
@@ -789,20 +802,17 @@ components:
   examples:
     ServerPublicKeyCredentialCreationOptionsRequest-Default:
       summary: "Default (Required)"
-      value: |-
-        {
-          "username": "janedoe@example.com"
-        }
+      value: 
+        userName: janedoe@example.com
     ServerPublicKeyCredentialCreationOptionsRequest-Optional:
       summary: "Optional"
-      value: |-
-        {
-          "userName": "janedoe@example.com",
-          "displayName": "jane12345"
-          "authenticatorSelection": {
-            "residentKey": "preferred",
-            "authenticatorAttachment": "cross-platform",
-            "userVerification": "preferred"
-          },
-          "attestation": "direct"
-        }
+      value:
+        userName: janedoe@example.com
+        displayName: janedoe
+        authenticatorSelection:
+          residentKey: preferred
+          authenticatorAttachment: cross-platform
+          userVerification: preferred
+        attestation: direct
+
+
