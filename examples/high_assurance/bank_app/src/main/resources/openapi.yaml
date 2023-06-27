@@ -1,0 +1,311 @@
+openapi: 3.0.0
+info:
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Passkey WebAuthn High Assurance API by Yubico
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /v1/accounts:
+    post:
+      operationId: CreateAccountRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequest'
+        description: Create a new account by specifying userName
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAccountResponse'
+          description: Successful bank account creation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Failed request response
+      summary: Admin API to create a new bank account for user
+      x-content-type: application/json
+      x-accepts: application/json
+  /v1/account/{accountId}:
+    get:
+      operationId: AccountDetails
+      parameters:
+      - description: ID of bank account to return
+        explode: false
+        in: path
+        name: accountId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDetailsResponse'
+          description: Successful account details
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Failed request response
+      summary: Returns bank account details by acccountId
+      x-accepts: application/json
+  /v1/account/{accountId}/transactions:
+    get:
+      operationId: AccountTransactionList
+      parameters:
+      - description: ID of account to fetch transactions
+        explode: false
+        in: path
+        name: accountId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountTransactionListResponse'
+          description: "Successful array of transactions for a single account. Empty\
+            \ array [] if no transactions exist."
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Failed request response
+      summary: Returns transactions by account ID
+      x-accepts: application/json
+    post:
+      operationId: TransactionCreate
+      parameters:
+      - description: ID of bank account to return
+        explode: false
+        in: path
+        name: accountId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionCreateRequest'
+        description: Create a transaction
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionCreateResponse'
+          description: Successful transaction created response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Failed request response
+      summary: Create a new transaction
+      x-content-type: application/json
+      x-accepts: application/json
+  /v1/account/{accountId}/advanced-protection:
+    get:
+      operationId: AdvancedProtectionStatus
+      parameters:
+      - description: ID of account for advanced protection status
+        explode: false
+        in: path
+        name: accountId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvancedProtectionStatusResponse'
+          description: Advanced protection status response is (true|false)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Failed request response
+      summary: Get advanced protection status for account
+      x-accepts: application/json
+    put:
+      operationId: UpdateAdvancedProtectionStatus
+      parameters:
+      - description: ID of bank account to return
+        explode: false
+        in: path
+        name: accountId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAdvancedProtectionStatusRequest'
+        description: Update advanced protection status for account
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateAdvancedProtectionStatusResponse'
+          description: Successful advanced protection status response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Failed request response
+      summary: Update/Set advanced protection status for account
+      x-content-type: application/json
+      x-accepts: application/json
+components:
+  schemas:
+    CreateAccountRequest:
+      example:
+        userName: robert
+      properties:
+        userName:
+          example: robert
+          type: string
+      type: object
+    CreateAccountResponse:
+      example:
+        status: created
+      properties:
+        status:
+          example: created
+          type: string
+    AccountDetailsResponse:
+      example:
+        accountId: 1234
+        balance: 0.8008281904610115
+      properties:
+        accountId:
+          example: 1234
+          type: integer
+        balance:
+          type: number
+    AccountTransactionListResponse:
+      example:
+        transactions:
+        - amount: 0.8008281904610115
+          type: transfer
+          transactionDate: 06/19/2023 04:20pm
+          transactionId: 49583
+        - amount: 0.8008281904610115
+          type: transfer
+          transactionDate: 06/19/2023 04:20pm
+          transactionId: 49583
+      properties:
+        transactions:
+          items:
+            $ref: '#/components/schemas/AccountTransactionListResponse_transactions_inner'
+          type: array
+    TransactionCreateRequest:
+      example:
+        amount: 0.8008281904610115
+        description: birthday gift
+        type: deposit
+      properties:
+        type:
+          example: deposit
+          type: string
+        amount:
+          type: number
+        description:
+          example: birthday gift
+          type: string
+      type: object
+    TransactionCreateResponse:
+      example:
+        transactionId: 2938
+        status: complete
+      properties:
+        status:
+          example: complete
+          type: string
+        transactionId:
+          example: 2938
+          type: integer
+      type: object
+    UpdateAdvancedProtectionStatusRequest:
+      example:
+        accountId: 1349
+        enabled: true
+      properties:
+        accountId:
+          example: 1349
+          type: integer
+        enabled:
+          example: true
+          type: boolean
+      type: object
+    AdvancedProtectionStatusResponse:
+      example:
+        enabled: false
+      properties:
+        enabled:
+          example: false
+          type: boolean
+      type: object
+    UpdateAdvancedProtectionStatusResponse:
+      example:
+        status: complete
+      properties:
+        status:
+          example: complete
+          type: string
+      type: object
+    Error:
+      properties:
+        status:
+          example: error
+          type: string
+        errorMessage:
+          example: descriptive error message
+          type: string
+      type: object
+    AccountTransactionListResponse_transactions_inner:
+      example:
+        amount: 0.8008281904610115
+        type: transfer
+        transactionDate: 06/19/2023 04:20pm
+        transactionId: 49583
+      properties:
+        transactionId:
+          example: 49583
+          type: integer
+        type:
+          example: transfer
+          type: string
+        amount:
+          type: number
+        transactionDate:
+          example: 06/19/2023 04:20pm
+          type: string

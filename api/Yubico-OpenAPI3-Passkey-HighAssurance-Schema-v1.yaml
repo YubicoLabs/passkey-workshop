@@ -295,6 +295,13 @@ paths:
     post:
       summary: Create a new transaction
       operationId: TransactionCreate
+      parameters:
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+          required: true
+          description: ID of bank account to return
       requestBody:
         description: Create a transaction
         required: true
@@ -342,6 +349,13 @@ paths:
     put:
       summary: Update/Set advanced protection status for account
       operationId: UpdateAdvancedProtectionStatus
+      parameters:
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+          required: true
+          description: ID of bank account to return
       requestBody:
         description: Update advanced protection status for account
         required: true
