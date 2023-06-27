@@ -161,8 +161,8 @@ paths:
                 $ref: "#/components/schemas/UserProfileResponse"
   /v1/user/credentials/{userName}:
     get:
-      summary: Get user credentials by ID
-      operationId: UserCredentialsByID
+      summary: Get user credentials by userName
+      operationId: UserCredentialsByUserName
       parameters:
         - in: path
           name: userName
@@ -246,7 +246,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /v1/account/{accountId}:
     get:
-      summary: Returns bank account details
+      summary: Returns bank account details by acccountId
       operationId: AccountDetails
       parameters:
         - in: path
