@@ -1,5 +1,7 @@
 package com.yubicolabs.bank_app.models.common;
 
+import java.time.Instant;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
@@ -17,7 +19,7 @@ public class AccountTransaction {
   String description;
 
   @Getter
-  long createTime;
+  Instant createTime;
 
   @Getter
   Boolean status;

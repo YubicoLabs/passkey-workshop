@@ -17,12 +17,8 @@ public interface AccountTransactionStorage {
   /**
    * Create a new transaction for a specific account
    * 
-   * @param accountId   ID of the account
-   * @param type        determine if this is a deposit or withdrawal
-   * @param amount      amount of money to add/remove from account (based on type)
-   * @param description note attached to transaction
-   * @param status      determine if transaction was successful or not
-   * @return
+   * @param accountTransaction Transaction to store
+   * @return true if creation successful, false otherwise
    */
-  public AccountTransaction create(int accountId, String type, double amount, String description, boolean status);
+  public boolean create(AccountTransaction accountTransaction);
 }

@@ -36,5 +36,6 @@ public class AccountDBO {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
+  @Getter
   Long id;
 }
