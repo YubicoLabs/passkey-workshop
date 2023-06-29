@@ -11,7 +11,7 @@ servers:
 - url: https://{api_endpoint}
   variables:
     api_endpoint:
-      default: api.passkey.co
+      default: api.pkbank.io
 
 paths:
   /v1/status:
