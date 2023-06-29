@@ -15,9 +15,7 @@ import com.yubicolabs.bank_app.models.api.AccountDetailsResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionListResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionListResponseTransactionsInner;
 import com.yubicolabs.bank_app.models.api.AdvancedProtectionStatusResponse;
-import com.yubicolabs.bank_app.models.api.CreateAccountRequest;
 import com.yubicolabs.bank_app.models.api.CreateAccountResponse;
-import com.yubicolabs.bank_app.models.api.TransactionCreateRequest;
 import com.yubicolabs.bank_app.models.api.TransactionCreateResponse;
 import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusResponse;
 import com.yubicolabs.bank_app.models.common.Account;
@@ -34,23 +32,7 @@ public class BankOperations {
   @Autowired
   private StorageInstance storageInstance;
 
-  /**
-   * Assume the user handle from the user's auth token
-   * Used to perform checks in the application to ensure that a user should have
-   * access to account information
-   * 
-   * @param tempObject TODO
-   *                   returns the user handle presented in the user's auth token
-   */
-  private String getUserHandle(String tempObject) {
-    /**
-     * This method will be used to assume the user handle from the auth token
-     * TODO - Implement once we have a sense of the auth flow to this API + Spring
-     */
-    return "TODO";
-  }
-
-  public AccountDetailsResponse getAccountById(String accountId) throws Exception {
+  public AccountDetailsResponse getAccountById(String accountId, String userhandle) throws Exception {
     Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(Integer.parseInt(accountId));
 
     /**
@@ -66,7 +48,7 @@ public class BankOperations {
      * Check that the requestor is the owner of the account
      * TODO, update the string passed into this method
      */
-    if (!account.getUserHandle().equals(getUserHandle(accountId))) {
+    if (!account.getUserHandle().equals(userhandle)) {
       throw new Exception("Your account is not authorized to access this resource");
     }
 
@@ -75,7 +57,8 @@ public class BankOperations {
         .balance(BigDecimal.valueOf(account.getBalance())).build();
   }
 
-  public AccountTransactionListResponse getTransacationsByAccount(String accountId) throws Exception {
+  public AccountTransactionListResponse getTransacationsByAccount(String accountId, String userhandle)
+      throws Exception {
 
     Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(Integer.parseInt(accountId));
 
@@ -92,7 +75,7 @@ public class BankOperations {
      * Check that the requestor is the owner of the account
      * TODO, update the string passed into this method
      */
-    if (!account.getUserHandle().equals(getUserHandle(accountId))) {
+    if (!account.getUserHandle().equals(userhandle)) {
       throw new Exception("Your account is not authorized to access this resource");
     }
 
@@ -111,7 +94,8 @@ public class BankOperations {
     return AccountTransactionListResponse.builder().transactions(final_list).build();
   }
 
-  public AdvancedProtectionStatusResponse getAdvancedProtectionStatus(String accountId) throws Exception {
+  public AdvancedProtectionStatusResponse getAdvancedProtectionStatus(String accountId, String userhandle)
+      throws Exception {
     Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(Integer.parseInt(accountId));
 
     /**
@@ -127,7 +111,7 @@ public class BankOperations {
      * Check that the requestor is the owner of the account
      * TODO, update the string passed into this method
      */
-    if (!account.getUserHandle().equals(getUserHandle(accountId))) {
+    if (!account.getUserHandle().equals(userhandle)) {
       throw new Exception("Your account is not authorized to access this resource");
     }
 
@@ -135,14 +119,14 @@ public class BankOperations {
 
   }
 
-  public CreateAccountResponse createAccount(CreateAccountRequest accountRequest) throws Exception {
+  public CreateAccountResponse createAccount(String userhandle) throws Exception {
     /**
      * Consider adding a check where we check both the username and userhandle
      * against KeyCloak
      */
 
     Account new_account = Account.builder()
-        .userHandle(getUserHandle("TODO pass uername and get UID"))
+        .userHandle(userhandle)
         .advancedProtection(false) // default to false
         .balance(3000) // default to 3000
         .createTime(Instant.now())
@@ -157,9 +141,8 @@ public class BankOperations {
     }
   }
 
-  public TransactionCreateResponse createTransaction(TransactionCreateRequest request) throws Exception {
-    String userhandle = getUserHandle("TODO get userhanlde");
-
+  public TransactionCreateResponse createTransaction(String type, double amount, String description, String userhandle)
+      throws Exception {
     Optional<Account> maybeAccount = storageInstance.getAccountStorage().getAll(userhandle).stream().findFirst();
 
     /**
@@ -179,10 +162,22 @@ public class BankOperations {
       throw new Exception("Your account is not authorized to access this resource");
     }
 
+    /**
+     * TODO - Reconsider reimplementing this method
+     * There's no reason to re-create the same object twice
+     * Perhaps we pass in the different parts of a transaction to processTransaction
+     * Then build the transaction object later for the DB
+     * 
+     * The primary problem is that we can't determine the status until we verify
+     * that the transaction can be processed
+     * 
+     * Perhaps process transaction should return the accountransaction with a
+     * relevant status
+     */
     AccountTransaction new_transaction = AccountTransaction.builder()
-        .type(request.getType())
-        .amount(request.getAmount().doubleValue())
-        .description(request.getDescription())
+        .type(type)
+        .amount(amount)
+        .description(description)
         .createTime(Instant.now())
         .accountId(account.getId().intValue())
         .build();
@@ -208,7 +203,8 @@ public class BankOperations {
     }
   }
 
-  public UpdateAdvancedProtectionStatusResponse updateAdvancedProtection(int accountId, boolean enabled)
+  public UpdateAdvancedProtectionStatusResponse updateAdvancedProtection(int accountId, boolean enabled,
+      String userhandle)
       throws Exception {
     Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(accountId);
 
@@ -225,7 +221,7 @@ public class BankOperations {
      * Check that the requestor is the owner of the account
      * TODO, update the string passed into this method
      */
-    if (!account.getUserHandle().equals(getUserHandle("TODO-Add UH"))) {
+    if (!account.getUserHandle().equals(userhandle)) {
       throw new Exception("Your account is not authorized to access this resource");
     }
 
