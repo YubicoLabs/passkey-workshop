@@ -1,25 +1,20 @@
 package com.yubicolabs.bank_app.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.math.BigDecimal;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
  * AccountTransactionListResponseTransactionsInner
  */
 
+@Builder
 @JsonTypeName("AccountTransactionListResponse_transactions_inner")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-27T11:32:42.412827-05:00[America/Chicago]")
 public class AccountTransactionListResponseTransactionsInner {
@@ -43,9 +38,10 @@ public class AccountTransactionListResponseTransactionsInner {
 
   /**
    * Get transactionId
+   * 
    * @return transactionId
-  */
-  
+   */
+
   @Schema(name = "transactionId", example = "49583", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public Integer getTransactionId() {
     return transactionId;
@@ -62,9 +58,10 @@ public class AccountTransactionListResponseTransactionsInner {
 
   /**
    * Get type
+   * 
    * @return type
-  */
-  
+   */
+
   @Schema(name = "type", example = "transfer", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public String getType() {
     return type;
@@ -81,9 +78,10 @@ public class AccountTransactionListResponseTransactionsInner {
 
   /**
    * Get amount
+   * 
    * @return amount
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "amount", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public BigDecimal getAmount() {
     return amount;
@@ -100,9 +98,10 @@ public class AccountTransactionListResponseTransactionsInner {
 
   /**
    * Get transactionDate
+   * 
    * @return transactionDate
-  */
-  
+   */
+
   @Schema(name = "transactionDate", example = "06/19/2023 04:20pm", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public String getTransactionDate() {
     return transactionDate;
@@ -155,4 +154,3 @@ public class AccountTransactionListResponseTransactionsInner {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

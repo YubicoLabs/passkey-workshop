@@ -1,23 +1,16 @@
 package com.yubicolabs.bank_app.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
  * UpdateAdvancedProtectionStatusRequest
  */
-
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-27T11:32:42.412827-05:00[America/Chicago]")
 public class UpdateAdvancedProtectionStatusRequest {
 
@@ -34,9 +27,10 @@ public class UpdateAdvancedProtectionStatusRequest {
 
   /**
    * Get accountId
+   * 
    * @return accountId
-  */
-  
+   */
+
   @Schema(name = "accountId", example = "1349", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public Integer getAccountId() {
     return accountId;
@@ -53,9 +47,10 @@ public class UpdateAdvancedProtectionStatusRequest {
 
   /**
    * Get enabled
+   * 
    * @return enabled
-  */
-  
+   */
+
   @Schema(name = "enabled", example = "true", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public Boolean getEnabled() {
     return enabled;
@@ -104,4 +99,3 @@ public class UpdateAdvancedProtectionStatusRequest {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

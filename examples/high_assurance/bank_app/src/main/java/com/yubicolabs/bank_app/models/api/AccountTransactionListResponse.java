@@ -1,26 +1,19 @@
 package com.yubicolabs.bank_app.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.yubicolabs.bank_app.models.api.AccountTransactionListResponseTransactionsInner;
 import java.util.ArrayList;
 import java.util.List;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
  * AccountTransactionListResponse
  */
-
+@Builder
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-27T11:32:42.412827-05:00[America/Chicago]")
 public class AccountTransactionListResponse {
 
@@ -28,12 +21,14 @@ public class AccountTransactionListResponse {
   @Valid
   private List<AccountTransactionListResponseTransactionsInner> transactions = null;
 
-  public AccountTransactionListResponse transactions(List<AccountTransactionListResponseTransactionsInner> transactions) {
+  public AccountTransactionListResponse transactions(
+      List<AccountTransactionListResponseTransactionsInner> transactions) {
     this.transactions = transactions;
     return this;
   }
 
-  public AccountTransactionListResponse addTransactionsItem(AccountTransactionListResponseTransactionsInner transactionsItem) {
+  public AccountTransactionListResponse addTransactionsItem(
+      AccountTransactionListResponseTransactionsInner transactionsItem) {
     if (this.transactions == null) {
       this.transactions = new ArrayList<>();
     }
@@ -43,9 +38,10 @@ public class AccountTransactionListResponse {
 
   /**
    * Get transactions
+   * 
    * @return transactions
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "transactions", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public List<AccountTransactionListResponseTransactionsInner> getTransactions() {
     return transactions;
@@ -92,4 +88,3 @@ public class AccountTransactionListResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

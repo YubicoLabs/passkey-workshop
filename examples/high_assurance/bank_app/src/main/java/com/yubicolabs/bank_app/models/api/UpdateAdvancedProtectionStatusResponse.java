@@ -1,23 +1,17 @@
 package com.yubicolabs.bank_app.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
  * UpdateAdvancedProtectionStatusResponse
  */
 
+@Builder
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-27T11:32:42.412827-05:00[America/Chicago]")
 public class UpdateAdvancedProtectionStatusResponse {
 
@@ -31,9 +25,10 @@ public class UpdateAdvancedProtectionStatusResponse {
 
   /**
    * Get status
+   * 
    * @return status
-  */
-  
+   */
+
   @Schema(name = "status", example = "complete", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public String getStatus() {
     return status;
@@ -80,4 +75,3 @@ public class UpdateAdvancedProtectionStatusResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
-
