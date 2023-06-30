@@ -11,9 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.yubicolabs.bank_app.models.api.AccountDetailsResponse;
+import com.yubicolabs.bank_app.models.api.AccountDetailListResponse;
+import com.yubicolabs.bank_app.models.api.AccountResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionListResponse;
-import com.yubicolabs.bank_app.models.api.AccountTransactionListResponseTransactionsInner;
+import com.yubicolabs.bank_app.models.api.AccountTransactionResponse;
 import com.yubicolabs.bank_app.models.api.AdvancedProtectionStatusResponse;
 import com.yubicolabs.bank_app.models.api.CreateAccountResponse;
 import com.yubicolabs.bank_app.models.api.TransactionCreateResponse;
@@ -32,8 +33,27 @@ public class BankOperations {
   @Autowired
   private StorageInstance storageInstance;
 
-  public AccountDetailsResponse getAccountById(String accountId, String userhandle) throws Exception {
-    Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(Integer.parseInt(accountId));
+  /**
+   * Get all accounts for a given user handle
+   * 
+   * @param userhandle ID of the user
+   * @returns A list of all the accounts owned by the user
+   * @throws Exception
+   */
+  public AccountDetailListResponse getAccountsByUserhandle(String userhandle) throws Exception {
+    Collection<Account> accountList = storageInstance.getAccountStorage().getAll(userhandle);
+
+    List<AccountResponse> responseList = accountList.stream().map(account -> AccountResponse.builder()
+        .accountId(account.getId().intValue())
+        .advancedProtection(account.isAdvancedProtection())
+        .balance(BigDecimal.valueOf(account.getBalance()))
+        .build()).collect(Collectors.toList());
+
+    return AccountDetailListResponse.builder().accounts(responseList).build();
+  }
+
+  public AccountResponse getAccountById(int accountId, String userhandle) throws Exception {
+    Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(accountId);
 
     /**
      * Check that an account exists
@@ -52,15 +72,17 @@ public class BankOperations {
       throw new Exception("Your account is not authorized to access this resource");
     }
 
-    return AccountDetailsResponse.builder()
+    return AccountResponse.builder()
         .accountId(account.getId().intValue())
-        .balance(BigDecimal.valueOf(account.getBalance())).build();
+        .balance(BigDecimal.valueOf(account.getBalance()))
+        .advancedProtection(account.isAdvancedProtection())
+        .build();
   }
 
-  public AccountTransactionListResponse getTransacationsByAccount(String accountId, String userhandle)
+  public AccountTransactionListResponse getTransactionsByAccount(int accountId, String userhandle)
       throws Exception {
 
-    Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(Integer.parseInt(accountId));
+    Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(accountId);
 
     /**
      * Check that an account exists
@@ -80,12 +102,12 @@ public class BankOperations {
     }
 
     Collection<AccountTransaction> transactions = storageInstance.getAccountTransactionStorage()
-        .getAll(Integer.parseInt(accountId));
+        .getAll(accountId);
 
-    List<AccountTransactionListResponseTransactionsInner> final_list = transactions.stream()
-        .map(transaction -> AccountTransactionListResponseTransactionsInner.builder()
+    List<AccountTransactionResponse> final_list = transactions.stream()
+        .map(transaction -> AccountTransactionResponse.builder()
             .transactionId(transaction.getId().intValue())
-            .type(transaction.getType())
+            .type(AccountTransactionResponse.TypeEnum.fromValue(transaction.getType()))
             .amount(BigDecimal.valueOf(transaction.getAmount()))
             .transactionDate(transaction.getCreateTime().toString())
             .build())
@@ -94,9 +116,9 @@ public class BankOperations {
     return AccountTransactionListResponse.builder().transactions(final_list).build();
   }
 
-  public AdvancedProtectionStatusResponse getAdvancedProtectionStatus(String accountId, String userhandle)
+  public AdvancedProtectionStatusResponse getAdvancedProtectionStatus(int accountId, String userhandle)
       throws Exception {
-    Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(Integer.parseInt(accountId));
+    Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(accountId);
 
     /**
      * Check that an account exists
@@ -125,20 +147,18 @@ public class BankOperations {
      * against KeyCloak
      */
 
-    Account new_account = Account.builder()
-        .userHandle(userhandle)
-        .advancedProtection(false) // default to false
-        .balance(3000) // default to 3000
-        .createTime(Instant.now())
-        .build();
+    try {
+      if (storageInstance.getAccountStorage().getAll(userhandle).size() > 0) {
+        throw new Exception("This user already has an account");
+      }
 
-    boolean didCreate = storageInstance.getAccountStorage().create(new_account);
+      storageInstance.getAccountStorage().create(userhandle, false, 3000, Instant.now());
 
-    if (didCreate) {
       return CreateAccountResponse.builder().status("created").build();
-    } else {
-      throw new Exception("There was an issue creating your account");
+    } catch (Exception e) {
+      throw e;
     }
+
   }
 
   public TransactionCreateResponse createTransaction(String type, double amount, String description, String userhandle)
@@ -162,35 +182,16 @@ public class BankOperations {
       throw new Exception("Your account is not authorized to access this resource");
     }
 
-    /**
-     * TODO - Reconsider reimplementing this method
-     * There's no reason to re-create the same object twice
-     * Perhaps we pass in the different parts of a transaction to processTransaction
-     * Then build the transaction object later for the DB
-     * 
-     * The primary problem is that we can't determine the status until we verify
-     * that the transaction can be processed
-     * 
-     * Perhaps process transaction should return the accountransaction with a
-     * relevant status
-     */
-    AccountTransaction new_transaction = AccountTransaction.builder()
+    boolean didCreate = storageInstance.getAccountStorage().processTransaction(account.getId().intValue(), type,
+        amount);
+
+    AccountTransaction finalTransaction = AccountTransaction.builder()
         .type(type)
         .amount(amount)
         .description(description)
         .createTime(Instant.now())
-        .accountId(account.getId().intValue())
-        .build();
-
-    boolean didCreate = storageInstance.getAccountStorage().processTransaction(new_transaction);
-
-    AccountTransaction finalTransaction = AccountTransaction.builder()
-        .type(new_transaction.getType())
-        .amount(new_transaction.getAmount())
-        .description(new_transaction.getDescription())
-        .createTime(new_transaction.getCreateTime())
         .status(didCreate)
-        .accountId(new_transaction.getAccountId())
+        .accountId(account.getId().intValue())
         .build();
 
     boolean didCreate_trans = storageInstance.getAccountTransactionStorage().create(finalTransaction);
@@ -227,8 +228,7 @@ public class BankOperations {
 
     boolean didUpdate = storageInstance.getAccountStorage().setAdvancedProtection(accountId, enabled);
 
-    return UpdateAdvancedProtectionStatusResponse.builder()
-        .status(didUpdate ? "complete" : "error").build();
+    return UpdateAdvancedProtectionStatusResponse.builder().enabled(true).build();
 
   }
 

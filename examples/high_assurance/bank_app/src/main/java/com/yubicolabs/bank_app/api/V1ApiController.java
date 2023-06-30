@@ -1,16 +1,14 @@
 package com.yubicolabs.bank_app.api;
 
-import com.yubicolabs.bank_app.models.api.AccountDetailsResponse;
+import com.yubicolabs.bank_app.models.api.APIStatus;
+import com.yubicolabs.bank_app.models.api.AccountResponse;
+import com.yubicolabs.bank_app.models.api.AccountDetailListResponse;
+import com.yubicolabs.bank_app.models.api.AccountTransactionResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionListResponse;
-import com.yubicolabs.bank_app.models.api.AdvancedProtectionStatusResponse;
-import com.yubicolabs.bank_app.models.api.CreateAccountRequest;
-import com.yubicolabs.bank_app.models.api.CreateAccountResponse;
+import com.yubicolabs.bank_app.models.api.AdvancedProtection;
 import com.yubicolabs.bank_app.models.api.Error;
 import com.yubicolabs.bank_app.models.api.TransactionCreateRequest;
-import com.yubicolabs.bank_app.models.api.TransactionCreateResponse;
 import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusRequest;
-import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusResponse;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-27T11:32:42.412827-05:00[America/Chicago]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-30T13:35:17.173429-05:00[America/Chicago]")
 @Controller
 @RequestMapping("${openapi.passkeyWebAuthnHighAssuranceAPIByYubico.base-path:}")
 public class V1ApiController implements V1Api {

@@ -2,6 +2,7 @@ package com.yubicolabs.bank_app.services.storage.local;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import com.yubicolabs.bank_app.interfaces.AccountTransactionStorage;
@@ -20,7 +21,13 @@ public class AccountTransactionStorage_Local implements AccountTransactionStorag
 
   @Override
   public boolean create(AccountTransaction accountTransaction) {
-    return accountTransactionRepository.add(accountTransaction);
+    return accountTransactionRepository.add(AccountTransaction.builder()
+        .type(accountTransaction.getType())
+        .amount(accountTransaction.getAmount())
+        .description(accountTransaction.getDescription())
+        .createTime(accountTransaction.getCreateTime())
+        .status(accountTransaction.getStatus())
+        .accountId(accountTransaction.getAccountId())
+        .id(ThreadLocalRandom.current().nextLong(100)).build());
   }
-
 }

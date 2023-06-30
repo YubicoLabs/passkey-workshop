@@ -15,11 +15,11 @@ import javax.annotation.Generated;
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-27T11:32:42.412827-05:00[America/Chicago]")
 public class UpdateAdvancedProtectionStatusResponse {
 
-  @JsonProperty("status")
-  private String status;
+  @JsonProperty("enabled")
+  private boolean enabled;
 
-  public UpdateAdvancedProtectionStatusResponse status(String status) {
-    this.status = status;
+  public UpdateAdvancedProtectionStatusResponse status(boolean status) {
+    this.enabled = status;
     return this;
   }
 
@@ -29,13 +29,13 @@ public class UpdateAdvancedProtectionStatusResponse {
    * @return status
    */
 
-  @Schema(name = "status", example = "complete", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  public String getStatus() {
-    return status;
+  @Schema(name = "enabled", example = "complete", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  public boolean getEnabled() {
+    return enabled;
   }
 
-  public void setStatus(String status) {
-    this.status = status;
+  public void setStatus(boolean enabled) {
+    this.enabled = enabled;
   }
 
   @Override
@@ -47,19 +47,19 @@ public class UpdateAdvancedProtectionStatusResponse {
       return false;
     }
     UpdateAdvancedProtectionStatusResponse updateAdvancedProtectionStatusResponse = (UpdateAdvancedProtectionStatusResponse) o;
-    return Objects.equals(this.status, updateAdvancedProtectionStatusResponse.status);
+    return Objects.equals(this.enabled, updateAdvancedProtectionStatusResponse.enabled);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(status);
+    return Objects.hash(enabled);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class UpdateAdvancedProtectionStatusResponse {\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    Enabled: ").append(toIndentedString(enabled)).append("\n");
     sb.append("}");
     return sb.toString();
   }

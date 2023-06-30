@@ -6,28 +6,36 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.yubicolabs.bank_app.interfaces.AccountStorage;
 import com.yubicolabs.bank_app.models.common.Account;
 import com.yubicolabs.bank_app.models.common.AccountTransaction;
 import com.yubicolabs.bank_app.models.dbo.mysql.AccountDBO;
 
+@Component
 public class AccountStorage_mysql implements AccountStorage {
 
   @Autowired(required = false)
   AccountStorageRepositoryMysql accountStorageRepositoryMysql;
 
   @Override
-  public boolean create(Account account) {
+  public Account create(String userhandle, boolean isAdvancedProtection, double balance, Instant createTime)
+      throws Exception {
     try {
+      Account account = Account.builder().userHandle(userhandle)
+          .advancedProtection(isAdvancedProtection)
+          .balance(balance).createTime(createTime).build();
+
       AccountDBO newItem = AccountDBO.builder().userHandle(account.getUserHandle())
           .advancedProtection(account.isAdvancedProtection())
           .balance(account.getBalance()).createTime(account.getCreateTime().toEpochMilli()).build();
+
       accountStorageRepositoryMysql.save(newItem);
-      return true;
+      return account;
     } catch (Exception e) {
       e.printStackTrace();
-      return false;
+      throw new Exception("Account creation failed: " + e.getLocalizedMessage());
     }
   }
 
@@ -85,21 +93,21 @@ public class AccountStorage_mysql implements AccountStorage {
   }
 
   @Override
-  public boolean processTransaction(AccountTransaction transaction) {
+  public boolean processTransaction(int accountId, String type, double amount) {
     try {
       double newBalance = 0;
-      double originalBalance = get(transaction.getAccountId()).get().getBalance();
-      if (transaction.getType().equals("deposit")) {
-        newBalance = originalBalance + transaction.getAmount();
-      } else if (transaction.getType().equals("withdraw")) {
-        newBalance = originalBalance - transaction.getAmount();
+      double originalBalance = get(accountId).get().getBalance();
+      if (type.equals("deposit")) {
+        newBalance = originalBalance + amount;
+      } else if (type.equals("withdraw")) {
+        newBalance = originalBalance - amount;
       } else {
         return false;
       }
 
       double newBalance_final = newBalance;
       AccountDBO updateDBO = accountStorageRepositoryMysql
-          .findById(new Long(transaction.getAccountId())).get();
+          .findById(new Long(accountId)).get();
       updateDBO.setBalance(newBalance_final);
 
       AccountDBO newDBO = accountStorageRepositoryMysql.save(updateDBO);

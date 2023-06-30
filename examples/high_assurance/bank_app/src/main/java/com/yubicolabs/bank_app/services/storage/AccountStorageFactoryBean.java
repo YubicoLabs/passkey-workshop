@@ -29,8 +29,7 @@ public class AccountStorageFactoryBean implements FactoryBean<AccountStorage> {
 
   @Override
   public Class<?> getObjectType() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getObjectType'");
+    return null;
   }
 
 }

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.math.BigDecimal;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
@@ -19,11 +20,48 @@ import javax.annotation.Generated;
  * TransactionCreateRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-27T11:32:42.412827-05:00[America/Chicago]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-30T13:35:17.173429-05:00[America/Chicago]")
 public class TransactionCreateRequest {
 
+  /**
+   * Gets or Sets type
+   */
+  public enum TypeEnum {
+    DEPOSIT("deposit"),
+    
+    WITHDRAWL("withdrawl"),
+    
+    TRANSFER("transfer");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static TypeEnum fromValue(String value) {
+      for (TypeEnum b : TypeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
   @JsonProperty("type")
-  private String type;
+  private TypeEnum type;
 
   @JsonProperty("amount")
   private BigDecimal amount;
@@ -31,7 +69,7 @@ public class TransactionCreateRequest {
   @JsonProperty("description")
   private String description;
 
-  public TransactionCreateRequest type(String type) {
+  public TransactionCreateRequest type(TypeEnum type) {
     this.type = type;
     return this;
   }
@@ -42,11 +80,11 @@ public class TransactionCreateRequest {
   */
   
   @Schema(name = "type", example = "deposit", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  public String getType() {
+  public TypeEnum getType() {
     return type;
   }
 
-  public void setType(String type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 

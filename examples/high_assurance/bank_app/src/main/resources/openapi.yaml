@@ -1,21 +1,49 @@
 openapi: 3.0.0
 info:
+  description: |
+    This REST API allows a developer to interact with a ficticious bank application through any web, mobile, or commandline client
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: Passkey WebAuthn High Assurance API by Yubico
-  version: 1.0.0
+  version: 1.0.1
 servers:
-- url: /
+- url: "https://{api_endpoint}"
+  variables:
+    api_endpoint:
+      default: api.pkbank.io
 paths:
+  /v1/status:
+    get:
+      operationId: APIStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIStatus'
+          description: API status response
+      summary: Get API status
+      x-accepts: application/json
   /v1/accounts:
+    get:
+      operationId: GetAccountsRequest
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDetailListResponse'
+          description: Successfully retrieved all user accounts
+      summary: API to list all accounts that belong to a user
+      x-accepts: application/json
     post:
       operationId: CreateAccountRequest
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAccountRequest'
+              type: object
         description: Create a new account by specifying userName
         required: true
       responses:
@@ -186,24 +214,18 @@ paths:
       x-accepts: application/json
 components:
   schemas:
-    CreateAccountRequest:
+    APIStatus:
       example:
-        userName: robert
-      properties:
-        userName:
-          example: robert
-          type: string
-      type: object
-    CreateAccountResponse:
-      example:
-        status: created
+        status: ok
       properties:
         status:
-          example: created
+          example: ok
           type: string
-    AccountDetailsResponse:
+      type: object
+    Account:
       example:
         accountId: 1234
+        advancedProtection: false
         balance: 0.8008281904610115
       properties:
         accountId:
@@ -211,22 +233,81 @@ components:
           type: integer
         balance:
           type: number
+        advancedProtection:
+          example: false
+          type: boolean
+      type: object
+    CreateAccountRequest:
+      properties:
+        userName:
+          example: robert
+          type: string
+      type: object
+    CreateAccountResponse:
+      $ref: '#/components/schemas/Account'
+    AccountDetailsResponse:
+      $ref: '#/components/schemas/Account'
+    AccountDetailListResponse:
+      example:
+        accounts:
+        - accountId: 1234
+          advancedProtection: false
+          balance: 0.8008281904610115
+        - accountId: 1234
+          advancedProtection: false
+          balance: 0.8008281904610115
+      properties:
+        accounts:
+          items:
+            $ref: '#/components/schemas/Account'
+          type: array
+      type: object
     AccountTransactionListResponse:
       example:
         transactions:
         - amount: 0.8008281904610115
+          description: birthday gift
           type: transfer
           transactionDate: 06/19/2023 04:20pm
           transactionId: 49583
         - amount: 0.8008281904610115
+          description: birthday gift
           type: transfer
           transactionDate: 06/19/2023 04:20pm
           transactionId: 49583
       properties:
         transactions:
           items:
-            $ref: '#/components/schemas/AccountTransactionListResponse_transactions_inner'
+            $ref: '#/components/schemas/AccountTransaction'
           type: array
+      type: object
+    AccountTransaction:
+      example:
+        amount: 0.8008281904610115
+        description: birthday gift
+        type: transfer
+        transactionDate: 06/19/2023 04:20pm
+        transactionId: 49583
+      properties:
+        transactionId:
+          example: 49583
+          type: integer
+        type:
+          enum:
+          - deposit
+          - withdrawal
+          - transfer
+          example: transfer
+          type: string
+        amount:
+          type: number
+        transactionDate:
+          example: 06/19/2023 04:20pm
+          type: string
+        description:
+          example: birthday gift
+          type: string
+      type: object
     TransactionCreateRequest:
       example:
         amount: 0.8008281904610115
@@ -234,6 +315,10 @@ components:
         type: deposit
       properties:
         type:
+          enum:
+          - deposit
+          - withdrawl
+          - transfer
           example: deposit
           type: string
         amount:
@@ -243,18 +328,8 @@ components:
           type: string
       type: object
     TransactionCreateResponse:
-      example:
-        transactionId: 2938
-        status: complete
-      properties:
-        status:
-          example: complete
-          type: string
-        transactionId:
-          example: 2938
-          type: integer
-      type: object
-    UpdateAdvancedProtectionStatusRequest:
+      $ref: '#/components/schemas/AccountTransaction'
+    AdvancedProtection:
       example:
         accountId: 1349
         enabled: true
@@ -266,22 +341,18 @@ components:
           example: true
           type: boolean
       type: object
-    AdvancedProtectionStatusResponse:
+    UpdateAdvancedProtectionStatusRequest:
       example:
-        enabled: false
+        enabled: true
       properties:
         enabled:
-          example: false
+          example: true
           type: boolean
       type: object
+    AdvancedProtectionStatusResponse:
+      $ref: '#/components/schemas/AdvancedProtection'
     UpdateAdvancedProtectionStatusResponse:
-      example:
-        status: complete
-      properties:
-        status:
-          example: complete
-          type: string
-      type: object
+      $ref: '#/components/schemas/AdvancedProtection'
     Error:
       properties:
         status:
@@ -291,21 +362,3 @@ components:
           example: descriptive error message
           type: string
       type: object
-    AccountTransactionListResponse_transactions_inner:
-      example:
-        amount: 0.8008281904610115
-        type: transfer
-        transactionDate: 06/19/2023 04:20pm
-        transactionId: 49583
-      properties:
-        transactionId:
-          example: 49583
-          type: integer
-        type:
-          example: transfer
-          type: string
-        amount:
-          type: number
-        transactionDate:
-          example: 06/19/2023 04:20pm
-          type: string

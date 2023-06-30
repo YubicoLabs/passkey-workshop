@@ -15,16 +15,38 @@ import java.util.*;
 import javax.annotation.Generated;
 
 /**
- * UpdateAdvancedProtectionStatusRequest
+ * AdvancedProtection
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-30T13:35:17.173429-05:00[America/Chicago]")
-public class UpdateAdvancedProtectionStatusRequest {
+public class AdvancedProtection {
+
+  @JsonProperty("accountId")
+  private Integer accountId;
 
   @JsonProperty("enabled")
   private Boolean enabled;
 
-  public UpdateAdvancedProtectionStatusRequest enabled(Boolean enabled) {
+  public AdvancedProtection accountId(Integer accountId) {
+    this.accountId = accountId;
+    return this;
+  }
+
+  /**
+   * Get accountId
+   * @return accountId
+  */
+  
+  @Schema(name = "accountId", example = "1349", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  public Integer getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(Integer accountId) {
+    this.accountId = accountId;
+  }
+
+  public AdvancedProtection enabled(Boolean enabled) {
     this.enabled = enabled;
     return this;
   }
@@ -51,19 +73,21 @@ public class UpdateAdvancedProtectionStatusRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest = (UpdateAdvancedProtectionStatusRequest) o;
-    return Objects.equals(this.enabled, updateAdvancedProtectionStatusRequest.enabled);
+    AdvancedProtection advancedProtection = (AdvancedProtection) o;
+    return Objects.equals(this.accountId, advancedProtection.accountId) &&
+        Objects.equals(this.enabled, advancedProtection.enabled);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(enabled);
+    return Objects.hash(accountId, enabled);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UpdateAdvancedProtectionStatusRequest {\n");
+    sb.append("class AdvancedProtection {\n");
+    sb.append("    accountId: ").append(toIndentedString(accountId)).append("\n");
     sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
     sb.append("}");
     return sb.toString();

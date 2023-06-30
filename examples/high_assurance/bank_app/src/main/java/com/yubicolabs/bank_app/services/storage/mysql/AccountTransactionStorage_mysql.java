@@ -5,11 +5,13 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.yubicolabs.bank_app.interfaces.AccountTransactionStorage;
 import com.yubicolabs.bank_app.models.common.AccountTransaction;
 import com.yubicolabs.bank_app.models.dbo.mysql.AccountTransactionDBO;
 
+@Component
 public class AccountTransactionStorage_mysql implements AccountTransactionStorage {
 
   @Autowired(required = false)

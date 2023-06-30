@@ -4,18 +4,17 @@ import com.fasterxml.jackson.databind.Module;
 import org.openapitools.jackson.nullable.JsonNullableModule;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
-@SpringBootApplication(
-    nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
-)
-@ComponentScan(
-    basePackages = {"org.openapitools", "com.yubicolabs.bank_app.api" , "org.openapitools.configuration"},
-    nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
-)
+@SpringBootApplication
+@ComponentScan(basePackages = { "org.openapitools", "org.openapitools.configuration", "com.yubicolabs.bank_app" })
+@EnableJpaRepositories(basePackages = "com.yubicolabs.bank_app")
+@EntityScan(basePackages = "com.yubicolabs.bank_app")
+@EnableAutoConfiguration
 public class OpenApiGeneratorApplication {
 
     public static void main(String[] args) {

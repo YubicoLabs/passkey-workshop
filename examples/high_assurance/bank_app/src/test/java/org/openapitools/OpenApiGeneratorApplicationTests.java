@@ -1,81 +1,226 @@
 package org.openapitools;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.math.BigDecimal;
+import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
+import com.yubicolabs.bank_app.models.api.AccountTransactionListResponse;
+import com.yubicolabs.bank_app.models.api.AdvancedProtectionStatusResponse;
+import com.yubicolabs.bank_app.models.api.CreateAccountResponse;
+import com.yubicolabs.bank_app.models.api.TransactionCreateResponse;
+import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusResponse;
 import com.yubicolabs.bank_app.models.common.Account;
 import com.yubicolabs.bank_app.models.common.AccountTransaction;
+import com.yubicolabs.bank_app.services.bank.BankOperations;
 import com.yubicolabs.bank_app.services.storage.local.AccountStorage_Local;
 import com.yubicolabs.bank_app.services.storage.local.AccountTransactionStorage_Local;
 
 @SpringBootTest
 class OpenApiGeneratorApplicationTests {
 
-  @Test
-  void AccountMethods_Local() {
-    AccountStorage_Local local = new AccountStorage_Local();
+    @Autowired
+    BankOperations bankOperations;
 
-    Account account1 = Account.builder().userHandle("my_user_handle").advancedProtection(false)
-        .balance(3000).id(Long.valueOf(123456789)).build();
+    @Test
+    void AccountMethods_Local() {
+        AccountStorage_Local local = new AccountStorage_Local();
 
-    assertTrue(local.create(account1));
-    assertEquals(local.getAll("my_user_handle").size(), 1);
-    System.out
-        .println(local.getAll("my_user_handle").stream().findFirst().get()
-            .getId() == 123456789);
-    assertTrue(local.get(123456789).isPresent());
+        Account firstAccount = null;
+        try {
+            firstAccount = local.create("my_user_handle", false, 3000, Instant.now());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
 
-    System.out.println("Current AP: " + local.get(123456789).get().isAdvancedProtection());
-    assertTrue(local.setAdvancedProtection(123456789, true));
-    System.out.println("Current AP: " + local.get(123456789).get().isAdvancedProtection());
+        assertEquals(local.getAll("my_user_handle").size(), 1);
 
-    System.out.println("Current balance: " + local.get(123456789).get().getBalance());
-    AccountTransaction transaction1 = AccountTransaction.builder()
-        .type("withdraw")
-        .amount(1000)
-        .description("To myself")
-        .status(true)
-        .accountId(123456789).build();
-    assertTrue(local.processTransaction(transaction1));
-    System.out.println("Current balance: " + local.get(123456789).get().getBalance());
-  }
+        assertTrue(local.get(firstAccount.getId().intValue()).isPresent());
 
-  @Test
-  void TransactionMethods_Local() {
-    AccountTransactionStorage_Local local = new AccountTransactionStorage_Local();
+        assertTrue(local.setAdvancedProtection(firstAccount.getId().intValue(), true));
 
-    AccountTransaction newItem = AccountTransaction.builder()
-        .type("deposit")
-        .amount(2000)
-        .description("to me")
-        .status(true)
-        .accountId(123456789).build();
+        assertTrue(local.processTransaction(firstAccount.getId().intValue(), "withdraw", 1000));
+    }
 
-    AccountTransaction newItem_2 = AccountTransaction.builder()
-        .type("deposit")
-        .amount(2000)
-        .description("to me 2")
-        .status(true)
-        .accountId(123456789).build();
+    @Test
+    void TransactionMethods_Local() {
+        AccountTransactionStorage_Local local = new AccountTransactionStorage_Local();
 
-    AccountTransaction newItem_3 = AccountTransaction.builder()
-        .type("deposit")
-        .amount(2000)
-        .description("to not me")
-        .status(true)
-        .accountId(987654321).build();
+        AccountTransaction newItem = AccountTransaction.builder()
+                .type("deposit")
+                .amount(2000)
+                .description("to me")
+                .status(true)
+                .accountId(123456789).build();
 
-    assertTrue(local.create(newItem));
-    assertEquals(local.getAll(123456789).size(), 1);
+        AccountTransaction newItem_2 = AccountTransaction.builder()
+                .type("deposit")
+                .amount(2000)
+                .description("to me 2")
+                .status(true)
+                .accountId(123456789).build();
 
-    local.create(newItem_2);
-    assertEquals(local.getAll(123456789).size(), 2);
+        AccountTransaction newItem_3 = AccountTransaction.builder()
+                .type("deposit")
+                .amount(2000)
+                .description("to not me")
+                .status(true)
+                .accountId(987654321).build();
 
-    local.create(newItem_3);
-    assertEquals(local.getAll(987654321).size(), 1);
-  }
+        assertTrue(local.create(newItem));
+        assertEquals(local.getAll(123456789).size(), 1);
+
+        local.create(newItem_2);
+        assertEquals(local.getAll(123456789).size(), 2);
+
+        local.create(newItem_3);
+        assertEquals(local.getAll(987654321).size(), 1);
+    }
+
+    @Test
+    void testAccountCreation() {
+        String userhandle = "user_handle_1";
+        try {
+            CreateAccountResponse response = bankOperations.createAccount(userhandle);
+            assertEquals(response.getStatus(), "created");
+        } catch (Exception e) {
+            fail("Error creating first account");
+        }
+        assertThrows(Exception.class, () -> bankOperations.createAccount(userhandle));
+    }
+
+    void testAccountNumber() {
+        String userhanlde = "user_handle_1";
+        // @TODO implement this test
+    }
+
+    @Test
+    void testAdvancedProtectionGet() {
+        try {
+            String userhandle = "user_handle_3";
+            bankOperations.createAccount(userhandle);
+            int accountId = bankOperations.getAccountsByUserhandle(userhandle).getAccounts().get(0).getAccountId();
+            try {
+
+                AdvancedProtectionStatusResponse method_response = bankOperations.getAdvancedProtectionStatus(accountId,
+                        userhandle);
+                assertFalse(method_response.getEnabled());
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail();
+            }
+            String wrong_userhandle = "user_handle_2";
+            assertThrows(Exception.class,
+                    () -> bankOperations.getAdvancedProtectionStatus(accountId, wrong_userhandle));
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testAdvancedProtectionSet() {
+        try {
+            String userhandle = "user_handle_4";
+            bankOperations.createAccount(userhandle);
+            int accountId = bankOperations.getAccountsByUserhandle(userhandle).getAccounts().get(0).getAccountId();
+
+            try {
+                UpdateAdvancedProtectionStatusResponse response = bankOperations.updateAdvancedProtection(accountId,
+                        true,
+                        userhandle);
+                assertTrue(response.getEnabled());
+
+                AdvancedProtectionStatusResponse response_2 = bankOperations.getAdvancedProtectionStatus(accountId,
+                        userhandle);
+                assertTrue(response_2.getEnabled());
+            } catch (Exception e) {
+                fail();
+            }
+            String wrong_userhandle = "user_handle_2";
+            assertThrows(Exception.class,
+                    () -> bankOperations.updateAdvancedProtection(accountId, false, wrong_userhandle));
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testCreateTransaction() {
+        try {
+            String userhandle = "user_handle_5";
+            bankOperations.createAccount(userhandle);
+            int accountId = bankOperations.getAccountsByUserhandle(userhandle).getAccounts().get(0).getAccountId();
+
+            try {
+                TransactionCreateResponse response = bankOperations.createTransaction("deposit", 1000, "Test",
+                        userhandle);
+                assertTrue(response.getStatus().equals("complete"));
+
+                assertEquals(bankOperations.getAccountById(accountId, userhandle).getBalance(),
+                        BigDecimal.valueOf(4000.0));
+
+                TransactionCreateResponse response_withdraw = bankOperations.createTransaction("withdraw", 1000, "Test",
+                        userhandle);
+                assertTrue(response_withdraw.getStatus().equals("complete"));
+
+                assertEquals(bankOperations.getAccountById(accountId, userhandle).getBalance(),
+                        BigDecimal.valueOf(3000.0));
+
+                TransactionCreateResponse response_cent = bankOperations.createTransaction("withdraw", .52, "Test",
+                        userhandle);
+                assertTrue(response_cent.getStatus().equals("complete"));
+
+                assertEquals(bankOperations.getAccountById(accountId, userhandle).getBalance(),
+                        BigDecimal.valueOf(2999.48));
+
+            } catch (Exception e) {
+                fail();
+            }
+            String wrong_userhandle = "user_handle_2";
+            assertThrows(Exception.class, () -> bankOperations.createTransaction("withdraw", 1000, "Test",
+                    wrong_userhandle));
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testGetTransactions() {
+        try {
+            String userhandle = "user_handle_6";
+            bankOperations.createAccount(userhandle);
+            int accountId = bankOperations.getAccountsByUserhandle(userhandle).getAccounts().get(0).getAccountId();
+
+            try {
+                bankOperations.createTransaction("deposit", 1000, "Test", userhandle);
+                bankOperations.createTransaction("deposit", 1000, "Test", userhandle);
+                bankOperations.createTransaction("deposit", 1000, "Test", userhandle);
+
+                AccountTransactionListResponse response = bankOperations.getTransactionsByAccount(accountId,
+                        userhandle);
+                assertEquals(response.getTransactions().size(), 3);
+
+            } catch (Exception e) {
+                fail();
+            }
+
+            String wrong_userhandle = "user_handle_2";
+            assertThrows(Exception.class, () -> bankOperations.getTransactionsByAccount(accountId, wrong_userhandle));
+        } catch (Exception e) {
+            fail();
+        }
+
+    }
 
 }

@@ -2,6 +2,7 @@ package com.yubicolabs.bank_app.interfaces;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.time.Instant;
 
 import com.yubicolabs.bank_app.models.common.Account;
 import com.yubicolabs.bank_app.models.common.AccountTransaction;
@@ -9,12 +10,18 @@ import com.yubicolabs.bank_app.models.common.AccountTransaction;
 public interface AccountStorage {
 
   /**
-   * Create a new account for a user
+   * Creates a new user account
    * 
-   * @param userHandle ID of the user attempting to create the account
-   * @return true if account created, false otherwise
+   * @param userhandle           ID of the user
+   * @param isAdvancedProtection setting for advanced protection (default false)
+   * @param balance              balance to enter into account
+   * @param createTime           time of creation
+   * 
+   * @return new Account that was created
+   * @throws Exception if account creation not successful
    */
-  public boolean create(Account account);
+  public Account create(String userhandle, boolean isAdvancedProtection, double balance, Instant createTime)
+      throws Exception;
 
   /**
    * Get all accounts for a specific user
@@ -45,11 +52,13 @@ public interface AccountStorage {
   public boolean setAdvancedProtection(int accountId, boolean setting);
 
   /**
-   * Process a transaction to update the account balance
+   * Process a withdraw or deposit for a specific account
    * 
-   * @param transaction transaction to be processed for the account
+   * @param accountId ID of the account to transact
+   * @param type      deposit or withdraw
+   * @param amount    amount to change in the account, based on type
    * @return true if processing successful, false otherwise
    */
-  public boolean processTransaction(AccountTransaction transaction);
+  public boolean processTransaction(int accountId, String type, double amount);
 
 }

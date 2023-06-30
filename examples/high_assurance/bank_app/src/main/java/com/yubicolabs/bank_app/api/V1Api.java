@@ -5,16 +5,15 @@
  */
 package com.yubicolabs.bank_app.api;
 
-import com.yubicolabs.bank_app.models.api.AccountDetailsResponse;
+import com.yubicolabs.bank_app.models.api.APIStatus;
+import com.yubicolabs.bank_app.models.api.AccountResponse;
+import com.yubicolabs.bank_app.models.api.AccountDetailListResponse;
+import com.yubicolabs.bank_app.models.api.AccountTransactionResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionListResponse;
-import com.yubicolabs.bank_app.models.api.AdvancedProtectionStatusResponse;
-import com.yubicolabs.bank_app.models.api.CreateAccountRequest;
-import com.yubicolabs.bank_app.models.api.CreateAccountResponse;
+import com.yubicolabs.bank_app.models.api.AdvancedProtection;
 import com.yubicolabs.bank_app.models.api.Error;
 import com.yubicolabs.bank_app.models.api.TransactionCreateRequest;
-import com.yubicolabs.bank_app.models.api.TransactionCreateResponse;
 import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusRequest;
-import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusResponse;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,7 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-27T11:32:42.412827-05:00[America/Chicago]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-30T13:35:17.173429-05:00[America/Chicago]")
 @Validated
 @Tag(name = "v1", description = "the v1 API")
 public interface V1Api {
@@ -51,36 +50,54 @@ public interface V1Api {
     }
 
     /**
+     * GET /v1/status : Get API status
+     *
+     * @return API status response (status code 200)
+     */
+    @Operation(operationId = "aPIStatus", summary = "Get API status", responses = {
+            @ApiResponse(responseCode = "200", description = "API status response", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = APIStatus.class))
+            })
+    })
+    @RequestMapping(method = RequestMethod.GET, value = "/v1/status", produces = { "application/json" })
+    default ResponseEntity<APIStatus> aPIStatus(
+
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"status\" : \"ok\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * GET /v1/account/{accountId} : Returns bank account details by acccountId
      *
      * @param accountId ID of bank account to return (required)
      * @return Successful account details (status code 200)
      *         or Failed request response (status code 400)
      */
-    @Operation(
-        operationId = "accountDetails",
-        summary = "Returns bank account details by acccountId",
-        responses = {
+    @Operation(operationId = "accountDetails", summary = "Returns bank account details by acccountId", responses = {
             @ApiResponse(responseCode = "200", description = "Successful account details", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = AccountDetailsResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = AccountResponse.class))
             }),
             @ApiResponse(responseCode = "400", description = "Failed request response", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
             })
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.GET,
-        value = "/v1/account/{accountId}",
-        produces = { "application/json" }
-    )
-    default ResponseEntity<AccountDetailsResponse> accountDetails(
-        @Parameter(name = "accountId", description = "ID of bank account to return", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId
-    ) {
+    })
+    @RequestMapping(method = RequestMethod.GET, value = "/v1/account/{accountId}", produces = { "application/json" })
+    default ResponseEntity<AccountResponse> accountDetails(
+            @Parameter(name = "accountId", description = "ID of bank account to return", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId) {
         getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"accountId\" : 1234, \"balance\" : 0.8008281904610115 }";
+                    String exampleString = "{ \"accountId\" : 1234, \"advancedProtection\" : false, \"balance\" : 0.8008281904610115 }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -89,39 +106,31 @@ public interface V1Api {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
-
 
     /**
      * GET /v1/account/{accountId}/transactions : Returns transactions by account ID
      *
      * @param accountId ID of account to fetch transactions (required)
-     * @return Successful array of transactions for a single account. Empty array [] if no transactions exist. (status code 200)
+     * @return Successful array of transactions for a single account. Empty array []
+     *         if no transactions exist. (status code 200)
      *         or Failed request response (status code 400)
      */
-    @Operation(
-        operationId = "accountTransactionList",
-        summary = "Returns transactions by account ID",
-        responses = {
+    @Operation(operationId = "accountTransactionList", summary = "Returns transactions by account ID", responses = {
             @ApiResponse(responseCode = "200", description = "Successful array of transactions for a single account. Empty array [] if no transactions exist.", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = AccountTransactionListResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = AccountTransactionListResponse.class))
             }),
             @ApiResponse(responseCode = "400", description = "Failed request response", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
             })
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.GET,
-        value = "/v1/account/{accountId}/transactions",
-        produces = { "application/json" }
-    )
+    })
+    @RequestMapping(method = RequestMethod.GET, value = "/v1/account/{accountId}/transactions", produces = {
+            "application/json" })
     default ResponseEntity<AccountTransactionListResponse> accountTransactionList(
-        @Parameter(name = "accountId", description = "ID of account to fetch transactions", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId
-    ) {
+            @Parameter(name = "accountId", description = "ID of account to fetch transactions", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId) {
         getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"transactions\" : [ { \"amount\" : 0.8008281904610115, \"type\" : \"transfer\", \"transactionDate\" : \"06/19/2023 04:20pm\", \"transactionId\" : 49583 }, { \"amount\" : 0.8008281904610115, \"type\" : \"transfer\", \"transactionDate\" : \"06/19/2023 04:20pm\", \"transactionId\" : 49583 } ] }";
+                    String exampleString = "{ \"transactions\" : [ { \"amount\" : 0.8008281904610115, \"description\" : \"birthday gift\", \"type\" : \"transfer\", \"transactionDate\" : \"06/19/2023 04:20pm\", \"transactionId\" : 49583 }, { \"amount\" : 0.8008281904610115, \"description\" : \"birthday gift\", \"type\" : \"transfer\", \"transactionDate\" : \"06/19/2023 04:20pm\", \"transactionId\" : 49583 } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -131,38 +140,30 @@ public interface V1Api {
 
     }
 
-
     /**
-     * GET /v1/account/{accountId}/advanced-protection : Get advanced protection status for account
+     * GET /v1/account/{accountId}/advanced-protection : Get advanced protection
+     * status for account
      *
      * @param accountId ID of account for advanced protection status (required)
      * @return Advanced protection status response is (true|false) (status code 200)
      *         or Failed request response (status code 400)
      */
-    @Operation(
-        operationId = "advancedProtectionStatus",
-        summary = "Get advanced protection status for account",
-        responses = {
+    @Operation(operationId = "advancedProtectionStatus", summary = "Get advanced protection status for account", responses = {
             @ApiResponse(responseCode = "200", description = "Advanced protection status response is (true|false)", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = AdvancedProtectionStatusResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = AdvancedProtection.class))
             }),
             @ApiResponse(responseCode = "400", description = "Failed request response", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
             })
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.GET,
-        value = "/v1/account/{accountId}/advanced-protection",
-        produces = { "application/json" }
-    )
-    default ResponseEntity<AdvancedProtectionStatusResponse> advancedProtectionStatus(
-        @Parameter(name = "accountId", description = "ID of account for advanced protection status", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId
-    ) {
+    })
+    @RequestMapping(method = RequestMethod.GET, value = "/v1/account/{accountId}/advanced-protection", produces = {
+            "application/json" })
+    default ResponseEntity<AdvancedProtection> advancedProtectionStatus(
+            @Parameter(name = "accountId", description = "ID of account for advanced protection status", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId) {
         getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"enabled\" : false }";
+                    String exampleString = "{ \"accountId\" : 1349, \"enabled\" : true }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -171,40 +172,30 @@ public interface V1Api {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
-
 
     /**
      * POST /v1/accounts : Admin API to create a new bank account for user
      *
-     * @param createAccountRequest Create a new account by specifying userName (required)
+     * @param body Create a new account by specifying userName (required)
      * @return Successful bank account creation (status code 200)
      *         or Failed request response (status code 400)
      */
-    @Operation(
-        operationId = "createAccountRequest",
-        summary = "Admin API to create a new bank account for user",
-        responses = {
+    @Operation(operationId = "createAccountRequest", summary = "Admin API to create a new bank account for user", responses = {
             @ApiResponse(responseCode = "200", description = "Successful bank account creation", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = CreateAccountResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = AccountResponse.class))
             }),
             @ApiResponse(responseCode = "400", description = "Failed request response", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
             })
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/v1/accounts",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<CreateAccountResponse> createAccountRequest(
-        @Parameter(name = "CreateAccountRequest", description = "Create a new account by specifying userName", required = true) @Valid @RequestBody CreateAccountRequest createAccountRequest
-    ) {
+    })
+    @RequestMapping(method = RequestMethod.POST, value = "/v1/accounts", produces = { "application/json" }, consumes = {
+            "application/json" })
+    default ResponseEntity<AccountResponse> createAccountRequest(
+            @Parameter(name = "body", description = "Create a new account by specifying userName", required = true) @Valid @RequestBody Object body) {
         getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"status\" : \"created\" }";
+                    String exampleString = "{ \"accountId\" : 1234, \"advancedProtection\" : false, \"balance\" : 0.8008281904610115 }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -214,41 +205,58 @@ public interface V1Api {
 
     }
 
+    /**
+     * GET /v1/accounts : API to list all accounts that belong to a user
+     *
+     * @return Successfully retrieved all user accounts (status code 200)
+     */
+    @Operation(operationId = "getAccountsRequest", summary = "API to list all accounts that belong to a user", responses = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved all user accounts", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = AccountDetailListResponse.class))
+            })
+    })
+    @RequestMapping(method = RequestMethod.GET, value = "/v1/accounts", produces = { "application/json" })
+    default ResponseEntity<AccountDetailListResponse> getAccountsRequest(
+
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"accounts\" : [ { \"accountId\" : 1234, \"advancedProtection\" : false, \"balance\" : 0.8008281904610115 }, { \"accountId\" : 1234, \"advancedProtection\" : false, \"balance\" : 0.8008281904610115 } ] }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
 
     /**
      * POST /v1/account/{accountId}/transactions : Create a new transaction
      *
-     * @param accountId ID of bank account to return (required)
+     * @param accountId                ID of bank account to return (required)
      * @param transactionCreateRequest Create a transaction (required)
      * @return Successful transaction created response (status code 200)
      *         or Failed request response (status code 400)
      */
-    @Operation(
-        operationId = "transactionCreate",
-        summary = "Create a new transaction",
-        responses = {
+    @Operation(operationId = "transactionCreate", summary = "Create a new transaction", responses = {
             @ApiResponse(responseCode = "200", description = "Successful transaction created response", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionCreateResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = AccountTransactionResponse.class))
             }),
             @ApiResponse(responseCode = "400", description = "Failed request response", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
             })
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/v1/account/{accountId}/transactions",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<TransactionCreateResponse> transactionCreate(
-        @Parameter(name = "accountId", description = "ID of bank account to return", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId,
-        @Parameter(name = "TransactionCreateRequest", description = "Create a transaction", required = true) @Valid @RequestBody TransactionCreateRequest transactionCreateRequest
-    ) {
+    })
+    @RequestMapping(method = RequestMethod.POST, value = "/v1/account/{accountId}/transactions", produces = {
+            "application/json" }, consumes = { "application/json" })
+    default ResponseEntity<AccountTransactionResponse> transactionCreate(
+            @Parameter(name = "accountId", description = "ID of bank account to return", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId,
+            @Parameter(name = "TransactionCreateRequest", description = "Create a transaction", required = true) @Valid @RequestBody TransactionCreateRequest transactionCreateRequest) {
         getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"transactionId\" : 2938, \"status\" : \"complete\" }";
+                    String exampleString = "{ \"amount\" : 0.8008281904610115, \"description\" : \"birthday gift\", \"type\" : \"transfer\", \"transactionDate\" : \"06/19/2023 04:20pm\", \"transactionId\" : 49583 }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -258,41 +266,34 @@ public interface V1Api {
 
     }
 
-
     /**
-     * PUT /v1/account/{accountId}/advanced-protection : Update/Set advanced protection status for account
+     * PUT /v1/account/{accountId}/advanced-protection : Update/Set advanced
+     * protection status for account
      *
-     * @param accountId ID of bank account to return (required)
-     * @param updateAdvancedProtectionStatusRequest Update advanced protection status for account (required)
+     * @param accountId                             ID of bank account to return
+     *                                              (required)
+     * @param updateAdvancedProtectionStatusRequest Update advanced protection
+     *                                              status for account (required)
      * @return Successful advanced protection status response (status code 200)
      *         or Failed request response (status code 400)
      */
-    @Operation(
-        operationId = "updateAdvancedProtectionStatus",
-        summary = "Update/Set advanced protection status for account",
-        responses = {
+    @Operation(operationId = "updateAdvancedProtectionStatus", summary = "Update/Set advanced protection status for account", responses = {
             @ApiResponse(responseCode = "200", description = "Successful advanced protection status response", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateAdvancedProtectionStatusResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = AdvancedProtection.class))
             }),
             @ApiResponse(responseCode = "400", description = "Failed request response", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
             })
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.PUT,
-        value = "/v1/account/{accountId}/advanced-protection",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<UpdateAdvancedProtectionStatusResponse> updateAdvancedProtectionStatus(
-        @Parameter(name = "accountId", description = "ID of bank account to return", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId,
-        @Parameter(name = "UpdateAdvancedProtectionStatusRequest", description = "Update advanced protection status for account", required = true) @Valid @RequestBody UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest
-    ) {
+    })
+    @RequestMapping(method = RequestMethod.PUT, value = "/v1/account/{accountId}/advanced-protection", produces = {
+            "application/json" }, consumes = { "application/json" })
+    default ResponseEntity<AdvancedProtection> updateAdvancedProtectionStatus(
+            @Parameter(name = "accountId", description = "ID of bank account to return", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId,
+            @Parameter(name = "UpdateAdvancedProtectionStatusRequest", description = "Update advanced protection status for account", required = true) @Valid @RequestBody UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) {
         getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"status\" : \"complete\" }";
+                    String exampleString = "{ \"accountId\" : 1349, \"enabled\" : true }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

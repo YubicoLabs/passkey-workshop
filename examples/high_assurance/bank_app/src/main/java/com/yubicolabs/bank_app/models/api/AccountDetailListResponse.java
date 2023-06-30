@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.yubicolabs.bank_app.models.api.AccountTransactionResponse;
+import com.yubicolabs.bank_app.models.api.AccountResponse;
 import java.util.ArrayList;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
@@ -18,42 +18,42 @@ import java.util.*;
 import javax.annotation.Generated;
 
 /**
- * AccountTransactionListResponse
+ * AccountDetailListResponse
  */
 @Builder
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-30T13:35:17.173429-05:00[America/Chicago]")
-public class AccountTransactionListResponse {
+public class AccountDetailListResponse {
 
-  @JsonProperty("transactions")
+  @JsonProperty("accounts")
   @Valid
-  private List<AccountTransactionResponse> transactions = null;
+  private List<AccountResponse> accounts = null;
 
-  public AccountTransactionListResponse transactions(List<AccountTransactionResponse> transactions) {
-    this.transactions = transactions;
+  public AccountDetailListResponse accounts(List<AccountResponse> accounts) {
+    this.accounts = accounts;
     return this;
   }
 
-  public AccountTransactionListResponse addTransactionsItem(AccountTransactionResponse transactionsItem) {
-    if (this.transactions == null) {
-      this.transactions = new ArrayList<>();
+  public AccountDetailListResponse addAccountsItem(AccountResponse accountsItem) {
+    if (this.accounts == null) {
+      this.accounts = new ArrayList<>();
     }
-    this.transactions.add(transactionsItem);
+    this.accounts.add(accountsItem);
     return this;
   }
 
   /**
-   * Get transactions
+   * Get accounts
    * 
-   * @return transactions
+   * @return accounts
    */
   @Valid
-  @Schema(name = "transactions", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  public List<AccountTransactionResponse> getTransactions() {
-    return transactions;
+  @Schema(name = "accounts", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  public List<AccountResponse> getAccounts() {
+    return accounts;
   }
 
-  public void setTransactions(List<AccountTransactionResponse> transactions) {
-    this.transactions = transactions;
+  public void setAccounts(List<AccountResponse> accounts) {
+    this.accounts = accounts;
   }
 
   @Override
@@ -64,20 +64,20 @@ public class AccountTransactionListResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AccountTransactionListResponse accountTransactionListResponse = (AccountTransactionListResponse) o;
-    return Objects.equals(this.transactions, accountTransactionListResponse.transactions);
+    AccountDetailListResponse accountDetailListResponse = (AccountDetailListResponse) o;
+    return Objects.equals(this.accounts, accountDetailListResponse.accounts);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(transactions);
+    return Objects.hash(accounts);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AccountTransactionListResponse {\n");
-    sb.append("    transactions: ").append(toIndentedString(transactions)).append("\n");
+    sb.append("class AccountDetailListResponse {\n");
+    sb.append("    accounts: ").append(toIndentedString(accounts)).append("\n");
     sb.append("}");
     return sb.toString();
   }

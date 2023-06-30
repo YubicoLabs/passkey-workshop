@@ -15,19 +15,16 @@ import java.util.*;
 import javax.annotation.Generated;
 
 /**
- * Error
+ * APIStatus
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-30T13:35:17.173429-05:00[America/Chicago]")
-public class Error {
+public class APIStatus {
 
   @JsonProperty("status")
   private String status;
 
-  @JsonProperty("errorMessage")
-  private String errorMessage;
-
-  public Error status(String status) {
+  public APIStatus status(String status) {
     this.status = status;
     return this;
   }
@@ -37,32 +34,13 @@ public class Error {
    * @return status
   */
   
-  @Schema(name = "status", example = "error", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "status", example = "ok", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public String getStatus() {
     return status;
   }
 
   public void setStatus(String status) {
     this.status = status;
-  }
-
-  public Error errorMessage(String errorMessage) {
-    this.errorMessage = errorMessage;
-    return this;
-  }
-
-  /**
-   * Get errorMessage
-   * @return errorMessage
-  */
-  
-  @Schema(name = "errorMessage", example = "descriptive error message", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  public String getErrorMessage() {
-    return errorMessage;
-  }
-
-  public void setErrorMessage(String errorMessage) {
-    this.errorMessage = errorMessage;
   }
 
   @Override
@@ -73,22 +51,20 @@ public class Error {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Error error = (Error) o;
-    return Objects.equals(this.status, error.status) &&
-        Objects.equals(this.errorMessage, error.errorMessage);
+    APIStatus apIStatus = (APIStatus) o;
+    return Objects.equals(this.status, apIStatus.status);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(status, errorMessage);
+    return Objects.hash(status);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Error {\n");
+    sb.append("class APIStatus {\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
-    sb.append("    errorMessage: ").append(toIndentedString(errorMessage)).append("\n");
     sb.append("}");
     return sb.toString();
   }

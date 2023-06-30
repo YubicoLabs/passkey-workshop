@@ -1,8 +1,10 @@
 package com.yubicolabs.bank_app.services.storage.local;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import com.yubicolabs.bank_app.interfaces.AccountStorage;
@@ -14,8 +16,21 @@ public class AccountStorage_Local implements AccountStorage {
   private Collection<Account> accountRepository = new HashSet<Account>();
 
   @Override
-  public boolean create(Account account) {
-    return accountRepository.add(account);
+  public Account create(String userhandle, boolean isAdvancedProtection, double balance, Instant createTime)
+      throws Exception {
+
+    Account new_account = Account.builder()
+        .userHandle(userhandle)
+        .advancedProtection(isAdvancedProtection)
+        .balance(balance)
+        .createTime(createTime)
+        .id(ThreadLocalRandom.current().nextLong(100)).build();
+    boolean didCreate = accountRepository.add(new_account);
+    if (didCreate) {
+      return new_account;
+    } else {
+      throw new Exception("Account creation failed");
+    }
   }
 
   @Override
@@ -41,13 +56,13 @@ public class AccountStorage_Local implements AccountStorage {
   }
 
   @Override
-  public boolean processTransaction(AccountTransaction transaction) {
+  public boolean processTransaction(int accountId, String type, double amount) {
     double newBalance = 0;
-    double originalBalance = get(transaction.getAccountId()).get().getBalance();
-    if (transaction.getType().equals("deposit")) {
-      newBalance = originalBalance + transaction.getAmount();
-    } else if (transaction.getType().equals("withdraw")) {
-      newBalance = originalBalance - transaction.getAmount();
+    double originalBalance = get(accountId).get().getBalance();
+    if (type.equals("deposit")) {
+      newBalance = originalBalance + amount;
+    } else if (type.equals("withdraw")) {
+      newBalance = originalBalance - amount;
     } else {
       return false;
     }
@@ -55,10 +70,10 @@ public class AccountStorage_Local implements AccountStorage {
     double newBalance_final = newBalance;
 
     accountRepository.stream()
-        .filter(account -> account.getId() == transaction.getAccountId())
+        .filter(account -> account.getId() == accountId)
         .forEach(account -> account.setBalance(newBalance_final));
 
-    return get(transaction.getAccountId()).get().getBalance() == newBalance_final;
+    return get(accountId).get().getBalance() == newBalance_final;
   }
 
 }
