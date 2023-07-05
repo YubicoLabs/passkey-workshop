@@ -163,43 +163,37 @@ public class BankOperations {
 
   public TransactionCreateResponse createTransaction(String type, double amount, String description, String userhandle)
       throws Exception {
-    Optional<Account> maybeAccount = storageInstance.getAccountStorage().getAll(userhandle).stream().findFirst();
+    try {
+      Optional<Account> maybeAccount = storageInstance.getAccountStorage().getAll(userhandle).stream().findFirst();
 
-    /**
-     * Check that an account exists
-     */
-    if (!maybeAccount.isPresent()) {
-      throw new Exception("The account does not exist");
-    }
+      /**
+       * Check that an account exists
+       */
+      if (!maybeAccount.isPresent()) {
+        throw new Exception("The account does not exist");
+      }
 
-    Account account = maybeAccount.get();
+      Account account = maybeAccount.get();
 
-    /**
-     * Check that the requestor is the owner of the account
-     * TODO, update the string passed into this method
-     */
-    if (!account.getUserHandle().equals(userhandle)) {
-      throw new Exception("Your account is not authorized to access this resource");
-    }
+      /**
+       * Check that the requestor is the owner of the account
+       * TODO, update the string passed into this method
+       */
+      if (!account.getUserHandle().equals(userhandle)) {
+        throw new Exception("Your account is not authorized to access this resource");
+      }
 
-    boolean didCreate = storageInstance.getAccountStorage().processTransaction(account.getId().intValue(), type,
-        amount);
+      boolean didCreate = storageInstance.getAccountStorage().processTransaction(account.getId().intValue(), type,
+          amount);
 
-    AccountTransaction finalTransaction = AccountTransaction.builder()
-        .type(type)
-        .amount(amount)
-        .description(description)
-        .createTime(Instant.now())
-        .status(didCreate)
-        .accountId(account.getId().intValue())
-        .build();
+      AccountTransaction finalTransaction = storageInstance.getAccountTransactionStorage().create(type, amount,
+          description, didCreate, account.getId().intValue(), Instant.now());
 
-    boolean didCreate_trans = storageInstance.getAccountTransactionStorage().create(finalTransaction);
-    if (didCreate_trans) {
       return TransactionCreateResponse.builder()
           .status(finalTransaction.getStatus() == true ? "complete" : "error")
+          .transactionId(finalTransaction.getId().intValue())
           .build();
-    } else {
+    } catch (Exception e) {
       throw new Exception("[Error] there was an issue recording the transaction");
     }
   }
@@ -228,7 +222,11 @@ public class BankOperations {
 
     boolean didUpdate = storageInstance.getAccountStorage().setAdvancedProtection(accountId, enabled);
 
-    return UpdateAdvancedProtectionStatusResponse.builder().enabled(true).build();
+    if (didUpdate) {
+      return UpdateAdvancedProtectionStatusResponse.builder().enabled(true).build();
+    } else {
+      throw new Exception("There was an issue updating your account");
+    }
 
   }
 

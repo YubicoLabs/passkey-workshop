@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import com.yubicolabs.bank_app.interfaces.AccountStorage;
 import com.yubicolabs.bank_app.models.common.Account;
-import com.yubicolabs.bank_app.models.common.AccountTransaction;
 
 public class AccountStorage_Local implements AccountStorage {
 

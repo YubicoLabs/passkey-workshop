@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.time.Instant;
 
 import com.yubicolabs.bank_app.models.common.Account;
-import com.yubicolabs.bank_app.models.common.AccountTransaction;
 
 public interface AccountStorage {
 

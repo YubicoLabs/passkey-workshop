@@ -1,23 +1,17 @@
 package com.yubicolabs.bank_app.models.api;
 
-import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.time.OffsetDateTime;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
-
-import java.util.*;
 import javax.annotation.Generated;
 
 /**
  * Error
  */
 
+@Builder
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-30T13:35:17.173429-05:00[America/Chicago]")
 public class Error {
 
@@ -34,9 +28,10 @@ public class Error {
 
   /**
    * Get status
+   * 
    * @return status
-  */
-  
+   */
+
   @Schema(name = "status", example = "error", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public String getStatus() {
     return status;
@@ -53,9 +48,10 @@ public class Error {
 
   /**
    * Get errorMessage
+   * 
    * @return errorMessage
-  */
-  
+   */
+
   @Schema(name = "errorMessage", example = "descriptive error message", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public String getErrorMessage() {
     return errorMessage;
@@ -104,4 +100,3 @@ public class Error {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

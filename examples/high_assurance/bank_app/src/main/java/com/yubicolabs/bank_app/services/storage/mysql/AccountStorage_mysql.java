@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import com.yubicolabs.bank_app.interfaces.AccountStorage;
 import com.yubicolabs.bank_app.models.common.Account;
-import com.yubicolabs.bank_app.models.common.AccountTransaction;
 import com.yubicolabs.bank_app.models.dbo.mysql.AccountDBO;
 
 @Component

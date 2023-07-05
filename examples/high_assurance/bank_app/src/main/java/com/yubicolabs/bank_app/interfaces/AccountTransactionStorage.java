@@ -1,5 +1,6 @@
 package com.yubicolabs.bank_app.interfaces;
 
+import java.time.Instant;
 import java.util.Collection;
 
 import com.yubicolabs.bank_app.models.common.AccountTransaction;
@@ -20,5 +21,6 @@ public interface AccountTransactionStorage {
    * @param accountTransaction Transaction to store
    * @return true if creation successful, false otherwise
    */
-  public boolean create(AccountTransaction accountTransaction);
+  public AccountTransaction create(String type, double amount, String description, Boolean status, int accountId,
+      Instant createTime) throws Exception;
 }

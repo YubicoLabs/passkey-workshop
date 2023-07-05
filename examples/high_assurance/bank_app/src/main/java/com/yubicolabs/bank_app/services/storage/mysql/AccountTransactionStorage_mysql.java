@@ -28,23 +28,23 @@ public class AccountTransactionStorage_mysql implements AccountTransactionStorag
   }
 
   @Override
-  public boolean create(AccountTransaction accountTransaction) {
+  public AccountTransaction create(String type, double amount, String description, Boolean status, int accountId,
+      Instant createTime) throws Exception {
     try {
       AccountTransactionDBO newItem = AccountTransactionDBO.builder()
-          .type(accountTransaction.getType())
-          .amount(accountTransaction.getAmount())
-          .description(accountTransaction.getDescription())
-          .createTime(accountTransaction.getCreateTime().toEpochMilli())
-          .status(accountTransaction.getStatus())
-          .accountId(accountTransaction.getAccountId())
+          .type(type)
+          .amount(amount)
+          .description(description)
+          .createTime(createTime.toEpochMilli())
+          .status(status)
+          .accountId(accountId)
           .build();
 
       accountTransactionRepositoryMysql.save(newItem);
-      return true;
+      return buildAccountTransaction(newItem);
     } catch (Exception e) {
       e.printStackTrace();
-      System.out.println("[ERROR]: Error adding transaction to MySQL");
-      return false;
+      throw new Exception("There was an issue creating your transaction");
     }
   }
 
