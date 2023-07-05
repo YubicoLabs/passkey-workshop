@@ -1,0 +1,56 @@
+openapi: 3.0.1
+info:
+  title: ping test
+  version: "1.0"
+servers:
+- url: http://localhost:8080/
+paths:
+  /ping:
+    get:
+      responses:
+        "200":
+          description: Server is up and running
+        default:
+          description: Something is wrong
+      security: []
+      summary: Checks if the server is running
+      x-accepts: application/json
+  /message:
+    get:
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authenticated
+        "403":
+          description: Access token does not have the required scope
+      security:
+      - OAuth2:
+        - read
+      summary: Gets the message
+      x-accepts: application/json
+    post:
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authenticated
+        "403":
+          description: Access token does not have the required scope
+      security:
+      - OAuth2:
+        - write
+      summary: create a new message
+      x-accepts: application/json
+components:
+  schemas: {}
+  securitySchemes:
+    OAuth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/oauth/authorize
+          scopes:
+            read: Grants read access
+            write: Grants write access
+          tokenUrl: https://example.com/oauth/token
+      type: oauth2
