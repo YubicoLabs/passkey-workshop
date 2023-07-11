@@ -1,0 +1,15 @@
+server:
+  port: "8001"
+spring:
+  jackson:
+    date-format: org.openapitools.RFC3339DateFormat
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: "false"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8000/realms/demo/protocol/openid-connect/certs
+logging:
+  level:
+    web: debug

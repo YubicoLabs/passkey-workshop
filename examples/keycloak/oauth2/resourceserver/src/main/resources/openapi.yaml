@@ -1,0 +1,46 @@
+openapi: 3.0.1
+info:
+  title: api test
+  version: "1.2"
+servers:
+- url: http://localhost:8088/
+paths:
+  /message:
+    get:
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authenticated
+        "403":
+          description: Access token does not have the required scope
+      security:
+      - OAuth2:
+        - read
+      summary: Gets the message
+      x-accepts: application/json
+    post:
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authenticated
+        "403":
+          description: Access token does not have the required scope
+      security:
+      - OAuth2:
+        - write
+      summary: create a new message
+      x-accepts: application/json
+components:
+  schemas: {}
+  securitySchemes:
+    OAuth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: http://localhost:8000/oauth/authorize
+          scopes:
+            message:read: Grants read access
+            message:write: Grants write access
+          tokenUrl: http://localhost:8000/oauth/token
+      type: oauth2

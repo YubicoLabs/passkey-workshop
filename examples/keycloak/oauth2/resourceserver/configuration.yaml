@@ -1,0 +1,6 @@
+groupId: com.example
+artifactId: com.example.demo_rp
+apiPackage: com.example.demo_rp.api
+modelPackage: com.example.demo_rp.models.api
+
+# org.openapitools.api => com.example.demo_rp.api
