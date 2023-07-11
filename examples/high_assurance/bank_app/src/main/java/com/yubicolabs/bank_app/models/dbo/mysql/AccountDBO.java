@@ -1,8 +1,14 @@
 package com.yubicolabs.bank_app.models.dbo.mysql;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 
@@ -32,10 +38,17 @@ public class AccountDBO {
   double balance;
 
   @Getter
-  long createTime;
+  @CreationTimestamp
+  Date createTime;
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Getter
   Long id;
+
+  @PrePersist
+  protected void onCreate() {
+    createTime = new Date();
+  }
+
 }

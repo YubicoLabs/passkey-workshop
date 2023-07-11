@@ -35,7 +35,6 @@ public class AccountTransactionStorage_mysql implements AccountTransactionStorag
           .type(type)
           .amount(amount)
           .description(description)
-          .createTime(createTime.toEpochMilli())
           .status(status)
           .accountId(accountId)
           .build();
@@ -53,7 +52,7 @@ public class AccountTransactionStorage_mysql implements AccountTransactionStorag
         .type(dbo.getType())
         .amount(dbo.getAmount())
         .description(dbo.getDescription())
-        .createTime(Instant.ofEpochMilli(dbo.getCreateTime()))
+        .createTime(dbo.getTransactionCreateTime().toInstant())
         .status(dbo.isStatus())
         .accountId(dbo.getAccountId())
         .id(dbo.getId()).build();

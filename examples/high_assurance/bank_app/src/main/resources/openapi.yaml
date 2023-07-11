@@ -8,10 +8,10 @@ info:
   title: Passkey WebAuthn High Assurance API by Yubico
   version: 1.0.1
 servers:
-- url: "https://{api_endpoint}"
-  variables:
-    api_endpoint:
-      default: api.pkbank.io
+  - url: "https://{api_endpoint}"
+    variables:
+      api_endpoint:
+        default: api.pkbank.io
 paths:
   /v1/status:
     get:
@@ -21,7 +21,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIStatus'
+                $ref: "#/components/schemas/APIStatus"
           description: API status response
       summary: Get API status
       x-accepts: application/json
@@ -33,7 +33,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountDetailListResponse'
+                $ref: "#/components/schemas/AccountDetailListResponse"
           description: Successfully retrieved all user accounts
       summary: API to list all accounts that belong to a user
       x-accepts: application/json
@@ -51,13 +51,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateAccountResponse'
+                $ref: "#/components/schemas/CreateAccountResponse"
           description: Successful bank account creation
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
           description: Failed request response
       summary: Admin API to create a new bank account for user
       x-content-type: application/json
@@ -66,26 +66,26 @@ paths:
     get:
       operationId: AccountDetails
       parameters:
-      - description: ID of bank account to return
-        explode: false
-        in: path
-        name: accountId
-        required: true
-        schema:
-          type: integer
-        style: simple
+        - description: ID of bank account to return
+          explode: false
+          in: path
+          name: accountId
+          required: true
+          schema:
+            type: integer
+          style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountDetailsResponse'
+                $ref: "#/components/schemas/AccountDetailsResponse"
           description: Successful account details
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
           description: Failed request response
       summary: Returns bank account details by acccountId
       x-accepts: application/json
@@ -93,46 +93,47 @@ paths:
     get:
       operationId: AccountTransactionList
       parameters:
-      - description: ID of account to fetch transactions
-        explode: false
-        in: path
-        name: accountId
-        required: true
-        schema:
-          type: integer
-        style: simple
+        - description: ID of account to fetch transactions
+          explode: false
+          in: path
+          name: accountId
+          required: true
+          schema:
+            type: integer
+          style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountTransactionListResponse'
-          description: "Successful array of transactions for a single account. Empty\
+                $ref: "#/components/schemas/AccountTransactionListResponse"
+          description:
+            "Successful array of transactions for a single account. Empty\
             \ array [] if no transactions exist."
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
           description: Failed request response
       summary: Returns transactions by account ID
       x-accepts: application/json
     post:
       operationId: TransactionCreate
       parameters:
-      - description: ID of bank account to return
-        explode: false
-        in: path
-        name: accountId
-        required: true
-        schema:
-          type: integer
-        style: simple
+        - description: ID of bank account to return
+          explode: false
+          in: path
+          name: accountId
+          required: true
+          schema:
+            type: integer
+          style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransactionCreateRequest'
+              $ref: "#/components/schemas/TransactionCreateRequest"
         description: Create a transaction
         required: true
       responses:
@@ -140,13 +141,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionCreateResponse'
+                $ref: "#/components/schemas/TransactionCreateResponse"
           description: Successful transaction created response
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
           description: Failed request response
       summary: Create a new transaction
       x-content-type: application/json
@@ -155,45 +156,45 @@ paths:
     get:
       operationId: AdvancedProtectionStatus
       parameters:
-      - description: ID of account for advanced protection status
-        explode: false
-        in: path
-        name: accountId
-        required: true
-        schema:
-          type: integer
-        style: simple
+        - description: ID of account for advanced protection status
+          explode: false
+          in: path
+          name: accountId
+          required: true
+          schema:
+            type: integer
+          style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdvancedProtectionStatusResponse'
+                $ref: "#/components/schemas/AdvancedProtectionStatusResponse"
           description: Advanced protection status response is (true|false)
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
           description: Failed request response
       summary: Get advanced protection status for account
       x-accepts: application/json
     put:
       operationId: UpdateAdvancedProtectionStatus
       parameters:
-      - description: ID of bank account to return
-        explode: false
-        in: path
-        name: accountId
-        required: true
-        schema:
-          type: integer
-        style: simple
+        - description: ID of bank account to return
+          explode: false
+          in: path
+          name: accountId
+          required: true
+          schema:
+            type: integer
+          style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateAdvancedProtectionStatusRequest'
+              $ref: "#/components/schemas/UpdateAdvancedProtectionStatusRequest"
         description: Update advanced protection status for account
         required: true
       responses:
@@ -201,13 +202,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UpdateAdvancedProtectionStatusResponse'
+                $ref: "#/components/schemas/UpdateAdvancedProtectionStatusResponse"
           description: Successful advanced protection status response
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
           description: Failed request response
       summary: Update/Set advanced protection status for account
       x-content-type: application/json
@@ -244,41 +245,41 @@ components:
           type: string
       type: object
     CreateAccountResponse:
-      $ref: '#/components/schemas/Account'
+      $ref: "#/components/schemas/Account"
     AccountDetailsResponse:
-      $ref: '#/components/schemas/Account'
+      $ref: "#/components/schemas/Account"
     AccountDetailListResponse:
       example:
         accounts:
-        - accountId: 1234
-          advancedProtection: false
-          balance: 0.8008281904610115
-        - accountId: 1234
-          advancedProtection: false
-          balance: 0.8008281904610115
+          - accountId: 1234
+            advancedProtection: false
+            balance: 0.8008281904610115
+          - accountId: 1234
+            advancedProtection: false
+            balance: 0.8008281904610115
       properties:
         accounts:
           items:
-            $ref: '#/components/schemas/Account'
+            $ref: "#/components/schemas/Account"
           type: array
       type: object
     AccountTransactionListResponse:
       example:
         transactions:
-        - amount: 0.8008281904610115
-          description: birthday gift
-          type: transfer
-          transactionDate: 06/19/2023 04:20pm
-          transactionId: 49583
-        - amount: 0.8008281904610115
-          description: birthday gift
-          type: transfer
-          transactionDate: 06/19/2023 04:20pm
-          transactionId: 49583
+          - amount: 0.8008281904610115
+            description: birthday gift
+            type: transfer
+            transactionDate: 06/19/2023 04:20pm
+            transactionId: 49583
+          - amount: 0.8008281904610115
+            description: birthday gift
+            type: transfer
+            transactionDate: 06/19/2023 04:20pm
+            transactionId: 49583
       properties:
         transactions:
           items:
-            $ref: '#/components/schemas/AccountTransaction'
+            $ref: "#/components/schemas/AccountTransaction"
           type: array
       type: object
     AccountTransaction:
@@ -294,9 +295,9 @@ components:
           type: integer
         type:
           enum:
-          - deposit
-          - withdrawal
-          - transfer
+            - deposit
+            - withdraw
+            - transfer
           example: transfer
           type: string
         amount:
@@ -316,9 +317,9 @@ components:
       properties:
         type:
           enum:
-          - deposit
-          - withdrawl
-          - transfer
+            - deposit
+            - withdraw
+            - transfer
           example: deposit
           type: string
         amount:
@@ -328,7 +329,7 @@ components:
           type: string
       type: object
     TransactionCreateResponse:
-      $ref: '#/components/schemas/AccountTransaction'
+      $ref: "#/components/schemas/AccountTransaction"
     AdvancedProtection:
       example:
         accountId: 1349
@@ -350,9 +351,9 @@ components:
           type: boolean
       type: object
     AdvancedProtectionStatusResponse:
-      $ref: '#/components/schemas/AdvancedProtection'
+      $ref: "#/components/schemas/AdvancedProtection"
     UpdateAdvancedProtectionStatusResponse:
-      $ref: '#/components/schemas/AdvancedProtection'
+      $ref: "#/components/schemas/AdvancedProtection"
     Error:
       properties:
         status:

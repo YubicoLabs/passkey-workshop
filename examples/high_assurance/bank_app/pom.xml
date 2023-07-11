@@ -20,6 +20,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <build>
+        <finalName>com.yubicolabs.bank_app</finalName>
         <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
             <plugin>
@@ -86,5 +87,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+        <dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+            <version>8.0.32</version>
+		</dependency>
     </dependencies>
 </project>

@@ -1,0 +1,11 @@
+services:
+  passkey-bank:
+    container_name: passkey-bank
+    build: .
+    image: passkey_bank
+    environment:
+      RP_ALLOWED_CROSS_ORIGINS: "${RP_ALLOWED_CROSS_ORIGINS}"
+      DATABASE_TYPE: "${DATABASE_TYPE}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
+    ports:
+      - 8082:8082

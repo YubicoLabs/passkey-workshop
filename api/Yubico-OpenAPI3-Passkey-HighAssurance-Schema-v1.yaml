@@ -247,7 +247,7 @@ components:
           example: transfer
           enum:
             - deposit
-            - withdrawal
+            - withdraw
             - transfer
         amount:
           type: number
@@ -266,7 +266,7 @@ components:
           example: deposit
           enum:
             - deposit
-            - withdrawl
+            - withdraw
             - transfer
         amount:
           type: number

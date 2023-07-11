@@ -18,7 +18,6 @@ public class AccountStorageFactoryBean implements FactoryBean<AccountStorage> {
   @Autowired(required = false)
   AccountStorage_mysql accountStorage_mysql;
 
-  @Override
   public AccountStorage getObject() {
     if (name.equalsIgnoreCase("mysql")) {
       return accountStorage_mysql;

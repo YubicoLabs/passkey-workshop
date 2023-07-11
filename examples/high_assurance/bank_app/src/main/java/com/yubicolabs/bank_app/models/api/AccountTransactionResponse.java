@@ -33,7 +33,7 @@ public class AccountTransactionResponse {
   public enum TypeEnum {
     DEPOSIT("deposit"),
 
-    WITHDRAWAL("withdrawal"),
+    WITHDRAW("withdraw"),
 
     TRANSFER("transfer");
 

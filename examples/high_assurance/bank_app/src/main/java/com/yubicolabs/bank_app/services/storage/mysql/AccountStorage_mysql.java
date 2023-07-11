@@ -22,15 +22,16 @@ public class AccountStorage_mysql implements AccountStorage {
   public Account create(String userhandle, boolean isAdvancedProtection, double balance, Instant createTime)
       throws Exception {
     try {
-      Account account = Account.builder().userHandle(userhandle)
-          .advancedProtection(isAdvancedProtection)
-          .balance(balance).createTime(createTime).build();
 
-      AccountDBO newItem = AccountDBO.builder().userHandle(account.getUserHandle())
-          .advancedProtection(account.isAdvancedProtection())
-          .balance(account.getBalance()).createTime(account.getCreateTime().toEpochMilli()).build();
+      AccountDBO newItem = AccountDBO.builder().userHandle(userhandle)
+          .advancedProtection(isAdvancedProtection)
+          .balance(balance).build();
 
       accountStorageRepositoryMysql.save(newItem);
+
+      Account account = Account.builder().userHandle(userhandle)
+          .advancedProtection(isAdvancedProtection).id(newItem.getId())
+          .balance(balance).createTime(newItem.getCreateTime().toInstant()).build();
       return account;
     } catch (Exception e) {
       e.printStackTrace();
@@ -124,7 +125,7 @@ public class AccountStorage_mysql implements AccountStorage {
         .userHandle(accountDBO.getUserHandle())
         .advancedProtection(accountDBO.getAdvancedProtection())
         .balance(accountDBO.getBalance())
-        .createTime(Instant.ofEpochMilli(accountDBO.getCreateTime()))
+        .createTime(accountDBO.getCreateTime().toInstant())
         .id(accountDBO.getId())
         .build();
   }

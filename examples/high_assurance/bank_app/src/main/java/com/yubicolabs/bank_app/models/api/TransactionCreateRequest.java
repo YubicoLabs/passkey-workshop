@@ -12,7 +12,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
 import java.util.*;
 import javax.annotation.Generated;
 
@@ -28,9 +27,9 @@ public class TransactionCreateRequest {
    */
   public enum TypeEnum {
     DEPOSIT("deposit"),
-    
-    WITHDRAWL("withdrawl"),
-    
+
+    WITHDRAW("withdraw"),
+
     TRANSFER("transfer");
 
     private String value;
@@ -76,9 +75,10 @@ public class TransactionCreateRequest {
 
   /**
    * Get type
+   * 
    * @return type
-  */
-  
+   */
+
   @Schema(name = "type", example = "deposit", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public TypeEnum getType() {
     return type;
@@ -95,9 +95,10 @@ public class TransactionCreateRequest {
 
   /**
    * Get amount
+   * 
    * @return amount
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "amount", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public BigDecimal getAmount() {
     return amount;
@@ -114,9 +115,10 @@ public class TransactionCreateRequest {
 
   /**
    * Get description
+   * 
    * @return description
-  */
-  
+   */
+
   @Schema(name = "description", example = "birthday gift", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   public String getDescription() {
     return description;
@@ -167,4 +169,3 @@ public class TransactionCreateRequest {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

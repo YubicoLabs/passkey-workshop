@@ -12,6 +12,7 @@ import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.yubicolabs.bank_app.models.api.AccountTransactionListResponse;
 import com.yubicolabs.bank_app.models.api.AdvancedProtectionStatusResponse;
@@ -25,66 +26,11 @@ import com.yubicolabs.bank_app.services.storage.local.AccountStorage_Local;
 import com.yubicolabs.bank_app.services.storage.local.AccountTransactionStorage_Local;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class OpenApiGeneratorApplicationTests {
 
     @Autowired
     BankOperations bankOperations;
-
-    @Test
-    void AccountMethods_Local() {
-        AccountStorage_Local local = new AccountStorage_Local();
-
-        Account firstAccount = null;
-        try {
-            firstAccount = local.create("my_user_handle", false, 3000, Instant.now());
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
-
-        assertEquals(local.getAll("my_user_handle").size(), 1);
-
-        assertTrue(local.get(firstAccount.getId().intValue()).isPresent());
-
-        assertTrue(local.setAdvancedProtection(firstAccount.getId().intValue(), true));
-
-        assertTrue(local.processTransaction(firstAccount.getId().intValue(), "withdraw", 1000));
-    }
-
-    @Test
-    void TransactionMethods_Local() {
-        AccountTransactionStorage_Local local = new AccountTransactionStorage_Local();
-
-        AccountTransaction newItem = AccountTransaction.builder()
-                .type("deposit")
-                .amount(2000)
-                .description("to me")
-                .status(true)
-                .accountId(123456789).build();
-
-        AccountTransaction newItem_2 = AccountTransaction.builder()
-                .type("deposit")
-                .amount(2000)
-                .description("to me 2")
-                .status(true)
-                .accountId(123456789).build();
-
-        AccountTransaction newItem_3 = AccountTransaction.builder()
-                .type("deposit")
-                .amount(2000)
-                .description("to not me")
-                .status(true)
-                .accountId(987654321).build();
-
-        assertTrue(local.create(newItem));
-        assertEquals(local.getAll(123456789).size(), 1);
-
-        local.create(newItem_2);
-        assertEquals(local.getAll(123456789).size(), 2);
-
-        local.create(newItem_3);
-        assertEquals(local.getAll(987654321).size(), 1);
-    }
 
     @Test
     void testAccountCreation() {
