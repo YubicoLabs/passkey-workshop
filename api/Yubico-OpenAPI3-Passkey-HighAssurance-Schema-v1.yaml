@@ -3,7 +3,7 @@ info:
   title: Passkey WebAuthn High Assurance API by Yubico
   description: | 
     This REST API allows a developer to interact with a ficticious bank application through any web, mobile, or commandline client
-  version: 1.0.1
+  version: 1.0.2
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -29,6 +29,8 @@ paths:
     get:
       summary: API to list all accounts that belong to a user
       operationId: GetAccountsRequest
+      security:
+        - OAuth2: []
       responses:
         "200":
           description: Successfully retrieved all user accounts
@@ -46,6 +48,8 @@ paths:
           application/json:
             schema:
               type: object
+      security:
+        - OAuth2: []
       responses:
         "200":
           description: Successful bank account creation
@@ -70,6 +74,8 @@ paths:
             type: integer
           required: true
           description: ID of bank account to return
+      security:
+        - OAuth2: []
       responses:
         "200":
           description: Successful account details
@@ -94,6 +100,8 @@ paths:
             type: integer
           required: true
           description: ID of account to fetch transactions
+      security:
+        - OAuth2: []
       responses:
         "200":
           description: Successful array of transactions for a single account. Empty array [] if no transactions exist.
@@ -124,6 +132,8 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/TransactionCreateRequest"
+      security:
+        - OAuth2: []
       responses:
         "200":
           description: Successful transaction created response
@@ -148,6 +158,8 @@ paths:
             type: integer
           required: true
           description: ID of account for advanced protection status
+      security:
+        - OAuth2: []
       responses:
         "200":
           description: Advanced protection status response is (true|false)
@@ -178,6 +190,8 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UpdateAdvancedProtectionStatusRequest"
+      security:
+        - OAuth2: []
       responses:
         "200":
           description: Successful advanced protection status response
@@ -490,3 +504,15 @@ components:
           authenticatorAttachment: cross-platform
           userVerification: preferred
         attestation: direct
+  # Security
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          # TODO: parameterize
+          authorizationUrl: http://localhost:8081/realms/bank/protocol/openid-connect/auth
+          tokenUrl: http://localhost:8081/realms/bank/protocol/openid-connect/token
+          scopes:
+            high_assurance: TODO check if required
+
