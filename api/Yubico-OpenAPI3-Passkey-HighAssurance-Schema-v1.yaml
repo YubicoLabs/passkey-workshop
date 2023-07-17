@@ -294,7 +294,11 @@ components:
     AdvancedProtectionStatusResponse:
       $ref: "#/components/schemas/AdvancedProtection"
     UpdateAdvancedProtectionStatusResponse:
-      $ref: "#/components/schemas/AdvancedProtection"
+      type: object
+      properties:
+        result:
+          type: string
+          example: deleted
     AttestationOptionsRequest:
       type: object
       properties:
@@ -461,13 +465,6 @@ components:
         status:
           type: boolean
           example: true
-    UpdateAdvancedProtectionStatusResponse:
-      $ref: "#/components/schemas/AdvancedProtection"
-      type: object
-      properties:
-        result:
-          type: string
-          example: deleted
     Error:
       type: object
       properties:
