@@ -1,0 +1,2 @@
+com.yubicolabs.keycloak.registration.PasskeyRegisterFactory
+com.yubicolabs.keycloak.authentication.PasskeyAuthenticateFactory
