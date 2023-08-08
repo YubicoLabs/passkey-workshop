@@ -57,8 +57,6 @@ public class PasskeyAuthenticate implements Authenticator {
       String formResult = getFormResult(context);
       String userHandle = getUserHandle(context);
 
-      System.out.println(formResult);
-
       HttpRequest request = HttpRequest.newBuilder()
           .uri(URI.create("http://host.docker.internal:8080/v1/assertion/result"))
           .header(HTTP.CONTENT_TYPE, "application/json")

@@ -10,6 +10,7 @@ import org.keycloak.authentication.RequiredActionProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.models.UserSessionModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yubicolabs.keycloak.models.AttestationOptionsRequest;
@@ -46,73 +47,91 @@ public class PasskeyRegister implements Authenticator {
 
   @Override
   public void authenticate(AuthenticationFlowContext context) {
-    UserModel userModel = context.getUser();
+    Response form = context.form()
+        .setAttribute("action_type", "USERNAME")
+        .createForm("passkey-register-username.ftl");
 
-    AuthenticatorSelection authSelect = AuthenticatorSelection.builder()
-        .residentKey(ResidentKeyEnum.PREFERRED)
-        .userVerification(UserVerificationEnum.REQUIRED)
-        .build();
-
-    AttestationOptionsRequest attestationOptionsRequest = AttestationOptionsRequest.builder()
-        .userName(userModel.getUsername())
-        .displayName(userModel.getUsername())
-        .authenticatorSelection(authSelect)
-        .build();
-
-    try {
-      String optionsRequestBody = mapper.writeValueAsString(attestationOptionsRequest);
-
-      HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create("http://host.docker.internal:8080/v1/attestation/options"))
-          .header(HTTP.CONTENT_TYPE, "application/json")
-          .header("accept", "application/json")
-          .POST(BodyPublishers.ofString(optionsRequestBody))
-          .build();
-
-      HttpResponse<String> response = HttpClient.newBuilder().build().send(request, BodyHandlers.ofString());
-
-      if (response.statusCode() == HttpStatus.SC_OK) {
-        Response form = context.form()
-            .setAttribute("ATTESTATION_OPTIONS", response.body())
-            .createForm("passkey-register.ftl");
-
-        context.challenge(form);
-      } else {
-        throw new Exception("The HTTP call did not return 200: " + response.body());
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      logger.error("There was an issue getting attestation options: " + e.getMessage());
-    }
+    context.challenge(form);
   }
 
   @Override
   public void action(AuthenticationFlowContext context) {
-    try {
-      String formResult = getFormResult(context);
+    String actionType = getActionType(context);
 
-      HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create("http://host.docker.internal:8080/v1/attestation/result"))
-          .header(HTTP.CONTENT_TYPE, "application/json")
-          .header("accept", "application/json")
-          .POST(BodyPublishers.ofString(formResult))
-          .build();
+    if (actionType.equals("USERNAME")) {
+      String chosenUsername = getUsername(context);
+      System.out.println(chosenUsername);
 
-      HttpResponse<String> response = HttpClient.newBuilder().build().send(request, BodyHandlers.ofString());
+      if (chooseUsername_Action(context, chosenUsername)) {
+        System.out.println("Username valid");
+        Response form = context.form()
+            .setAttribute("action_type", "PASSKEY_CREATE")
+            .setAttribute("username", chosenUsername)
+            .setAttribute("ATTESTATION_OPTIONS", chosenUsername)
+            .createForm("passkey-register.ftl");
 
-      if (response.statusCode() == HttpStatus.SC_OK) {
-        context.success();
+        context.challenge(form);
       } else {
-        throw new Exception("The HTTP call did not return 200: " + response.body());
+        System.out.println("Username NOT valid");
+        context.failure(AuthenticationFlowError.INVALID_CREDENTIALS);
+        /*
+         * Return form, with a message noting that the username is not available
+         */
       }
-    } catch (Exception e) {
-      context.failure(AuthenticationFlowError.INVALID_CREDENTIALS);
+    } else if (actionType.equals("PASSKEY_CREATE")) {
+      try {
+        String formResult = getFormResult(context);
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://host.docker.internal:8080/v1/attestation/result"))
+            .header(HTTP.CONTENT_TYPE, "application/json")
+            .header("accept", "application/json")
+            .POST(BodyPublishers.ofString(formResult))
+            .build();
+
+        HttpResponse<String> response = HttpClient.newBuilder().build().send(request,
+            BodyHandlers.ofString());
+
+        if (response.statusCode() == HttpStatus.SC_OK) {
+          String chosenUsername = getUsername(context);
+          String userHandle = getUserHandle(context);
+
+          UserModel um = context.getSession().users().addUser(context.getRealm(), userHandle, chosenUsername, false,
+              false);
+
+          um.setEnabled(true);
+          context.setUser(um);
+          context.success();
+        } else {
+          throw new Exception("The HTTP call did not return 200: " + response.body());
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        context.failure(AuthenticationFlowError.INVALID_CREDENTIALS);
+      }
     }
+  }
+
+  /**
+   * True if the username is valid, and available
+   * False is otherwise
+   * 
+   * @param context Authentication context
+   * @return
+   */
+  private boolean chooseUsername_Action(AuthenticationFlowContext context, String username) {
+    UserModel um = context.getSession().users().getUserByUsername(context.getRealm(), username);
+    if (um == null) {
+      return true;
+    } else {
+      return false;
+    }
+
   }
 
   @Override
   public boolean requiresUser() {
-    return true;
+    return false;
   }
 
   @Override
@@ -128,6 +147,24 @@ public class PasskeyRegister implements Authenticator {
   private String getFormResult(AuthenticationFlowContext context) {
     MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
     String secret = formData.getFirst("attestationResult_String");
+    return secret;
+  }
+
+  private String getActionType(AuthenticationFlowContext context) {
+    MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
+    String action_type = formData.getFirst("action_type");
+    return action_type;
+  }
+
+  private String getUsername(AuthenticationFlowContext context) {
+    MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
+    String username = formData.getFirst("username");
+    return username;
+  }
+
+  private String getUserHandle(AuthenticationFlowContext context) {
+    MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
+    String secret = formData.getFirst("userHandle");
     return secret;
   }
 
