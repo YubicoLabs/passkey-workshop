@@ -54,10 +54,10 @@ public class PasskeyAuthenticator implements Authenticator {
        * registration
        */
       if (currentUser == null) {
-        String userHanlde = context.getHttpRequest().getDecodedFormParameters().get("userHandle").get(0);
+        String userHandle = context.getHttpRequest().getDecodedFormParameters().get("userHandle").get(0);
 
         // Attempt to locate the user in the realm
-        currentUser = context.getSession().users().getUserById(context.getRealm(), userHanlde);
+        currentUser = context.getSession().users().getUserById(context.getRealm(), userHandle);
       }
 
       // User was found

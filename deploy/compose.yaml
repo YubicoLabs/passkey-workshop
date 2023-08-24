@@ -61,17 +61,19 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      CLIENT_URL: "${CLIENT_URL}"
     ports:
       - "8081:8080"
     expose:
       - "8081"
-    profiles: ["web"]
+    profiles: ["web", "mobile"]
 
   proxy:
     build: proxy
     depends_on:
       - passkey-client
       - passkey-services
+      - idp
     ports:
       - 9000:80
     expose:
@@ -80,8 +82,8 @@ services:
 
   tunnel:
     image: cloudflare/cloudflared:latest
-    depends_on:
-      - proxy
+    #depends_on:
+    #  - proxy
     command: tunnel --url http://proxy
     profiles: ["tunnel"]
 

@@ -57,9 +57,9 @@ if [[ ! -d java-app/source ]] ; then
 fi
 
 # IdP
-if [[ ! -f keycloak/passkey_authenticator.jar ]] ; then
-  echo "### copying keycloak passkey authenticator"
-  cp ../examples/IdentityProviders/KeyCloak/pre-build/passkey_authenticator.jar keycloak/
+if [[ ! -d keycloak/source ]] ; then
+  echo "### copying keycloak passkey authenticator source code"
+  cp -r ../examples/IdentityProviders/KeyCloak/passkey_authenticator/ keycloak/source/
 fi
 
 # modify and rebuild the web app
@@ -93,6 +93,10 @@ sed -i '' "s/[a-z-]*\.trycloudflare\.com/$hostname/"	".env"
 echo "### editing Pawskey sources"
 sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/"	../examples/clients/mobile/iOS/PawsKey/PawsKey.xcodeproj/project.pbxproj
 sed -i '' "s/[a-z-]*\.trycloudflare.com/$hostname/" ../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
+
+# TODO: instead of editing source files, make endpoints configurable
+sed -i '' "s#http://host.docker.internal:8080#https://$hostname#;s#http://localhost:3000#https://$hostname#" keycloak/source/src/main/java/com/yubicolabs/PasskeyAuthenticator/PasskeyAuthenticator.java
+sed -i '' "s#http://host.docker.internal:8080#https://$hostname#;s#http://localhost:3000#https://$hostname#" keycloak/source/src/main/java/com/yubicolabs/PasskeyAuthenticator/PasskeyRegistrationAuthenticator.java
 
 echo "### launching containers (this may take a minute)"
 docker compose --profile mobile up -d
