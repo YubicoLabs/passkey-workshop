@@ -94,10 +94,12 @@ RP_ALLOWED_ORIGINS=replace-with-your-hostname.trycloudflare.com
 RP_ALLOWED_CROSS_ORIGINS=replace-with-your-hostname.trycloudflare.com
 ```
 
-Also edit the URL for your RP backend API so it includes your tunnel hostname:
+Also edit the URL for your RP backend API, your IdP, and your redirect URI so it includes your tunnel hostname:
 
 ```
 REACT_APP_API=https://replace-with-your-hostname.trycloudflare.com/v1
+REACT_APP_OIDC=https://replace-with-your-hostname.trycloudflare.com/realms/passkeyDemo/protocol/openid-connect
+REACT_APP_REDIRECT_URI=https://replace-with-your-hostname.trycloudflare.com/oidc/callback
 ```
 
 11. Run:
