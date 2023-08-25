@@ -18,4 +18,4 @@ Click the button below to begin your passkey journey!
 
 ## Yubico Developer Program
 
-This tutorial has been brought to you by the Yubico Developer Program! For more guides and tutorials please visit [developers.yubico.com](developers.yubico.com).
+This tutorial has been brought to you by the Yubico Developer Program! For more guides and tutorials please visit [developers.yubico.com](https://developers.yubico.com).
