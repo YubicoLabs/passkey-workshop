@@ -10,7 +10,7 @@ Differences with ../scripts (power)shell scripts:
 
 This document describes how to manually deploy the web and mobile environments, but this can be done automatically with the deploy script:
 
-- mobile.sh - for a proxied web and mobile deployment running over a cloud tunnel
+- cloudflared.sh - for a proxied web and mobile deployment running over a cloudflare tunnel
 
 # Deploy for mobile
 
@@ -33,9 +33,9 @@ To deploy the mobile client:
 
         docker compose --profile mobile --profile web down
 
-3. Copy the environment file
+3. Copy the example environment file
 
-        cp tunnel.env .env
+        cp cloudflared.env.example .env
 
 4. Copy the frontend code
 
@@ -112,17 +112,12 @@ REACT_APP_API=https://replace-with-your-hostname.trycloudflare.com/v1
 
 14. Start XCode with the iOS sample code in directory `../examples/clients/mobile/iOS/PawsKey`
 
-Make the following changes to the sources:
+15. In the Pawskey target, on the "Signing and Capabilities" tab, under "Signing", select your development team from the dropdown.
 
-- In the Associated Domains Capability settings, change `webcredentials:passkey.fyi` to `webcredentials:your-proxied-tunnel-endpoint.trycloudflare.com` (use your tunnel hostname).
+16. In Project Navigator, select "Configuration/Constants" and update the hostname in the `API_BASE_URI` and `RP_ID` constants to match your cloudflared tunnel endpoint. For instance:
 
-- In the file `examples/clients/mobile/iOS/PawsKey/Shared/AccountManager.swift`, update the domain variable accordingly. For instance:
-
-        let domain = "your-proxied-tunnel-endpoint.trycloudflare.com"
-
-- In the file `examples/clients/mobile/iOS/PawsKey/Shared/RelyingParty.swift`, update the `API_ENDPOINT` accordingly. For instance:
-
-        static let API_ENDPOINT = "https://your-proxied-tunnel-endpoint.trycloudflare.com/v1"
+        API_BASE_URI = your-proxied-tunnel-endpoint.trycloudflare.com/v1
+        RP_ID = your-proxied-tunnel-endpoint.trycloudflare.com
 
 15. Build and run the Pawskey application on your iOS device.
 

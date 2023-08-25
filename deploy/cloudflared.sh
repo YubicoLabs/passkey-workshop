@@ -1,18 +1,40 @@
 #!/bin/bash
 
+# make sure we have docker compose v2
+echo "### checking docker compose version"
+docker compose version | grep v2 || { echo docker compose v2 is required; exit; }
+
 # use a default environment file unless already present
 if [[ ! -f ".env" ]] ; then
-  echo "### copying default environment file"
-  cp tunnel.env ".env"
+  echo "### .env file missing - copying example environment file"
+  cp cloudflared.env.example ".env"
 fi
 
 # load current environment
 source ".env"
 
-# Apple dev team needs to be changed
-if grep -q "UVWXYZ1234" ".env"; then
-  echo "Please edit your .env file and fill in your DEVELOPMENT_TEAM"
-  exit
+if [ "$(uname)" == "Darwin" ]; then
+	echo "### checking Apple Developer Team ID"
+	# Apple dev team needs to be changed, retrieve from .env file or from keychain...
+	if [[ -z "$DEVELOPMENT_TEAM" ]] ; then
+	  # dev team is in OU field of subject DN in dev certificate
+	  DEVELOPMENT_TEAM=$(security find-certificate -a -c 'Apple Development: ' -p | awk -v cmd='openssl x509 -noout -subject' '/BEGIN/{close(cmd)}; {print | cmd}' | egrep -o 'OU[[:blank:]]*=[[:blank:]]*[A-Z0-9]{10,}' | tr -d '[[:blank:]]' | cut -d= -f2)
+	  N=$(echo $DEVELOPMENT_TEAM | wc -w)
+	  if [[ $N -lt 1 ]] ; then
+	    echo Cannot find a DEVELOPMENT_TEAM
+	    echo "Please edit your .env file and fill in your DEVELOPMENT_TEAM"
+	    exit
+	  fi
+	  if [[ $N -gt 1 ]] ; then
+	    echo You have more than one Team ID
+	    echo "Please edit your .env file and fill in your DEVELOPMENT_TEAM"
+	    echo We found the following Team IDs in your KeyChain: $DEVELOPMENT_TEAM
+	    security find-certificate -a -c 'Apple Development:' -p | awk -v cmd='openssl x509 -noout -subject'   '/BEGIN/{close(cmd)}; {print | cmd}' | tr '/,' '\n' | grep -e CN -e OU | cut -d= -f2
+	    exit
+	  fi
+	fi
+	# use the team ID found
+	echo DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM
 fi
 
 # stop and remove any running containers as they may need to be restarted
@@ -70,11 +92,10 @@ sed -i '' "s/[a-z-]*\.trycloudflare\.com/$hostname/"	".env"
 
 echo "### editing Pawskey sources"
 sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/"	../examples/clients/mobile/iOS/PawsKey/PawsKey.xcodeproj/project.pbxproj
-sed -i '' "s/replace-with-your-hostname.trycloudflare.com/$hostname/" \
-	../examples/clients/mobile//iOS/PawsKey/Shared/RelyingParty.swift \
-	../examples/clients/mobile/iOS/PawsKey/Shared/AccountManager.swift \
-	../examples/clients/mobile/iOS/PawsKey/Shared/PawsKey.entitlements \
-	../examples/clients/mobile/iOS/PawsKey/PawsKeyDebug.entitlements
+sed -i '' "s/[a-z-]*\.trycloudflare.com/$hostname/" ../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
 
-echo "### launching containers"
+echo "### launching containers (this may take a minute)"
 docker compose --profile mobile up -d
+
+echo please find your web application here:
+echo https://$hostname/test_panel

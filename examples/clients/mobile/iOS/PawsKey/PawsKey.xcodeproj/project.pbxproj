@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		260C034529C03DC60024BF50 /* RelyingParty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260C034429C03DC60024BF50 /* RelyingParty.swift */; };
 		265E131229C530B300B40759 /* SignInFailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265E131129C530B300B40759 /* SignInFailedViewController.swift */; };
+		26E7FFCB2A2E564000A282E4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E7FFCA2A2E564000A282E4 /* Constants.swift */; };
 		E09D56EF2669A5F2004A809B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09D56EE2669A5F2004A809B /* AppDelegate.swift */; };
 		E09D56F12669A5F2004A809B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09D56F02669A5F2004A809B /* SceneDelegate.swift */; };
 		E09D56F62669A5F2004A809B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E09D56F42669A5F2004A809B /* Main.storyboard */; };
@@ -23,6 +24,8 @@
 		260C034329BFEFAC0024BF50 /* PawsKeyDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PawsKeyDebug.entitlements; sourceTree = "<group>"; };
 		260C034429C03DC60024BF50 /* RelyingParty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelyingParty.swift; sourceTree = "<group>"; };
 		265E131129C530B300B40759 /* SignInFailedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInFailedViewController.swift; sourceTree = "<group>"; };
+		26E7FFCA2A2E564000A282E4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		26E7FFCE2A2E585400A282E4 /* Constants.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Constants.xcconfig; sourceTree = "<group>"; };
 		2C088C6DEDBE3305FCC6C1B2 /* Pods_PawsKey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PawsKey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0EE5C66F4ACE15F993A4F03 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		E09D56EB2669A5F2004A809B /* PawsKey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PawsKey.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,6 +55,7 @@
 			isa = PBXGroup;
 			children = (
 				D0EE5C66F4ACE15F993A4F03 /* SampleCode.xcconfig */,
+				26E7FFCE2A2E585400A282E4 /* Constants.xcconfig */,
 			);
 			name = Configuration;
 			sourceTree = "<group>";
@@ -91,6 +95,7 @@
 				E09D56FC2669A5F5004A809B /* Info.plist */,
 				260C034429C03DC60024BF50 /* RelyingParty.swift */,
 				265E131129C530B300B40759 /* SignInFailedViewController.swift */,
+				26E7FFCA2A2E564000A282E4 /* Constants.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -172,6 +177,7 @@
 				E0C944D72669A8840033265C /* UserHomeViewController.swift in Sources */,
 				E09D56F12669A5F2004A809B /* SceneDelegate.swift in Sources */,
 				260C034529C03DC60024BF50 /* RelyingParty.swift in Sources */,
+				26E7FFCB2A2E564000A282E4 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,7 +341,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "fyi.passkey.pawskey${SAMPLE_CODE_DISAMBIGUATOR}";
+				PRODUCT_BUNDLE_IDENTIFIER = "co.pawskey.iOS${SAMPLE_CODE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTS_MACCATALYST = YES;
@@ -365,7 +371,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "fyi.passkey.pawskey${SAMPLE_CODE_DISAMBIGUATOR}";
+				PRODUCT_BUNDLE_IDENTIFIER = "co.pawskey.iOS${SAMPLE_CODE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTS_MACCATALYST = YES;
