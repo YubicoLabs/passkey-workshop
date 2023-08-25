@@ -3,28 +3,19 @@ package com.yubicolabs.keycloak.authentication;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
-import org.keycloak.authentication.CredentialRegistrator;
-import org.keycloak.authentication.InitiatedActionSupport;
-import org.keycloak.authentication.RequiredActionContext;
-import org.keycloak.authentication.RequiredActionProvider;
+import org.keycloak.authentication.authenticators.util.AcrStore;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yubicolabs.keycloak.models.AttestationOptionsRequest;
-import com.yubicolabs.keycloak.models.AuthenticatorSelection;
-import com.yubicolabs.keycloak.models.AuthenticatorSelection.ResidentKeyEnum;
-import com.yubicolabs.keycloak.models.AuthenticatorSelection.UserVerificationEnum;
 
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -74,6 +65,28 @@ public class PasskeyAuthenticate implements Authenticator {
         System.out.println(um.toString());
 
         context.setUser(um);
+
+        /**
+         * Note to future Cody
+         * 
+         * This is where we can set the ACR that will be provided with the auth token
+         * You will need to set this for both successful auth and reg
+         * 
+         * The passkey API should return a response that denotes if a the request
+         * was a HA or LA (both reg and auth)
+         * 
+         * The Bank API should evaluate the ID token's ACR before any action is allowed
+         * 
+         * ACR of 1 is LA
+         * ACR of 2 is HA
+         * 
+         * For now, this will always default as 2
+         * 
+         */
+        AcrStore acrStore = new AcrStore(context.getAuthenticationSession());
+        System.out.println(acrStore.getLevelOfAuthenticationFromCurrentAuthentication());
+        acrStore.setLevelAuthenticated(2);
+        System.out.println(acrStore.getLevelOfAuthenticationFromCurrentAuthentication());
         context.success();
       } else {
         throw new Exception("The HTTP call did not return 200: " + response.body());

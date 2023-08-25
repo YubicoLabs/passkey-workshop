@@ -3,29 +3,18 @@ package com.yubicolabs.keycloak.registration;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
-import org.keycloak.authentication.CredentialRegistrator;
-import org.keycloak.authentication.InitiatedActionSupport;
-import org.keycloak.authentication.RequiredActionContext;
-import org.keycloak.authentication.RequiredActionProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
-import org.keycloak.models.UserSessionModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yubicolabs.keycloak.models.AttestationOptionsRequest;
-import com.yubicolabs.keycloak.models.AuthenticatorSelection;
-import com.yubicolabs.keycloak.models.AuthenticatorSelection.ResidentKeyEnum;
-import com.yubicolabs.keycloak.models.AuthenticatorSelection.UserVerificationEnum;
 
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
