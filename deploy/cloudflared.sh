@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This script automates the deployment of all components and exposes them to the Internet through a cloudflare tunnel
+
 # make sure we have docker compose v2
 echo "### checking docker compose version"
 docker compose version | grep v2 || { echo docker compose v2 is required; exit; }
