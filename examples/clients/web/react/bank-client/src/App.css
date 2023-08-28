@@ -1,0 +1,304 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body {
+  background-color: #221C3E;
+}
+
+.navbar {
+  padding-top: 2em;
+  padding-bottom: 2em;
+}
+
+.navbar-brand {
+  font-family: 'Helvetica Neue';
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 31px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #F2F0FF;
+  padding-right: 2em;
+  border-right: 1px solid #F2F0FF;
+}
+
+.nav-link {
+  font-family: 'Helvetica Neue';
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.06em;
+  text-align: center;
+  color: #F2F0FF;
+  margin: 0 3em;
+}
+
+.nav-notification {
+  padding-right: 2em;
+  border-right: 1px solid #F2F0FF;
+}
+
+.nav-notification svg {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.nav-username-circle {
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+
+  background: #BDBDBD;
+  border: 2px solid #BDBDBD;
+  color: #F2F0FF;
+  text-align: center;
+  font: 12px 'Helvetica Neue';
+  display: inline-block;
+  margin-right: 1em;
+}
+
+.nav-username {
+  margin-left: 2em;
+  color: var(--text-text-1, #F2F0FF);
+  text-align: center;
+
+  /* Body 2/Default */
+  font-family: Helvetica Neue;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  /* 150% */
+}
+
+.navbar-toggler {
+  background-color: #F2F0FF;
+  color: #BDBDBD;
+}
+
+.action_parent {
+  display: flex;
+}
+
+.action {
+  display: flex;
+  width: inherit;
+  flex-direction: column;
+
+  padding: 10px;
+  padding-top: 24px;
+}
+
+.hero {
+  background-image:
+    linear-gradient(45deg, #0803FF 0%, #7a64ff99 100%),
+    url('/public/img/backsplash.jpeg');
+  width: 438px;
+  height: 264px;
+  background-size: cover;
+  color: white;
+
+  border-radius: 20px;
+  border: 1px solid #000;
+}
+
+.card-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-gap-1 {
+  margin-top: 90px;
+}
+
+.card-gap-2 {
+  margin-top: 24px;
+}
+
+.card-logo {
+  justify-content: end;
+  display: flex;
+  padding-right: 18px;
+}
+
+.caption-default {
+  color: var(--text-text-1, #F2F0FF);
+
+  /* Caption/Default */
+  font-family: Helvetica Neue;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  /* 150% */
+  text-transform: uppercase;
+  display: block;
+}
+
+.card-text-name {
+  color: var(--text-text-1, #F2F0FF);
+  font-family: Helvetica Neue;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  /* 110% */
+}
+
+.nav-home {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.title {
+  color: var(--text-text-1, #F2F0FF);
+
+  /* Title/Default */
+  font-family: Helvetica Neue;
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 72px;
+  /* 150% */
+  letter-spacing: 0.48px;
+}
+
+h2 {
+  color: var(--text-text-1, #F2F0FF);
+  text-align: center;
+
+  /* H2 Heading/Default */
+  font-family: 'Helvetica Neue';
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 42px;
+  /* 150% */
+}
+
+h3 {
+  color: var(--text-text-1, #F2F0FF);
+
+  /* H3 Heading/Bold */
+  font-family: 'Helvetica Neue';
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 30px;
+  /* 150% */
+}
+
+.text-1 {
+  color: var(--text-text-1, #F2F0FF);
+
+  /* Button/Default */
+  font-family: Helvetica Neue;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  /* 200% */
+  letter-spacing: 1.68px;
+  text-transform: uppercase;
+}
+
+.body-1 {
+  color: var(--text-text-1, #F2F0FF);
+
+  /* Body 1/Default */
+  font-family: Helvetica Neue;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* 150% */
+}
+
+a .text-1 {
+  text-decoration: none;
+}
+
+a .text-1:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.nav-link-home {
+  display: flex;
+  padding: 28px 27px;
+  align-items: flex-start;
+  gap: 10px;
+  align-self: stretch;
+
+  border-radius: 16px;
+  border: 1px solid var(--background-light, #F2F0FF);
+
+  margin-top: 24px;
+}
+
+.account-balance-parent {
+  display: flex;
+  padding: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 35px;
+
+  border-radius: 16px;
+  border: 1px solid var(--background-light, #F2F0FF);
+}
+
+.recent-transactions {
+  width: 100%;
+}
+
+.recent-transactions>h2 {
+  text-align: start;
+}
+
+.recent-transactions-list-item {
+  margin-top: 16px;
+}
