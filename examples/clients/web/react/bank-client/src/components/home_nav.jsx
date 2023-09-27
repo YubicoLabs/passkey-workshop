@@ -16,7 +16,7 @@ export default function HomeNav() {
           <Link className="nav-link-home text-1" to="/transaction">
             Make a transfer
           </Link>
-          <Link className="nav-link-home text-1" to="/transaction">
+          <Link className="nav-link-home text-1" to="/account">
             Account settings
           </Link>
         </Nav>
