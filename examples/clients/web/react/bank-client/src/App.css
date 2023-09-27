@@ -296,6 +296,21 @@ a .text-1:hover {
   margin-top: 24px;
 }
 
+.nav-link-account {
+  color: var(--primary-hover, #426BFF);
+
+  /* Button/Default */
+  font-family: Helvetica Neue;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  /* 200% */
+  letter-spacing: 1.68px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
 .account-balance-parent {
   display: flex;
   padding: 24px;
