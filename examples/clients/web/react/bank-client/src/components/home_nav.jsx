@@ -9,10 +9,10 @@ export default function HomeNav() {
       <Row className="nav-home">
         <span className="text-1">Quick actions</span>
         <Nav className="flex-column">
-          <Link className="nav-link-home text-1" to="/transaction">
+          <Link className="nav-link-home text-1" to="/transactions/deposit">
             Make a deposit
           </Link>
-          <Link className="nav-link-home text-1" to="/transaction">
+          <Link className="nav-link-home text-1" to="/transactions/transfer">
             Make a transfer
           </Link>
           <Link className="nav-link-home text-1" to="/account">
