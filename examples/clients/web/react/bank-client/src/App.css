@@ -520,3 +520,53 @@ input:checked+.slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+.transaction-parent {
+  display: flex;
+  padding: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 35px;
+
+  border-radius: 16px;
+  border: 1px solid var(--background-light, #F2F0FF);
+}
+
+.standard-input {
+  width: 288px;
+  height: 64px;
+  flex-shrink: 0;
+
+  border-radius: 4px;
+  border: 1px solid var(--text-text-1, #F2F0FF);
+
+  color: #FFF;
+  margin-bottom: 20px;
+
+}
+
+::placeholder {
+  /* Body 1/Default */
+  font-family: Helvetica Neue;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* 150% */
+  color: #FFF;
+
+}
+
+input.standard-input,
+textarea {
+  background-color: transparent;
+  padding-left: 16px;
+
+  /* Body 1/Default */
+  font-family: Helvetica Neue;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* 150% */
+}

@@ -9,6 +9,7 @@ import Account from './pages/account/account';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import Transactions from './pages/transactions/transactions';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/transactions/*" element={<Transactions />} />
           </Routes>
         </Container>
       </BrowserRouter>

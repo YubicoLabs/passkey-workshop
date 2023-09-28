@@ -1,15 +1,16 @@
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Stack from "react-bootstrap/Stack";
 import PasskeyContainer from "../../components/passkey_container";
 import AdvancedProtectionContainer from "../../components/advanced_protection_container";
-import AccountSettingsMenu from "../../components/account_settings_menu";
+import PageSideNav from "../../components/page-side-nav";
 
 export default function Account() {
+  const pageSideNavProps = [{ name: "SECURITY", link: "/account" }];
+
   return (
     <Row>
       <Col md={12} lg={2}>
-        <AccountSettingsMenu />
+        <PageSideNav title="Settings" linkObjects={pageSideNavProps} />
       </Col>
       <Col md={12} lg={9}>
         <div className="account-balance-parent">
