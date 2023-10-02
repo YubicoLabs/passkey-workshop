@@ -8,15 +8,14 @@ import { Link } from "react-router-dom";
  *  }
  */
 export default function PageSideNav({ title, linkObjects }) {
-  console.log(linkObjects);
   return (
     <div>
       <div>
         <h3>{title}</h3>
       </div>
       <div style={{ marginTop: "24px" }}>
-        {linkObjects.map((value) => (
-          <div>
+        {linkObjects.map((value, i) => (
+          <div key={i}>
             <Link className="nav-link-account" to={value.link}>
               {value.name}
             </Link>

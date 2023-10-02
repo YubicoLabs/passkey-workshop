@@ -24,10 +24,10 @@
             </div> 
           </div>
         </div>
-        <div class="col-md-7 hero action_parent" style="padding-right: 0; padding-left: 0">
+        <div class="col-md-7 hero action_parent" style="padding-right: 0; padding-left: 0; background-image: linear-gradient(45deg, #0803FF 0%, #7a64ff99 100%), url('${url.resourcesPath}/img/backsplash.jpeg');">
           <div class="action splash" style="width: auto">
               <div class="header_login">
-                <img class="logo_image" src="/resources/hkbq9/login/passkey/img/logo.png"/>
+                <img class="logo_image" src="${url.resourcesPath}/img/logo.png"/>
                 <h2 class="splash_logo">Morning Star Banking Solution</h2>
               </div>
             </div>

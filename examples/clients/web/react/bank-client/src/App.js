@@ -1,15 +1,16 @@
-import logo from './logo.svg';
-import { BrowserRouter, Route, Routes} from "react-router-dom";
+import { BrowserRouter, Route, Routes, redirect } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 
-import Header from './components/header';
+import Header from "./components/header";
 
-import Home from './pages/home/home';
-import Account from './pages/account/account';
+import Home from "./pages/home/home";
+import Account from "./pages/account/account";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
-import Transactions from './pages/transactions/transactions';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
+import Transactions from "./pages/transactions/transactions";
+import AuthCallback from "./pages/callbacks/auth";
+import { ProtectedRoutes } from "./components/protected_routes";
 
 function App() {
   return (
@@ -18,9 +19,13 @@ function App() {
         <Header />
         <Container>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/transactions/*" element={<Transactions />} />
+            <Route path="/" element={<ProtectedRoutes />}>
+              <Route path="/dashboard" element={<Home />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/transactions/*" element={<Transactions />} />
+            </Route>
+            <Route path="/callback/auth" element={<AuthCallback />} />
+            <Route path="/error" element={<h1>ERROR</h1>} />
           </Routes>
         </Container>
       </BrowserRouter>

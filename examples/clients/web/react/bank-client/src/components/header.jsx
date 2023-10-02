@@ -1,13 +1,26 @@
+import { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { Link } from "react-router-dom";
 
 export default function Header() {
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const lsString = window.localStorage.getItem("USER_INFO");
+    const response = JSON.parse(lsString);
+    setEmail(
+      response !== null && response.preferred_username !== null
+        ? response.preferred_username
+        : ""
+    );
+  }, []);
+
   return (
     <Navbar expand="md">
       <Container>
-        <Navbar.Brand href="/">
+        <Navbar.Brand href="/dashboard">
           <img
             alt=""
             src="/img/logo.png"
@@ -20,7 +33,7 @@ export default function Header() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Link className="nav-link" to="/">
+            <Link className="nav-link" to="/dashboard">
               HOME
             </Link>
             <Link className="nav-link" to="/transactions">
@@ -44,12 +57,16 @@ export default function Header() {
                 />
               </svg>
             </div>
-            <div className="nav-username">
-              <span className="nav-username-circle d-none d-lg-inline-block">
-                C
-              </span>
-              <span>username@yubico.com</span>
-            </div>
+            {email !== "" ? (
+              <div className="nav-username">
+                <span className="nav-username-circle d-none d-lg-inline-block">
+                  {email.charAt(0).toUpperCase()}
+                </span>
+                <span>{email}</span>
+              </div>
+            ) : (
+              <></>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
