@@ -1,6 +1,5 @@
 name: passkey-workshop
 services:
-
   passkey-client:
     container_name: passkey-client
     build: react-app
@@ -11,6 +10,18 @@ services:
       REACT_APP_API: "${REACT_APP_API}"
     ports:
       - 3000:3000
+    profiles: ["web", "mobile"]
+
+  bank-client:
+    container_name: bank-client
+    build: bank-app
+    depends_on:
+      - passkey-services
+    image: bank_client
+    environment:
+      REACT_APP_API: "${REACT_APP_API}"
+    ports:
+      - 3002:3002
     profiles: ["web", "mobile"]
 
   passkey-services:
@@ -43,7 +54,16 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: "${MASTER_PASSWORD}"
     healthcheck:
-      test: ["CMD", "mysql" ,"-uroot", "-p$MASTER_PASSWORD", "--protocol=TCP", "-hlocalhost", "-estatus"]
+      test:
+        [
+          "CMD",
+          "mysql",
+          "-uroot",
+          "-p$MASTER_PASSWORD",
+          "--protocol=TCP",
+          "-hlocalhost",
+          "-estatus",
+        ]
       timeout: 20s
       retries: 10
     ports:
