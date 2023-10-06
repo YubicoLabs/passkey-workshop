@@ -1,4 +1,4 @@
-FROM quay.io/keycloak/keycloak:21.0.1
+FROM quay.io/keycloak/keycloak:21.1.2
 COPY passkey_authenticator.jar /opt/keycloak/providers/passkey_authenticator.jar
 COPY keycloak_init.sh /opt/keycloak/bin/keycloak_init.sh
 USER root
