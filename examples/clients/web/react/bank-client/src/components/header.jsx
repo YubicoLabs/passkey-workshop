@@ -36,7 +36,7 @@ export default function Header() {
             <Link className="nav-link" to="/dashboard">
               HOME
             </Link>
-            <Link className="nav-link" to="/transactions">
+            <Link className="nav-link" to="/transactions/deposit">
               PAYMENTS
             </Link>
             <Link className="nav-link" to="account">

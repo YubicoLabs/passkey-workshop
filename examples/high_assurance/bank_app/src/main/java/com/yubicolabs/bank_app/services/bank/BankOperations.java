@@ -110,6 +110,7 @@ public class BankOperations {
             .type(AccountTransactionResponse.TypeEnum.fromValue(transaction.getType()))
             .amount(BigDecimal.valueOf(transaction.getAmount()))
             .transactionDate(transaction.getCreateTime().toString())
+            .description(transaction.getDescription())
             .build())
         .collect(Collectors.toList());
 

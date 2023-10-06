@@ -570,3 +570,11 @@ textarea {
   line-height: 24px;
   /* 150% */
 }
+
+.transaction-type-button {
+  border: 1px solid #F2F0FF;
+  background-color: transparent;
+  color: #F2F0FF;
+  width: 64px;
+  height: 64px;
+}

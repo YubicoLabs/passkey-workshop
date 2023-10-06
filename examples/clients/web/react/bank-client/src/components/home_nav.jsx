@@ -12,7 +12,7 @@ export default function HomeNav() {
           <Link className="nav-link-home text-1" to="/transactions/deposit">
             Make a deposit
           </Link>
-          <Link className="nav-link-home text-1" to="/transactions/transfer">
+          <Link className="nav-link-home text-1" to="/transactions/withdraw">
             Make a transfer
           </Link>
           <Link className="nav-link-home text-1" to="/account">

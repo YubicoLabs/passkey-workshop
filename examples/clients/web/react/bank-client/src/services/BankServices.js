@@ -83,15 +83,6 @@ async function setAdvancedProtection(accountId, newSetting) {
 }
 
 async function getAccounts() {
-  return {
-    accounts: [
-      {
-        accountId: 1234,
-        balance: 100000,
-        advancedProtection: false,
-      },
-    ],
-  };
   try {
     const requestOptions = {
       method: "GET",
@@ -100,7 +91,7 @@ async function getAccounts() {
       },
     };
 
-    const response = await fetch(`${baseURL}/account`, requestOptions);
+    const response = await fetch(`${baseURL}/accounts`, requestOptions);
     const responseJSON = await response.json();
 
     console.info(`Printing response for this user's account`);
@@ -115,35 +106,6 @@ async function getAccounts() {
 }
 
 async function getTransactions(accountId) {
-  /**
-   * PREDEV Mock, remove the return statement when API is live
-   */
-
-  return {
-    transactions: [
-      {
-        transactionId: 1,
-        type: "transfer",
-        amount: 100,
-        transactionDate: "AAAAAAAAA",
-        description: "Best friend",
-      },
-      {
-        transactionId: 1,
-        type: "deposit",
-        amount: 300,
-        transactionDate: "BBBBBBBB",
-        description: "Mom",
-      },
-      {
-        transactionId: 1,
-        type: "transfer",
-        amount: 100,
-        transactionDate: "CCCCCCC",
-        description: "Someone",
-      },
-    ],
-  };
   try {
     const requestOptions = {
       method: "GET",
@@ -173,14 +135,6 @@ async function createTransactions(accountId, type, amount, description) {
   /**
    * PREDEV Mock, remove the return statement when API is live
    */
-
-  return {
-    transactionId: 1,
-    type: "transfer",
-    amount: 100,
-    transactionDate: "AAAAAAAAA",
-    description: "Best friend",
-  };
   try {
     const reqData = {
       type: type,
