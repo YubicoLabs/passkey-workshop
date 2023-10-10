@@ -5,12 +5,37 @@ This directory is an alternative to the ../scripts directory and can be used to 
 Differences with ../scripts (power)shell scripts:
 
 - a single docker compose file is used to deploy the whole environment
-- devtunnel is used to expose local docker containers to mobile clients
+- devtunnel can optionally be used to expose local docker containers to mobile clients
 
 This document describes how to manually deploy the complete workshop environment, but this can also be done automatically with the deploy scripts:
 
 - localhost.sh - for a deployment running everything on localhost
 - devtunnel.sh - for a deployment running over a devtunnel (for access over the Internet using for instance a mobile phone)
+
+## TL;DR
+
+Detailed deployment instructions are listed below but for a quickstart, here's the TL;DR:
+
+To deploy locally (only accessible on localhost):
+
+1. install Docker
+2. clone this repository
+3. cd into /deploy
+4. run the script in ./localhost.sh
+5. Point your browser to http://localhost:3000/
+
+To deploy using a tunnel (accessible over the Internet):
+
+1. install Docker and devtunnel
+2. logon to devtunnel first (`devtunnel user login`) with your Microsoft or Github account via your browser, then return back to the console
+3. clone this repository
+4. cd to /deploy
+5. run the script in ./devtunnel.sh
+6. if the script is complaining about your Apple Developer Team ID, edit the file `.env` and fill in the `DEVELOPMENT_TEAM` variable
+7. run the script in ./devtunnel.sh
+8. Point your browser to the devtunnel endpoint, as instructed by the script output
+
+You can also deploy manually, as per the instructions below.
 
 # Deploy on localhost
 
@@ -39,7 +64,7 @@ Deploying everything on localhost is simple, as this uses defaults for everythin
 # Deploy using a tunnel
 
 For mobile we need to expose the docker containers to the Internet in order to use them from a mobile phone.
-This deployment is similar the the localhost deployment, except that services are exposed on an HTTPS URL instead of localhost.
+This deployment is similar the localhost deployment, except that services are exposed on an HTTPS URL instead of localhost.
 
 This is what the tunneled workshop network looks like:
 
