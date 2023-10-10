@@ -7,8 +7,7 @@
 //
 
 // API Endpoint URI
-API_BASE_URI = replace-with-your-hostname.trycloudflare.com/v1
+API_BASE_URI = replace-with-your-api-hostname/v1
 
 // Relying Party Endpoint Domain. This needs to match your RP Id
-RP_ID = replace-with-your-hostname.trycloudflare.com
-
+RP_ID = replace-with-your-rpid
