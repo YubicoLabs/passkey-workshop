@@ -1,6 +1,8 @@
 
 const GLOBAL_OIDC_CONFIGS = {
-  baseUri: "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect",
+  baseUri: process.env.REACT_APP_OIDC || "http://localhost:8081/realms/passkeyDemo/protocol/openid-connect",
+
+
   client: "passkeyClient",
   redirect_uri: `${window.location.origin}/oidc/callback`,
   logout_redirect_uri: `${window.location.origin}/logout`

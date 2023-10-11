@@ -1,13 +1,18 @@
 #!/bin/bash
 
+# This script automates the deployment of all components and exposes them to the Internet through a devtunnel
+
 # make sure we have docker compose v2
 echo "### checking docker compose version"
 docker compose version | grep v2 || { echo docker compose v2 is required; exit; }
 
+echo "### checking for devtunnel"
+command -v devtunnel || { echo please install devtunnel first; exit; }
+
 # use a default environment file unless already present
 if [[ ! -f ".env" ]] ; then
   echo "### .env file missing - copying example environment file"
-  cp cloudflared.env.example ".env"
+  cp default.env ".env"
 fi
 
 # load current environment
@@ -39,8 +44,8 @@ fi
 
 # stop and remove any running containers as they may need to be restarted
 echo "### removing any running containers"
-docker compose --profile web --profile mobile stop
-docker compose --profile web --profile mobile rm
+docker compose stop
+docker compose rm
 
 # copy sources so they can be copied into docker images
 
@@ -57,9 +62,9 @@ if [[ ! -d java-app/source ]] ; then
 fi
 
 # IdP
-if [[ ! -f keycloak/passkey_authenticator.jar ]] ; then
-  echo "### copying keycloak passkey authenticator"
-  cp ../examples/IdentityProviders/KeyCloak/pre-build/passkey_authenticator.jar keycloak/
+if [[ ! -d keycloak/source ]] ; then
+  echo "### copying keycloak passkey authenticator source code"
+  cp -r ../examples/IdentityProviders/KeyCloak/passkey_authenticator/ keycloak/source/
 fi
 
 # modify and rebuild the web app
@@ -70,32 +75,47 @@ if [[ ! -z "$rebuild" ]] ; then
   docker compose build passkey-client
 fi
 
-tunnel=$(docker compose --profile tunnel ps -q)
-if [[ -z "$tunnel" ]] ; then
-  echo "### bringing up the tunnel"
-  docker compose --profile tunnel up -d
-fi
+echo "### bringing up the tunnel"
 
-# wait for tunnel
-while :
-do
-  hostname=$(docker compose --profile tunnel logs | grep INF | grep -o '[a-z-]*\.trycloudflare\.com')
-  [[ -z "$hostname" ]] || break
-  echo -n "."
-  sleep .5
-done
-hostname=$(docker compose --profile tunnel logs | grep INF | grep -o '[a-z-]*\.trycloudflare\.com' | tail -1)
+devtunnel user show | grep '^Not logged in' && { echo "logon to devtunnel first ('devtunnel user login')"; exit; }
+
+TUNNELID=$(devtunnel list --tags passkey-workshop --limit 1 | grep passkey-workshop | awk '{ print $1; }')
+if [[ -z "$TUNNELID" ]] ; then
+  echo "### create tunnel"
+  devtunnel create --allow-anonymous --tags passkey-workshop --host-header unchanged --origin-header unchanged
+fi
+TUNNELID=$(devtunnel list --tags passkey-workshop --limit 1 | grep passkey-workshop | awk '{ print $1; }')
+
+hostname=$TUNNELID.devtunnels.ms
 echo "### tunnel hostname is: $(tput bold) $hostname $(tput sgr0)"
 
+echo "### setting up ports"
+devtunnel port list $TUNNELID | grep '^3000\b' || devtunnel port create $TUNNELID  -p 3000 --description 'app'
+devtunnel port list $TUNNELID | grep '^8080\b' || devtunnel port create $TUNNELID  -p 8080 --description 'api'
+devtunnel port list $TUNNELID | grep '^8081\b' || devtunnel port create $TUNNELID  -p 8081 --description 'idp'
+
 echo "### editing .env file"
-sed -i '' "s/[a-z-]*\.trycloudflare\.com/$hostname/"	".env"
+sed -i '' "s#http://localhost#https://$hostname#"	".env"
+sed -i '' "s/localhost/$hostname/"	".env"
 
 echo "### editing Pawskey sources"
 sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/"	../examples/clients/mobile/iOS/PawsKey/PawsKey.xcodeproj/project.pbxproj
-sed -i '' "s/[a-z-]*\.trycloudflare.com/$hostname/" ../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
+sed -i '' \
+    -e "s#^API_BASE_URI[= ].*#API_BASE_URI = $hostname:8080/v1#" \
+    -e "s#^RP_ID[= ].*#RP_ID = $hostname#" \
+    ../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
+
+# TODO: instead of editing source files, make endpoints configurable
+sed -i '' "s#http://host.docker.internal#https://$hostname#;s#http://localhost#https://$hostname#" keycloak/source/src/main/java/com/yubicolabs/PasskeyAuthenticator/PasskeyAuthenticator.java
+sed -i '' "s#http://host.docker.internal#https://$hostname#;s#http://localhost#https://$hostname#" keycloak/source/src/main/java/com/yubicolabs/PasskeyAuthenticator/PasskeyRegistrationAuthenticator.java
 
 echo "### launching containers (this may take a minute)"
-docker compose --profile mobile up -d
+docker compose up -d
 
 echo please find your web application here:
-echo https://$hostname/test_panel
+echo https://$hostname:3000/test_panel
+
+echo "### starting devtunnel. Type ^C to stop the tunnel"
+devtunnel host $TUNNELID
+
+docker compose down

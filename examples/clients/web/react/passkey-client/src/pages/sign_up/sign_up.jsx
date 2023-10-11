@@ -29,9 +29,15 @@ export default function SignUp() {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /**
+   * @TODO - Instead of using an environment variable,
+   *         consider deriving the redirect_uri with something equivalent to
+   * 	     {@link https://expressjs.com/en/api.html#req.hostname|req.hostname}
+   * See also {@link https://expressjs.com/en/guide/behind-proxies.html|Express behind proxies}
+   */
   const oidcFormValues = {
     client_id: "passkeyClient",
-    redirect_uri: "http://localhost:3000/oidc/callback",
+    redirect_uri: process.env.REACT_APP_REDIRECT_URI || "http://localhost:3000/oidc/callback",
     scope: "openid",
     response_type: "code",
   };
