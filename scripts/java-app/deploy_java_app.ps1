@@ -8,7 +8,7 @@ param (
   [Parameter(Mandatory=$true)][string]$deployment_environment,
   [Parameter(Mandatory=$true)][string]$database_type,
   [Parameter(Mandatory=$true)][string]$database_root_password,
-  [Parameter(Mandatory=$true)[string]]$rp_attestation_trust_store
+  [Parameter(Mandatory=$true)][string]$rp_attestation_trust_store
   )
 
 Write-Host "`n****************************************"
