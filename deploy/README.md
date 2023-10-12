@@ -5,25 +5,70 @@ This directory is an alternative to the ../scripts directory and can be used to 
 Differences with ../scripts (power)shell scripts:
 
 - a single docker compose file is used to deploy the whole environment
-- cloudflared is used to expose local docker containers to mobile clients
-- a proxy is used so that all traffic between client and RP can be routed over a single tunnel
+- devtunnel can optionally be used to expose local docker containers to mobile clients
 
-This document describes how to manually deploy the web and mobile environments, but this can be done automatically with the deploy script:
+This document describes how to manually deploy the complete workshop environment, but this can also be done automatically with the deploy scripts:
 
-- cloudflared.sh - for a proxied web and mobile deployment running over a cloudflare tunnel
+- localhost.sh - for a deployment running everything on localhost
+- devtunnel.sh - for a deployment running over a devtunnel (for access over the Internet using for instance a mobile phone)
 
-# Deploy for mobile
+## TL;DR
+
+Detailed deployment instructions are listed below but for a quickstart, here's the TL;DR:
+
+To deploy locally (only accessible on localhost):
+
+1. install Docker
+2. clone this repository
+3. cd into /deploy
+4. run the script in ./localhost.sh
+5. Point your browser to http://localhost:3000/
+
+To deploy using a tunnel (accessible over the Internet):
+
+1. install Docker and devtunnel
+2. logon to devtunnel first (`devtunnel user login`) with your Microsoft or Github account via your browser, then return back to the console
+3. clone this repository
+4. cd to /deploy
+5. run the script in ./devtunnel.sh
+6. if the script is complaining about your Apple Developer Team ID, edit the file `.env` and fill in the `DEVELOPMENT_TEAM` variable
+7. run the script in ./devtunnel.sh
+8. Point your browser to the devtunnel endpoint, as instructed by the script output
+
+You can also deploy manually, as per the instructions below.
+
+# Deploy on localhost
+
+Deploying everything on localhost is simple, as this uses defaults for everything:
+
+1. From a terminal window, change into de deploy directory
+
+2. Copy the example environment file
+
+        cp default.env .env
+
+3. Copy all component source files
+
+	cp -r ../examples/clients/web/react/passkey-client/ react-app/source/
+	cp -r  ../examples/relyingParties/java-spring/ java-app/source/
+	cp -r ../examples/IdentityProviders/KeyCloak/passkey_authenticator/ keycloak/source/
+
+3. Build and run your docker containers:
+
+        docker compose up -d
+
+4. Point your browser to
+
+	http://localhost:3000/
+
+# Deploy using a tunnel
 
 For mobile we need to expose the docker containers to the Internet in order to use them from a mobile phone.
-This deployment is similar the the web-deployment, except that services are exposed on an HTTPS URL instead of localhost.
+This deployment is similar the localhost deployment, except that services are exposed on an HTTPS URL instead of localhost.
 
 This is what the tunneled workshop network looks like:
 
 ![Workshop network](passkey-workshop.png)
-
-Note that this also deploys the web front-end in order to demonstrate copyable passkeys.
-
-Also note that this deployment currently does not use keycloak, so only the TestPanel can be used in the web application.
 
 To deploy the mobile client:
 
@@ -31,11 +76,11 @@ To deploy the mobile client:
 
 2. If applicable, stop and remove any running containers:
 
-        docker compose --profile mobile --profile web down
+        docker compose down
 
 3. Copy the example environment file
 
-        cp cloudflared.env.example .env
+        cp default.env .env
 
 4. Copy the frontend code
 
@@ -67,57 +112,66 @@ Read [here](https://developer.apple.com/help/account/manage-your-team/locate-you
 
 No changes are required.
 
-8. Start your tunnel:
+8. Create a tunnel.
 
-        docker compose --profile tunnel up -d
+Install [devtunnel](https://learn.microsoft.com/en-gb/azure/developer/dev-tunnels/get-started), and sign in using your github or Microsoft account:
 
-9. Lookup the tunnel URL in cloudflared's output, either in Docker Desktop or using:
+	devtunnel user login
 
-        docker compose --profile tunnel logs
+Create the tunnel:
 
-For instance, the logfile shows:
+	devtunnel create --allow-anonymous --tags passkey-workshop --host-header unchanged --origin-header unchanged
 
-```
-INF +--------------------------------------------------------------------------------------------+
-INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
-INF |  https://your-proxied-tunnel-endpoint.trycloudflare.com                                     |
-INF +--------------------------------------------------------------------------------------------+
-```
+Note the tunnel ID that is assigned, for instance `abcd1234.euw`.
 
-when you are assigned the tunnel hostname `your-proxied-tunnel-endpoint.trycloudflare.com`.
+9. Create the following ports:
 
-10. Edit your .env file and set the values of `RP_ID`, `RP_ALLOWED_ORIGINS`, and `RP_ALLOWED_CROSS_ORIGINS` to your assigned hostname (`your-proxied-tunnel-endpoint.trycloudflare.com` in the example):
+	devtunnel port create <your tunnel id>  -p 3000 --description 'app'
+	devtunnel port create <your tunnel id>  -p 8080 --description 'api'
+	devtunnel port create <your tunnel id>  -p 8081 --description 'idp'
 
-```
-RP_ID=replace-with-your-hostname.trycloudflare.com
-RP_ALLOWED_ORIGINS=replace-with-your-hostname.trycloudflare.com
-RP_ALLOWED_CROSS_ORIGINS=replace-with-your-hostname.trycloudflare.com
-```
+10. Edit your .env file and set the values of `RP_ID`, `RP_ALLOWED_ORIGINS`, and `RP_ALLOWED_CROSS_ORIGINS` to your assigned tunnel endpoint.
 
-Also edit the URL for your RP backend API so it includes your tunnel hostname:
+Your tunnel endpoint is be derived from your tunnel id: `<your tunnel id>.devtunnels.ms`.
 
 ```
-REACT_APP_API=https://replace-with-your-hostname.trycloudflare.com/v1
+RP_ID=your-tunnel-endpoint
+RP_ALLOWED_ORIGINS=your-tunnel-endpoint
+RP_ALLOWED_CROSS_ORIGINS=your-tunnel-endpoint
 ```
 
-11. Run:
+Also edit the URL for your RP backend API, your IdP, and your redirect URI so it includes your tunnel hostname:
 
-        docker compose --profile mobile up -d
+```
+REACT_APP_API=https://your-tunnel-endpoint:8080/v1
+REACT_APP_OIDC=https://your-tunnel-endpoint:8081/realms/passkeyDemo/protocol/openid-connect
+REACT_APP_REDIRECT_URI=https://your-tunnel-endpoint:3000/oidc/callback
+```
+
+11. To run the complete environment,
+
+run your docker containers:
+
+        docker compose up -d
+
+and host your tunnel:
+
+	devtunnel host <your tunnel id>
 
 12. Point your browser to
 
-	https://your-proxied-tunnel-endpoint.trycloudflare.com/
+	https://your-tunnel-endpoint:3000/
 
-13. Verify that the testPanel works before proceeding with the iOS client code in XCode.
+13. Verify that everything works before proceeding with the iOS client code in XCode.
 
 14. Start XCode with the iOS sample code in directory `../examples/clients/mobile/iOS/PawsKey`
 
 15. In the Pawskey target, on the "Signing and Capabilities" tab, under "Signing", select your development team from the dropdown.
 
-16. In Project Navigator, select "Configuration/Constants" and update the hostname in the `API_BASE_URI` and `RP_ID` constants to match your cloudflared tunnel endpoint. For instance:
+16. In Project Navigator, select "Configuration/Constants" and update the hostname in the `API_BASE_URI` and `RP_ID` constants to match your tunnel endpoint. For instance:
 
-        API_BASE_URI = your-proxied-tunnel-endpoint.trycloudflare.com/v1
-        RP_ID = your-proxied-tunnel-endpoint.trycloudflare.com
+        API_BASE_URI = your-tunnel.com:8080/v1
+        RP_ID = your-tunnel-endpoint.com
 
 15. Build and run the Pawskey application on your iOS device.
 
@@ -125,24 +179,19 @@ REACT_APP_API=https://replace-with-your-hostname.trycloudflare.com/v1
 
 When done, stop and remove all containers:
 
-        docker compose --profile mobile stop
-        docker compose --profile mobile rm
+        docker compose down
 
-To also take the tunnel down, use:
-
-        docker compose --profile tunnel down
-
-Note that your assigned tunnel hostname will change when restarting the tunnel, so you will need to update your `.env` file and Paswkey code accordingly!
+Note that your assigned tunnel hostname will expire in 30 days, after which you need to create a new tunnel.
 
 ## Deleting passkeys
 
-As you are unlikely to be assigned the same tunnel hostname twice, you may want to delete all passkeys generated using that hostname as the RP ID.
+When done, you may want to delete all passkeys generated for your RP ID.
 
 In Chrome on MacOS, you can delete passkeys generated locally using chrome://settings/passkeys.
 Note that on MacOS, these passkeys aren't synced to your Google Account.
 
 If you used the hybrid flow to use your Android device as an authenticator however, passkeys *are* synced to your Google Account.
 To delete these passkeys using your Android device, navigate to _Settings_, _Passwords & accounts_, _Passwords_.
-You will find any synced passkeys under trycloudflare.com.
+You will find any synced passkeys under the name of your RP ID.
 
 Lastly, you can delete passkeys generated on your security key using chrome://settings/securityKeys (select "Sign-in data").

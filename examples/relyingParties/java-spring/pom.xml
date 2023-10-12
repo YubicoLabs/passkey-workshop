@@ -97,7 +97,7 @@
         <dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.24</version>
+			<version>1.18.30</version>
 			<scope>provided</scope>
 		</dependency>
         <dependency>
@@ -120,7 +120,7 @@
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
-            <version>9.0.72</version>
+            <version>9.0.80</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
