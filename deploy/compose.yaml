@@ -15,7 +15,7 @@ services:
 
   bank-client:
     container_name: bank-client
-    build: bank-app
+    build: bank-react-app
     depends_on:
       - passkey-services
     image: bank_client
@@ -23,7 +23,6 @@ services:
       REACT_APP_API: "${REACT_APP_API}"
     ports:
       - 3002:3002
-    profiles: ["web", "mobile"]
 
   passkey-services:
     container_name: passkey-services
@@ -46,6 +45,22 @@ services:
       - 8080:8080
     expose:
       - "8080"
+
+  bank-services:
+    container_name: bank-services
+    build: bank-java-app
+    depends_on:
+      db:
+        condition: service_healthy
+    image: bank_services
+    environment:
+      RP_ALLOWED_CROSS_ORIGINS: "${RP_ALLOWED_CROSS_ORIGINS}"
+      DATABASE_TYPE: "${DATABASE_TYPE}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
+    ports:
+      - 8082:8082
+    expose:
+      - "8082"
 
   db:
     container_name: passkey-mysql

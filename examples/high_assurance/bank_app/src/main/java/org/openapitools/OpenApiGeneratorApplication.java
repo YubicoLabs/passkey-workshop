@@ -29,9 +29,10 @@ public class OpenApiGeneratorApplication {
 
   public static void main(String[] args) {
     try {
-      Properties props = loadPropertyFile();
-      System.out.println(props.toString());
-      setStorageProperties(props);
+      // Properties props = loadPropertyFile();
+      // System.out.println(props.toString());
+      // setStorageProperties(props);
+      setStorageProperties();
 
       SpringApplication.run(OpenApiGeneratorApplication.class, args);
     } catch (Exception e) {
@@ -39,11 +40,9 @@ public class OpenApiGeneratorApplication {
     }
   }
 
-  private static void setStorageProperties(Properties props) {
+  private static void setStorageProperties() {
     // Determine if using in-mem or mysql
-    String storageType = props.getProperty("DATABASE_TYPE");
-
-    System.out.println(storageType);
+    String storageType = System.getenv("DATABASE_TYPE");
 
     if (storageType.equals("local")) {
       System.setProperty("datasource.type", "local");
@@ -65,7 +64,7 @@ public class OpenApiGeneratorApplication {
        * Please ensure that you have a robust secret management process that is not
        * exposed on the app server
        */
-      System.setProperty("spring.datasource.password", props.getProperty("DATABASE_PASSWORD"));
+      System.setProperty("spring.datasource.password", System.getenv("DATABASE_PASSWORD"));
 
       System.setProperty("spring.datasource.driver-class-name", "com.mysql.cj.jdbc.Driver");
     } else {
@@ -108,16 +107,17 @@ public class OpenApiGeneratorApplication {
   @Bean
   public WebMvcConfigurer corsConfigurer() {
     return new WebMvcConfigurer() {
-      @Autowired
-      Environment env;
-
+      /**
+       * Autowired
+       * Environment env;
+       */
       @Override
       public void addCorsMappings(CorsRegistry registry) {
         /*
          * Get origins list value from env variables
          */
 
-        String originsVal = env.getProperty("RP_ALLOWED_CROSS_ORIGINS");
+        String originsVal = System.getenv("RP_ALLOWED_CROSS_ORIGINS");
 
         /*
          * Split the origins list by comma (as noted by the shell script)
