@@ -1,4 +1,4 @@
-CREATE DATABASE passkeyStorage; 
+CREATE DATABASE passkeyStorage;
 
 USE passkeyStorage;
 
@@ -65,13 +65,11 @@ CREATE TABLE
         user_handle NVARCHAR(256) NOT NULL,
         user_identity TEXT,
         state NVARCHAR(50) DEFAULT 'ENABLED',
-        isHighAssurance BOOL DEFAULT FALSE,
+        is_high_assurance BOOL DEFAULT FALSE,
         PRIMARY KEY (id)
     );
 
-CREATE TABLE 
-    hibernate_sequence (
-	next_val BIGINT NOT NULL
-    );
+CREATE TABLE
+    hibernate_sequence (next_val BIGINT NOT NULL);
 
 INSERT INTO hibernate_sequence (next_val) VALUES (0);

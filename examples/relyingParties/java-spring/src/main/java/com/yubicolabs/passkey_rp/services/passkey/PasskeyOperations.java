@@ -295,6 +295,7 @@ public class PasskeyOperations {
               .registrationTime(cred.getRegistrationTime().atOffset(ZoneOffset.UTC))
               .lastUsedTime(cred.getLastUsedTime().atOffset(ZoneOffset.UTC))
               .iconURI((cred.getIconURI().isPresent() ? cred.getIconURI().get() : null))
+              .isHighAssurance(cred.isHighAssurance())
               .build())
           .collect(Collectors.toList());
 
@@ -391,6 +392,7 @@ public class PasskeyOperations {
 
     String credentialName;
     String iconURI;
+    boolean isHighAssurance;
 
     if (maybeMetadataEntry.isPresent()) {
       credentialName = maybeMetadataEntry.get().getDescription().isPresent()
@@ -399,9 +401,11 @@ public class PasskeyOperations {
       iconURI = maybeMetadataEntry.get().getIcon().isPresent()
           ? maybeMetadataEntry.get().getIcon().get()
           : null;
+      isHighAssurance = true;
     } else {
       credentialName = "My new passkey";
       iconURI = null;
+      isHighAssurance = false;
     }
 
     return CredentialRegistration.builder()
@@ -417,6 +421,7 @@ public class PasskeyOperations {
             .signatureCount(result.getSignatureCount())
             .build())
         .iconURI(Optional.ofNullable(iconURI))
+        .isHighAssurance(isHighAssurance)
         .build();
   }
 

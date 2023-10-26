@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.Optional;
 
 import com.yubico.webauthn.RegisteredCredential;
-import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.data.UserIdentity;
 
 import lombok.Builder;
@@ -19,6 +18,7 @@ public class CredentialRegistration {
   Instant lastUsedTime;
   Instant lastUpdateTime;
   RegisteredCredential credential;
+  boolean isHighAssurance;
 
   /**
    * Denotes an icon given by the FIDO MDS

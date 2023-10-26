@@ -84,6 +84,7 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
           .lastUsedTime(registration.getLastUsedTime().toEpochMilli())
           .credential(mapper.writeValueAsString(registration.getCredential()))
           .iconURI(registration.getIconURI().isPresent() ? registration.getIconURI().get() : null)
+          .isHighAssurance(registration.isHighAssurance())
           .build();
 
       credentialRegistrationRepositoryMySql.save(newItem);
@@ -146,6 +147,7 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
           .lastUpdateTime(Instant.ofEpochMilli(regDBO.getLastUpdateTime()))
           .credential(mapper.readValue(regDBO.getCredential(), RegisteredCredential.class))
           .iconURI(Optional.ofNullable(regDBO.getIconURI()))
+          .isHighAssurance(regDBO.isHighAssurance())
           .build();
     } catch (Exception e) {
       e.printStackTrace();
