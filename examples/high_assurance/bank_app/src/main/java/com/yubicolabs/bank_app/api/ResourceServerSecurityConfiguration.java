@@ -25,10 +25,13 @@ public class ResourceServerSecurityConfiguration {
 		// @formatter:off
 		http
 		.authorizeHttpRequests((authorize) -> authorize
-				.anyRequest().authenticated() // TODO: filter on scopes if necessary
+				.antMatchers("/v1/status").permitAll()
+				.antMatchers("/v1/**").authenticated() // TODO: filter on scopes if necessary
+				.anyRequest().permitAll()
 		)
 		.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 		// @formatter:on
+		http.cors();	// bypass authorization checks for preflight checks
 		return http.build();
 	}
 
