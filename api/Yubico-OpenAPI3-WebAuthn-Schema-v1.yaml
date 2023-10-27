@@ -480,6 +480,13 @@ components:
         status:
           type: string
           example: ok
+        loa:
+          type: integer
+          example: 1
+          default: 0
+          enum:
+            - 0
+            - 1
     UserProfileResponse:
       type: object
       properties:

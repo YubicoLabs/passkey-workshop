@@ -59,6 +59,7 @@ import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdateResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponseCredentialsInner;
 import com.yubicolabs.passkey_rp.models.api.UserDeleteResponse;
+import com.yubicolabs.passkey_rp.models.api.AssertionResultResponse.loaEnum;
 import com.yubicolabs.passkey_rp.models.common.AssertionOptions;
 import com.yubicolabs.passkey_rp.models.common.AttestationOptions;
 import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;
@@ -268,7 +269,20 @@ public class PasskeyOperations {
          * @TODO - Do we want to include the step where the signature count is updated?
          */
 
-        return AssertionResultResponse.builder().status("ok").build();
+        /**
+         * Set loa based on credential used in result
+         * 
+         * Right now this is assuming all trusted attestation in loa high
+         * We can refine this feature later
+         */
+
+        CredentialRegistration usedCredentialRegistration = relyingPartyInstance.getStorageInstance()
+            .getCredentialStorage().getByCredentialId(result.getCredential().getCredentialId()).stream().findFirst()
+            .get();
+
+        loaEnum resultLoa = usedCredentialRegistration.isHighAssurance() ? loaEnum.HIGH : loaEnum.LOW;
+
+        return AssertionResultResponse.builder().status("ok").loa(resultLoa).build();
       } else {
         throw new Exception("Your assertion failed for an unknown reason");
       }
