@@ -1,6 +1,8 @@
 package com.yubicolabs.passkey_rp.services.passkey;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.yubico.fido.metadata.FidoMetadataDownloader;
 import com.yubico.fido.metadata.FidoMetadataService;
-import com.yubico.fido.metadata.MetadataBLOB;
+import com.yubico.fido.metadata.FidoMetadataService.FidoMetadataServiceBuilder;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.attestation.AttestationTrustSource;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
@@ -144,9 +146,45 @@ public class RelyingPartyInstance {
             .useBlobCacheFile(new File("/tmp/fido-mds-blob.bin"))
             .build();
 
-        FidoMetadataService mds = FidoMetadataService.builder()
-            .useBlob(downloader.loadCachedBlob())
-            .build();
+        FidoMetadataServiceBuilder mdsServiceBuilder = FidoMetadataService.builder()
+            .useBlob(downloader.loadCachedBlob());
+
+        /**
+         * Opting to leverage an allow list to drive the allowed HA authenticators
+         * 
+         * A similar pattern can be used for leveraging a deny list; perform the inverse
+         * filtering options against the MDS
+         * 
+         * The first step is to check if AAGUIDs were defined in the env file
+         * If the env variable is not empty, attempt to split the string for comma
+         * separated AAGUIDs
+         * Next, Put each entry into an array list
+         * Lastly use the arraylist to filter the MDS builder
+         * 
+         * An empty allow list will allow for any attestation to be used
+         * A defined allow list allows a developer to explicitly define the
+         * authenticators they wish the application to trust
+         * 
+         * Note, setting the allow list on it's own will not prevent the use of
+         * untrusted attestation
+         * You must also define the env variable RP_ALLOW_UNTRUSTED_ATTESTATION as false
+         */
+        String ALLOW_LIST_ENV = System.getenv("ALLOW_LIST_AAGUIDS");
+
+        System.out.println("Allow list configuration: " + ALLOW_LIST_ENV);
+
+        if (!ALLOW_LIST_ENV.equalsIgnoreCase("")) {
+          String[] ALLOW_LIST_SPLIT = ALLOW_LIST_ENV.split(",");
+          ArrayList<String> ALLOW_LIST_AAGUIDS = new ArrayList<String>(Arrays.asList(ALLOW_LIST_SPLIT));
+
+          mdsServiceBuilder
+              .prefilter(blobEntry -> blobEntry.getAaguid().isPresent()
+                  && ALLOW_LIST_AAGUIDS.contains(blobEntry.getAaguid().get().asGuidString()));
+        }
+
+        FidoMetadataService mds = mdsServiceBuilder.build();
+
+        System.out.println("Pre-filtered MDS size: " + mds.findEntries(blob -> true).size());
 
         return mds;
       } catch (Exception e) {
