@@ -42,23 +42,25 @@ paths:
       summary: Admin API to create a new bank account for user
       operationId: CreateAccountRequest
       requestBody:
-        description: Create a new account by specifying userName
         required: true
         content:
           application/json:
             schema:
-              type: object
+              $ref: "#/components/schemas/CreateAccountRequest"
+            examples:
+              Default:
+                $ref: "#/components/examples/CreateAccountRequest-Default"
       security:
         - OAuth2: []
       responses:
         "200":
-          description: Successful bank account creation
+          description: Create new account response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateAccountResponse"
         "400":
-          description: Failed request response
+          description: 4xx response
           content:
             application/json:
               schema:
@@ -232,8 +234,14 @@ components:
         userName:
           type: string
           example: robert
+        userHandle:
+          type: string
+          example: _Z07XVOop2ZcmWB0lpH_FHochR0
     CreateAccountResponse:
-      $ref: "#/components/schemas/Account"
+      properties:
+        status:
+          type: string
+          example: created
     AccountDetailsResponse:
       $ref: "#/components/schemas/Account"
     AccountDetailListResponse:
@@ -490,20 +498,13 @@ components:
           example: descriptive error message
   # Examples
   examples:
-    ServerPublicKeyCredentialCreationOptionsRequest-Default:
+    CreateAccountRequest-Default:
       summary: "Default (Required)"
-      value: 
-        userName: janedoe@example.com
-    ServerPublicKeyCredentialCreationOptionsRequest-Optional:
-      summary: "Optional"
-      value:
-        userName: janedoe@example.com
-        displayName: janedoe
-        authenticatorSelection:
-          residentKey: preferred
-          authenticatorAttachment: cross-platform
-          userVerification: preferred
-        attestation: direct
+      value: |-
+        {
+          "userName": "janedoe@example.com",
+          "userHandle": "_Z07XVOop2ZcmWB0lpH_FHochR0"
+        }
   # Security
   securitySchemes:
     OAuth2:
@@ -515,4 +516,3 @@ components:
           tokenUrl: http://localhost:8081/realms/bank/protocol/openid-connect/token
           scopes:
             high_assurance: TODO check if required
-
