@@ -1,365 +1,518 @@
-openapi: 3.0.0
+openapi: "3.0.0"
 info:
-  description: |
+  title: Passkey WebAuthn High Assurance API by Yubico
+  description: | 
     This REST API allows a developer to interact with a ficticious bank application through any web, mobile, or commandline client
+  version: 1.0.2
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  title: Passkey WebAuthn High Assurance API by Yubico
-  version: 1.0.1
-servers:
-  - url: "https://{api_endpoint}"
-    variables:
-      api_endpoint:
-        default: api.pkbank.io
+servers: 
+- url: https://{api_endpoint}
+  variables:
+    api_endpoint:
+      default: api.pkbank.io
+
 paths:
   /v1/status:
     get:
+      summary: Get API status
       operationId: APIStatus
       responses:
         "200":
+          description: API status response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/APIStatus"
-          description: API status response
-      summary: Get API status
-      x-accepts: application/json
   /v1/accounts:
     get:
+      summary: API to list all accounts that belong to a user
       operationId: GetAccountsRequest
+      security:
+        - OAuth2: []
       responses:
         "200":
+          description: Successfully retrieved all user accounts
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccountDetailListResponse"
-          description: Successfully retrieved all user accounts
-      summary: API to list all accounts that belong to a user
-      x-accepts: application/json
     post:
+      summary: Admin API to create a new bank account for user
       operationId: CreateAccountRequest
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: object
-        description: Create a new account by specifying userName
-        required: true
+              $ref: "#/components/schemas/CreateAccountRequest"
+            examples:
+              Default:
+                $ref: "#/components/examples/CreateAccountRequest-Default"
+      security:
+        - OAuth2: []
       responses:
         "200":
+          description: Create new account response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateAccountResponse"
-          description: Successful bank account creation
         "400":
+          description: 4xx response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-          description: Failed request response
-      summary: Admin API to create a new bank account for user
-      x-content-type: application/json
-      x-accepts: application/json
   /v1/account/{accountId}:
     get:
+      summary: Returns bank account details by acccountId
       operationId: AccountDetails
       parameters:
-        - description: ID of bank account to return
-          explode: false
-          in: path
+        - in: path
           name: accountId
-          required: true
           schema:
             type: integer
-          style: simple
+          required: true
+          description: ID of bank account to return
+      security:
+        - OAuth2: []
       responses:
         "200":
+          description: Successful account details
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccountDetailsResponse"
-          description: Successful account details
         "400":
+          description: Failed request response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-          description: Failed request response
-      summary: Returns bank account details by acccountId
-      x-accepts: application/json
   /v1/account/{accountId}/transactions:
     get:
+      summary: Returns transactions by account ID
       operationId: AccountTransactionList
       parameters:
-        - description: ID of account to fetch transactions
-          explode: false
-          in: path
+        - in: path
           name: accountId
-          required: true
           schema:
             type: integer
-          style: simple
+          required: true
+          description: ID of account to fetch transactions
+      security:
+        - OAuth2: []
       responses:
         "200":
+          description: Successful array of transactions for a single account. Empty array [] if no transactions exist.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccountTransactionListResponse"
-          description:
-            "Successful array of transactions for a single account. Empty\
-            \ array [] if no transactions exist."
         "400":
+          description: Failed request response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-          description: Failed request response
-      summary: Returns transactions by account ID
-      x-accepts: application/json
     post:
+      summary: Create a new transaction
       operationId: TransactionCreate
       parameters:
-        - description: ID of bank account to return
-          explode: false
-          in: path
+        - in: path
           name: accountId
-          required: true
           schema:
             type: integer
-          style: simple
+          required: true
+          description: ID of bank account to return
       requestBody:
+        description: Create a transaction
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/TransactionCreateRequest"
-        description: Create a transaction
-        required: true
+      security:
+        - OAuth2: []
       responses:
         "200":
+          description: Successful transaction created response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransactionCreateResponse"
-          description: Successful transaction created response
         "400":
+          description: Failed request response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-          description: Failed request response
-      summary: Create a new transaction
-      x-content-type: application/json
-      x-accepts: application/json
   /v1/account/{accountId}/advanced-protection:
     get:
+      summary: Get advanced protection status for account
       operationId: AdvancedProtectionStatus
       parameters:
-        - description: ID of account for advanced protection status
-          explode: false
-          in: path
+        - in: path
           name: accountId
-          required: true
           schema:
             type: integer
-          style: simple
+          required: true
+          description: ID of account for advanced protection status
+      security:
+        - OAuth2: []
       responses:
         "200":
+          description: Advanced protection status response is (true|false)
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AdvancedProtectionStatusResponse"
-          description: Advanced protection status response is (true|false)
         "400":
+          description: Failed request response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-          description: Failed request response
-      summary: Get advanced protection status for account
-      x-accepts: application/json
     put:
+      summary: Update/Set advanced protection status for account
       operationId: UpdateAdvancedProtectionStatus
       parameters:
-        - description: ID of bank account to return
-          explode: false
-          in: path
+        - in: path
           name: accountId
-          required: true
           schema:
             type: integer
-          style: simple
+          required: true
+          description: ID of bank account to return
       requestBody:
+        description: Update advanced protection status for account
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/UpdateAdvancedProtectionStatusRequest"
-        description: Update advanced protection status for account
-        required: true
+      security:
+        - OAuth2: []
       responses:
         "200":
+          description: Successful advanced protection status response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/UpdateAdvancedProtectionStatusResponse"
-          description: Successful advanced protection status response
         "400":
+          description: Failed request response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-          description: Failed request response
-      summary: Update/Set advanced protection status for account
-      x-content-type: application/json
-      x-accepts: application/json
 components:
+  # Schemas
   schemas:
     APIStatus:
-      example:
-        status: ok
+      type: object
       properties:
         status:
-          example: ok
           type: string
-      type: object
+          example: ok
     Account:
-      example:
-        accountId: 1234
-        advancedProtection: false
-        balance: 0.8008281904610115
+      type: object
       properties:
         accountId:
-          example: 1234
           type: integer
+          example: 1234
         balance:
           type: number
+          example: $498.02
         advancedProtection:
-          example: false
           type: boolean
-      type: object
+          example: false
     CreateAccountRequest:
+      type: object
       properties:
         userName:
-          example: robert
           type: string
-      type: object
+          example: robert
+        userHandle:
+          type: string
+          example: _Z07XVOop2ZcmWB0lpH_FHochR0
     CreateAccountResponse:
-      $ref: "#/components/schemas/Account"
+      properties:
+        status:
+          type: string
+          example: created
     AccountDetailsResponse:
       $ref: "#/components/schemas/Account"
     AccountDetailListResponse:
-      example:
-        accounts:
-          - accountId: 1234
-            advancedProtection: false
-            balance: 0.8008281904610115
-          - accountId: 1234
-            advancedProtection: false
-            balance: 0.8008281904610115
+      type: object
       properties:
         accounts:
+          type: array
           items:
             $ref: "#/components/schemas/Account"
-          type: array
-      type: object
     AccountTransactionListResponse:
-      example:
-        transactions:
-          - amount: 0.8008281904610115
-            description: birthday gift
-            type: transfer
-            transactionDate: 06/19/2023 04:20pm
-            transactionId: 49583
-          - amount: 0.8008281904610115
-            description: birthday gift
-            type: transfer
-            transactionDate: 06/19/2023 04:20pm
-            transactionId: 49583
+      type: object
       properties:
         transactions:
+          type: array
           items:
             $ref: "#/components/schemas/AccountTransaction"
-          type: array
-      type: object
     AccountTransaction:
-      example:
-        amount: 0.8008281904610115
-        description: birthday gift
-        type: transfer
-        transactionDate: 06/19/2023 04:20pm
-        transactionId: 49583
+      type: object
       properties:
         transactionId:
-          example: 49583
           type: integer
+          example: 49583
         type:
+          type: string
+          example: transfer
           enum:
             - deposit
             - withdraw
             - transfer
-          example: transfer
-          type: string
         amount:
           type: number
+          example: $500
         transactionDate:
+          type: string
           example: 06/19/2023 04:20pm
-          type: string
         description:
-          example: birthday gift
           type: string
-      type: object
+          example: birthday gift
     TransactionCreateRequest:
-      example:
-        amount: 0.8008281904610115
-        description: birthday gift
-        type: deposit
+      type: object
       properties:
         type:
+          type: string
+          example: deposit
           enum:
             - deposit
             - withdraw
             - transfer
-          example: deposit
-          type: string
         amount:
           type: number
+          example: $250.75
         description:
-          example: birthday gift
           type: string
-      type: object
+          example: birthday gift
     TransactionCreateResponse:
       $ref: "#/components/schemas/AccountTransaction"
     AdvancedProtection:
-      example:
-        accountId: 1349
-        enabled: true
+      type: object
       properties:
         accountId:
-          example: 1349
           type: integer
+          example: 1349
         enabled:
-          example: true
           type: boolean
-      type: object
+          example: true
     UpdateAdvancedProtectionStatusRequest:
-      example:
-        enabled: true
+      type: object
       properties:
         enabled:
-          example: true
           type: boolean
-      type: object
+          example: true
     AdvancedProtectionStatusResponse:
       $ref: "#/components/schemas/AdvancedProtection"
     UpdateAdvancedProtectionStatusResponse:
-      $ref: "#/components/schemas/AdvancedProtection"
-    Error:
+      type: object
+      properties:
+        result:
+          type: string
+          example: deleted
+    AttestationOptionsRequest:
+      type: object
+      properties:
+        userName:
+          type: string
+          example: janedoe@example.com
+        displayName:
+          type: string
+          example: John Doe
+        authenticatorSelection:
+          type: object
+          properties:
+            residentKey:
+              type: string
+              example: preferred
+              enum:
+                - preferred
+                - discouraged
+                - required
+                - ""
+            authenticatorAttachment:
+              type: string
+              example: cross-platform
+              enum:
+                - cross-platform
+                - platform
+                - ""
+            userVerification:
+              type: string
+              example: preferred
+              enum:
+                - preferred
+                - discouraged
+                - required
+                - ""
+        attestation:
+          type: string
+          example: direct
+          enum:
+            - direct
+            - enterprise
+            - indirect
+            - none
+    AttestationOptionsResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+          example: B-J4odOi9vcV-4TN_gpokEb1f1EI...
+        publicKey:
+          type: object
+          properties:
+            rp:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Example Corporation
+                id:
+                  type: string
+                  example: login.example.com
+            user:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: 4542432
+                name:
+                  type: string
+                  example: janedoe@example.com
+                displayName:
+                  type: string
+                  example: Jane Doe
+            challenge:
+              type: string
+              example: uhUjPNlZfvn7onwuhNdsLPkkE5Fv-lUN
+            pubKeyCredParams:
+              type: array
+              items:
+                properties:
+                  type:
+                    type: string
+                    example: public-key
+                  alg:
+                    type: integer
+                    example: -7
+            timeout:
+              type: integer
+              example: 10000
+            excludeCredentials:
+              type: array
+              items:
+                properties:
+                  type:
+                    type: string
+                    example: public-key
+                  id:
+                    type: string
+                    example: opQf1WmYAa5au-kk-pUKJIQp...
+            authenticatorSelection:
+              type: object
+              properties:
+                residentKey:
+                  type: string
+                  example: preferred
+                  default: preferred
+                  enum:
+                    - discouraged
+                    - preferred
+                    - required
+                authenticatorAttachment:
+                  type: string
+                  example: cross-platform
+                  default: cross-platform
+                  enum:
+                    - cross-platform
+                    - platform
+                userVerification:
+                  type: string
+                  example: preferred
+                  default: preferred
+                  enum:
+                    - required
+                    - preferred
+                    - discouraged
+            attestation:
+              type: string
+              example: direct
+              default: direct
+              enum:
+                - none
+                - indirect
+                - direct
+    AttestationResultRequest:
+      type: object
+      properties:
+        requestId:
+          type: string
+          example: B-J4odOi9vcV-4TN_gpokEb1f1EI...
+        makeCredentialResult:
+          type: object
+          properties:
+            id:
+              type: string
+              example: LFdoCFJSJUHc-c72yraRc_1mDvruywA
+            response:
+              type: object
+              properties:
+                clientDataJSON:
+                  type: string
+                  example: eyJj0OiJIiwidHlwZSI6IndlYmF1dGhyZWF0ZSJ9...
+                attestationObject:
+                  type: string
+                  example: o2NmbXRNAQELBQADgbpNt2IOL4i4z96Kqo1rqSUmonen...
+            type:
+              type: string
+              example: public-key
+            clientExtensionResults:
+              type: object
+              example: {}
+    AttestationResultResponse:
+      type: object
       properties:
         status:
-          example: error
-          type: string
-        errorMessage:
-          example: descriptive error message
-          type: string
+          type: boolean
+          example: true
+    Error:
       type: object
+      properties:
+        status:
+          type: string
+          example: error
+        errorMessage:
+          type: string
+          example: descriptive error message
+  # Examples
+  examples:
+    CreateAccountRequest-Default:
+      summary: "Default (Required)"
+      value: |-
+        {
+          "userName": "janedoe@example.com",
+          "userHandle": "_Z07XVOop2ZcmWB0lpH_FHochR0"
+        }
+  # Security
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          # TODO: parameterize
+          authorizationUrl: http://localhost:8081/realms/bank/protocol/openid-connect/auth
+          tokenUrl: http://localhost:8081/realms/bank/protocol/openid-connect/token
+          scopes:
+            high_assurance: TODO check if required
