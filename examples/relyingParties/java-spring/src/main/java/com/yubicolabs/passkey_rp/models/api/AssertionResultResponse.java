@@ -30,8 +30,8 @@ public class AssertionResultResponse {
    * loa = Level of Assurance
    */
   public enum loaEnum {
-    HIGH(1),
-    LOW(0);
+    HIGH(2),
+    LOW(1);
 
     private int value;
 

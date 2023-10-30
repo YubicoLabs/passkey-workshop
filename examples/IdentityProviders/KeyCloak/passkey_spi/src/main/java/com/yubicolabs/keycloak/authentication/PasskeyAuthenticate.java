@@ -9,6 +9,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yubicolabs.keycloak.models.AssertionResponse;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -58,6 +59,7 @@ public class PasskeyAuthenticate implements Authenticator {
       HttpResponse<String> response = HttpClient.newBuilder().build().send(request, BodyHandlers.ofString());
       System.out.println(response.toString());
       System.out.println(response.statusCode() + "   :   " + HttpStatus.SC_OK);
+      System.out.println(response.body());
 
       if (response.statusCode() == HttpStatus.SC_OK) {
         UserModel um = context.getSession().users().getUserById(context.getRealm(), userHandle);
@@ -65,6 +67,10 @@ public class PasskeyAuthenticate implements Authenticator {
         System.out.println(um.toString());
 
         context.setUser(um);
+
+        AssertionResponse assertionResponse = mapper.readValue(response.body(), AssertionResponse.class);
+        System.out.println("Assertion response: { status: '" + assertionResponse.getStatus() + "', loa: '"
+            + assertionResponse.getLoa() + "''}");
 
         /**
          * Note to future Cody
@@ -84,14 +90,14 @@ public class PasskeyAuthenticate implements Authenticator {
          * 
          */
         AcrStore acrStore = new AcrStore(context.getAuthenticationSession());
-        System.out.println(acrStore.getLevelOfAuthenticationFromCurrentAuthentication());
-        acrStore.setLevelAuthenticated(2);
-        System.out.println(acrStore.getLevelOfAuthenticationFromCurrentAuthentication());
+        acrStore.setLevelAuthenticated(assertionResponse.getLoa());
+        System.out.println("User LoA: " + acrStore.getLevelOfAuthenticationFromCurrentAuthentication());
         context.success();
       } else {
         throw new Exception("The HTTP call did not return 200: " + response.body());
       }
     } catch (Exception e) {
+      e.printStackTrace();
       context.failure(AuthenticationFlowError.INVALID_CREDENTIALS);
     }
   }
