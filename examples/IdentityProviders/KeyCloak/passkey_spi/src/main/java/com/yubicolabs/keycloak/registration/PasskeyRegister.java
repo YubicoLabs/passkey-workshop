@@ -3,11 +3,13 @@ package com.yubicolabs.keycloak.registration;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
+import org.keycloak.authentication.authenticators.util.AcrStore;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yubicolabs.keycloak.models.AttestationResponse;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -90,6 +92,13 @@ public class PasskeyRegister implements Authenticator {
 
           um.setEnabled(true);
           context.setUser(um);
+
+          AttestationResponse attestationResponse = mapper.readValue(response.body(), AttestationResponse.class);
+
+          AcrStore acrStore = new AcrStore(context.getAuthenticationSession());
+          acrStore.setLevelAuthenticated(attestationResponse.getCredential().isHighAssurance() ? 2 : 1);
+          System.out.println("User LoA: " + acrStore.getLevelOfAuthenticationFromCurrentAuthentication());
+
           context.success();
         } else {
           throw new Exception("The HTTP call did not return 200: " + response.body());

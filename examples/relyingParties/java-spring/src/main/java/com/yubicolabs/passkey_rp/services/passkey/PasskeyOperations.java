@@ -166,7 +166,16 @@ public class PasskeyOperations {
       CredentialRegistration toStore = buildCredentialDBO(options.getAttestationRequest(), newCred);
 
       if (relyingPartyInstance.getStorageInstance().getCredentialStorage().addRegistration(toStore)) {
-        return new AttestationResultResponse().status("created");
+        return new AttestationResultResponse().status("created").credential(
+            UserCredentialsResponseCredentialsInner.builder()
+                .id(toStore.getCredential().getCredentialId().getBase64Url())
+                .type("public-key")
+                .nickName(toStore.getCredentialNickname().get())
+                .registrationTime(toStore.getRegistrationTime().atOffset(ZoneOffset.UTC))
+                .lastUsedTime(toStore.getLastUsedTime().atOffset(ZoneOffset.UTC))
+                .iconURI((toStore.getIconURI().isPresent() ? toStore.getIconURI().get() : null))
+                .isHighAssurance(toStore.isHighAssurance())
+                .build());
       } else {
         throw new Exception("There was an unknown issue creating your credential");
       }

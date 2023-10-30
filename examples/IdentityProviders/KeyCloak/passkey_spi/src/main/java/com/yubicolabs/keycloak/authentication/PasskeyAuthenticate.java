@@ -69,11 +69,8 @@ public class PasskeyAuthenticate implements Authenticator {
         context.setUser(um);
 
         AssertionResponse assertionResponse = mapper.readValue(response.body(), AssertionResponse.class);
-        System.out.println("Assertion response: { status: '" + assertionResponse.getStatus() + "', loa: '"
-            + assertionResponse.getLoa() + "''}");
 
         /**
-         * Note to future Cody
          * 
          * This is where we can set the ACR that will be provided with the auth token
          * You will need to set this for both successful auth and reg
@@ -86,7 +83,6 @@ public class PasskeyAuthenticate implements Authenticator {
          * ACR of 1 is LA
          * ACR of 2 is HA
          * 
-         * For now, this will always default as 2
          * 
          */
         AcrStore acrStore = new AcrStore(context.getAuthenticationSession());

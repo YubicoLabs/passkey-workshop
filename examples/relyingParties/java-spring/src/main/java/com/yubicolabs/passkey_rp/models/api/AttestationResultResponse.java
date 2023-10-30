@@ -36,6 +36,29 @@ public class AttestationResultResponse {
     this.status = status;
   }
 
+  @JsonProperty("credential")
+  private UserCredentialsResponseCredentialsInner credential;
+
+  public AttestationResultResponse credential(UserCredentialsResponseCredentialsInner credential) {
+    this.credential = credential;
+    return this;
+  }
+
+  /**
+   * Get credential
+   * 
+   * @return credential
+   */
+
+  @Schema(name = "credential", required = false)
+  public UserCredentialsResponseCredentialsInner getCredential() {
+    return credential;
+  }
+
+  public void setCredential(UserCredentialsResponseCredentialsInner credential) {
+    this.credential = credential;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -58,6 +81,7 @@ public class AttestationResultResponse {
     StringBuilder sb = new StringBuilder();
     sb.append("class AttestationResultResponse {\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    credential: ").append(toIndentedString(credential.toString())).append("\n");
     sb.append("}");
     return sb.toString();
   }
