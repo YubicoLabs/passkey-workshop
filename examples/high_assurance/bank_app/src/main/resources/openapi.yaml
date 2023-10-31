@@ -44,7 +44,7 @@ paths:
           application/json:
             schema:
               type: object
-        description: Create a new account by specifying userName
+        description: Create a new account by specifying userHandle
         required: true
       responses:
         "200":
@@ -240,8 +240,8 @@ components:
       type: object
     CreateAccountRequest:
       properties:
-        userName:
-          example: robert
+        userHandle:
+          example: _Z07XVOop2ZcmWB0lpH_FHochR0
           type: string
       type: object
     CreateAccountResponse:

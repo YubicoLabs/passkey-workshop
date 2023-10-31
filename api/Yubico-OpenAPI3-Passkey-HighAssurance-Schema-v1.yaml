@@ -231,9 +231,6 @@ components:
     CreateAccountRequest:
       type: object
       properties:
-        userName:
-          type: string
-          example: robert
         userHandle:
           type: string
           example: _Z07XVOop2ZcmWB0lpH_FHochR0
@@ -502,7 +499,6 @@ components:
       summary: "Default (Required)"
       value: |-
         {
-          "userName": "janedoe@example.com",
           "userHandle": "_Z07XVOop2ZcmWB0lpH_FHochR0"
         }
   # Security

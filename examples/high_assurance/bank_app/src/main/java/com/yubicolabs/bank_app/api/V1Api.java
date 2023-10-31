@@ -11,6 +11,7 @@ import com.yubicolabs.bank_app.models.api.AccountDetailListResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionListResponse;
 import com.yubicolabs.bank_app.models.api.AdvancedProtection;
+import com.yubicolabs.bank_app.models.api.CreateAccountRequest;
 import com.yubicolabs.bank_app.models.api.Error;
 import com.yubicolabs.bank_app.models.api.TransactionCreateRequest;
 import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusRequest;
@@ -168,7 +169,7 @@ public interface V1Api {
     /**
      * POST /v1/accounts : Admin API to create a new bank account for user
      *
-     * @param body Create a new account by specifying userName (required)
+     * @param body Create a new account by specifying userHandle (required)
      * @return Successful bank account creation (status code 200)
      *         or Failed request response (status code 400)
      */
@@ -183,7 +184,7 @@ public interface V1Api {
     @RequestMapping(method = RequestMethod.POST, value = "/v1/accounts", produces = { "application/json" }, consumes = {
             "application/json" })
     default ResponseEntity<AccountResponse> createAccountRequest(
-            @Parameter(name = "body", description = "Create a new account by specifying userName", required = true) @Valid @RequestBody Object body) {
+            @Parameter(name = "body", description = "Create a new account by specifying userHandle", required = true) @Valid @RequestBody CreateAccountRequest body) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {

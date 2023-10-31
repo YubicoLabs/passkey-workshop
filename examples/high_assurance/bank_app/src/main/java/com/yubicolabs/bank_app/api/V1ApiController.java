@@ -1,5 +1,6 @@
 package com.yubicolabs.bank_app.api;
 
+import com.yubicolabs.bank_app.models.api.CreateAccountRequest;
 import com.yubicolabs.bank_app.models.api.Error;
 import com.yubicolabs.bank_app.models.api.TransactionCreateRequest;
 import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusRequest;
@@ -75,10 +76,10 @@ public class V1ApiController implements V1Api {
     }
 
     @Override
-    public ResponseEntity createAccountRequest(Object body) {
+    public ResponseEntity createAccountRequest(CreateAccountRequest body) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(bankOperations.createAccount(temp_userhandle));
+                    .body(bankOperations.createAccount(body.getUserHandle()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
