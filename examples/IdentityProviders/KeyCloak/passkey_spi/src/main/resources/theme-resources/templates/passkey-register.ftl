@@ -55,7 +55,7 @@
               <h3 style="margin-bottom: auto;">Failed</h3>
             </div>
             <div style="width: 100%; text-align: center;">
-              <span class="body_1_default">Passkey created failed. Please try again</span>
+              <span class="body_1_default">Passkey creation failed. Please try again</span>
             </div>
           </div>
           <div class="row">
@@ -77,7 +77,7 @@
           <div id="passkey_info" class="collapsible_content">
             <div class="collapsible_content_inner">
               <div class="collapsible_content_inner_item">
-                <span class="body_1_bold">Why should I user passkeys?</span>
+                <span class="body_1_bold">Why should I use passkeys?</span>
                 <span class="body_1_default">With passkeys, you don't need to remember complex passwords.</span>
               </div>
               <div class="collapsible_content_inner_item">
