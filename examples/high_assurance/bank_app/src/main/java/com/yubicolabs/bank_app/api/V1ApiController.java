@@ -9,6 +9,9 @@ import com.yubicolabs.bank_app.services.bank.BankOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -22,9 +25,6 @@ import javax.annotation.Generated;
 public class V1ApiController implements V1Api {
 
     private final NativeWebRequest request;
-
-    // TODO: Need a finalized way of getting the userhandle, will be temp for now
-    private final String temp_userhandle = "my_userhandle";
 
     @Autowired
     BankOperations bankOperations;
@@ -44,7 +44,7 @@ public class V1ApiController implements V1Api {
             Integer accountId) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(bankOperations.getAccountById(accountId.intValue(), temp_userhandle));
+                    .body(bankOperations.getAccountById(accountId.intValue(), getUserHandleFromJwt()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
@@ -56,7 +56,7 @@ public class V1ApiController implements V1Api {
             Integer accountId) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(bankOperations.getTransactionsByAccount(accountId.intValue(), temp_userhandle));
+                    .body(bankOperations.getTransactionsByAccount(accountId.intValue(), getUserHandleFromJwt()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
@@ -68,7 +68,7 @@ public class V1ApiController implements V1Api {
             Integer accountId) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(bankOperations.getAdvancedProtectionStatus(accountId.intValue(), temp_userhandle));
+                    .body(bankOperations.getAdvancedProtectionStatus(accountId.intValue(), getUserHandleFromJwt()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
@@ -90,7 +90,7 @@ public class V1ApiController implements V1Api {
     public ResponseEntity getAccountsRequest() {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(bankOperations.getAccountsByUserhandle(temp_userhandle));
+                    .body(bankOperations.getAccountsByUserhandle(getUserHandleFromJwt()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
@@ -103,7 +103,7 @@ public class V1ApiController implements V1Api {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(bankOperations.createTransaction(transactionCreateRequest.getType().getValue(),
                             transactionCreateRequest.getAmount().doubleValue(),
-                            transactionCreateRequest.getDescription(), temp_userhandle));
+                            transactionCreateRequest.getDescription(), getUserHandleFromJwt()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
@@ -116,11 +116,18 @@ public class V1ApiController implements V1Api {
         try {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(bankOperations.updateAdvancedProtection(accountId.intValue(),
-                            updateAdvancedProtectionStatusRequest.getEnabled(), temp_userhandle));
+                            updateAdvancedProtectionStatusRequest.getEnabled(), getUserHandleFromJwt()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
         }
+    }
+
+    private String getUserHandleFromJwt() {
+        JwtAuthenticationToken token = (JwtAuthenticationToken) SecurityContextHolder.getContext()
+                .getAuthentication();
+        Jwt jwt = (Jwt) token.getCredentials();
+        return (String) jwt.getClaims().get("sub");
     }
 
 }

@@ -1,3 +1,5 @@
+import AuthServices from "./AuthServices";
+
 const BankServices = {
   getAdvancedProtectionStatus,
   setAdvancedProtection,
@@ -7,7 +9,7 @@ const BankServices = {
   getAccount
 };
 
-const baseURL = process.env.REACT_APP_API || "http://localhost:8082/v1";
+const baseURL = process.env.BANK_APP_API || "http://localhost:8082/v1";
 
 async function getAdvancedProtectionStatus(accountId) {
   /**
@@ -21,9 +23,7 @@ async function getAdvancedProtectionStatus(accountId) {
   try {
     const requestOptions = {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: formatHeaders(),
     };
 
     const response = await fetch(
@@ -59,9 +59,7 @@ async function setAdvancedProtection(accountId, newSetting) {
 
     const requestOptions = {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: formatHeaders(),
       body: JSON.stringify(reqData),
     };
 
@@ -86,13 +84,17 @@ async function getAccounts() {
   try {
     const requestOptions = {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: formatHeaders(),
     };
 
     const response = await fetch(`${baseURL}/accounts`, requestOptions);
     const responseJSON = await response.json();
+
+    console.log(responseJSON);
+
+    if(responseJSON.accounts === undefined || responseJSON.accounts === null) {
+      throw new Error(responseJSON.error);
+    }
 
     console.info(`Printing response for this user's account`);
     console.info(responseJSON);
@@ -109,9 +111,7 @@ async function getTransactions(accountId) {
   try {
     const requestOptions = {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: formatHeaders(),
     };
 
     const response = await fetch(
@@ -144,9 +144,7 @@ async function createTransactions(accountId, type, amount, description) {
 
     const requestOptions = {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: formatHeaders(),
       body: JSON.stringify(reqData),
     };
 
@@ -168,17 +166,10 @@ async function createTransactions(accountId, type, amount, description) {
 }
 
 async function getAccount(accountId) {
-  return {
-    accountId: 1234,
-    balance: 100000,
-    advancedProtection: false,
-  };
   try {
     const requestOptions = {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: formatHeaders(),
     };
 
     const response = await fetch(
@@ -195,6 +186,15 @@ async function getAccount(accountId) {
     console.error("API call failed. See the message below for details");
     console.error(e.message);
     throw e;
+  }
+}
+
+function formatHeaders() {
+  const accessToken = AuthServices.getLocalAccessTokens().access_token;
+  console.log("Access token: " + accessToken);
+  return {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${accessToken}`
   }
 }
 

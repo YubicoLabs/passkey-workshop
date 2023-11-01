@@ -137,7 +137,8 @@ const AuthServices = {
   AUTH_URL,
   getAccessToken,
   stillAuthenticated,
-  getLogoutUri
+  getLogoutUri,
+  getLocalAccessTokens
 }
 
 export default AuthServices;

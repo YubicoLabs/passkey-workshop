@@ -30,6 +30,7 @@ export default function AccountBalance() {
       /**
        * Need to do something if the account cannot be found
        */
+      console.error(e.message);
     }
   };
 
