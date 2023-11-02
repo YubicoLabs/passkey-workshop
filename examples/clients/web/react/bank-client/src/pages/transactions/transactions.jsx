@@ -85,6 +85,10 @@ export default function Transactions() {
     }
   };
 
+  const cancelTransaction = () => {
+    navigate("/dashboard");
+  };
+
   const pageSideNavProps = [
     { name: "DEPOSIT", link: "/transactions/deposit" },
     { name: "WITHDRAW", link: "/transactions/withdraw" },
@@ -174,7 +178,9 @@ export default function Transactions() {
               <button className="button-primary" onClick={submitTransaction}>
                 {transactionType.toUpperCase()}
               </button>
-              <button className="button-text">CANCEL</button>
+              <button className="button-text" onClick={cancelTransaction}>
+                CANCEL
+              </button>
             </div>
           </div>
         ) : (

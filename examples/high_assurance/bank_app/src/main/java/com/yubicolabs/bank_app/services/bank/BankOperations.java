@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.security.sasl.AuthenticationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -162,7 +164,8 @@ public class BankOperations {
 
   }
 
-  public TransactionCreateResponse createTransaction(String type, double amount, String description, String userhandle)
+  public TransactionCreateResponse createTransaction(int acr, String type, double amount, String description,
+      String userhandle)
       throws Exception {
     try {
       Optional<Account> maybeAccount = storageInstance.getAccountStorage().getAll(userhandle).stream().findFirst();
@@ -184,6 +187,17 @@ public class BankOperations {
         throw new Exception("Your account is not authorized to access this resource");
       }
 
+      /**
+       * Check that the requestor has the right ACR (Level of Assurance) to process
+       * the transaction
+       * ACR of 1 is needed for all transactions < 1000
+       * ACR of 2 is needed for all transactions >= 1000
+       */
+
+      if (amount >= 1000 && acr < 2) {
+        throw new AuthenticationException("User does not have the correct permissions. Please reauthenticate");
+      }
+
       boolean didCreate = storageInstance.getAccountStorage().processTransaction(account.getId().intValue(), type,
           amount);
 
@@ -194,6 +208,8 @@ public class BankOperations {
           .status(finalTransaction.getStatus() == true ? "complete" : "error")
           .transactionId(finalTransaction.getId().intValue())
           .build();
+    } catch (AuthenticationException e) {
+      throw e;
     } catch (Exception e) {
       throw new Exception("[Error] there was an issue recording the transaction");
     }

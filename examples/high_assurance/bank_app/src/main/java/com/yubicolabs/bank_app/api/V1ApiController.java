@@ -18,6 +18,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.Optional;
 import javax.annotation.Generated;
+import javax.security.sasl.AuthenticationException;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-30T13:35:17.173429-05:00[America/Chicago]")
 @Controller
@@ -101,9 +102,12 @@ public class V1ApiController implements V1Api {
     public ResponseEntity transactionCreate(Integer accountId, TransactionCreateRequest transactionCreateRequest) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(bankOperations.createTransaction(transactionCreateRequest.getType().getValue(),
+                    .body(bankOperations.createTransaction(getAcr(), transactionCreateRequest.getType().getValue(),
                             transactionCreateRequest.getAmount().doubleValue(),
                             transactionCreateRequest.getDescription(), getUserHandleFromJwt()));
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
@@ -128,6 +132,13 @@ public class V1ApiController implements V1Api {
                 .getAuthentication();
         Jwt jwt = (Jwt) token.getCredentials();
         return (String) jwt.getClaims().get("sub");
+    }
+
+    private int getAcr() {
+        JwtAuthenticationToken token = (JwtAuthenticationToken) SecurityContextHolder.getContext()
+                .getAuthentication();
+        Jwt jwt = (Jwt) token.getCredentials();
+        return Integer.parseInt((String) jwt.getClaims().get("acr"));
     }
 
 }
