@@ -9,6 +9,7 @@ import AuthServices from "../../services/AuthServices";
 export default function AuthCallback({ callbackInfo }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const code = searchParams.get("code");
+  const state = searchParams.get("state");
 
   const navigate = useNavigate();
 
@@ -20,7 +21,13 @@ export default function AuthCallback({ callbackInfo }) {
 
       const checkingAuth = await AuthServices.stillAuthenticated();
       if (checkingAuth) {
-        navigate("/dashboard");
+        if (state === "standard") {
+          navigate("/dashboard");
+        } else if (state === "stepup") {
+          window.close();
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         throw new Error("There was an issue using your access token");
       }

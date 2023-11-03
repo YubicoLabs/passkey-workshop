@@ -13,7 +13,9 @@ const AUTH_SERVICES_CONSTANTS = {
 }
 
 const BASE_URL = `${AUTH_SERVICES_CONSTANTS.baseUrl}/realms/${AUTH_SERVICES_CONSTANTS.client_id}/protocol/openid-connect`
-const AUTH_URL = `${BASE_URL}/auth?client_id=${AUTH_SERVICES_CONSTANTS.client_id}&redirect_uri=${AUTH_SERVICES_CONSTANTS.redirect_uri}&scope=${AUTH_SERVICES_CONSTANTS.scope}&response_type=${AUTH_SERVICES_CONSTANTS.response_type}`;
+const AUTH_URL = `${BASE_URL}/auth?client_id=${AUTH_SERVICES_CONSTANTS.client_id}&redirect_uri=${AUTH_SERVICES_CONSTANTS.redirect_uri}&scope=${AUTH_SERVICES_CONSTANTS.scope}&response_type=${AUTH_SERVICES_CONSTANTS.response_type}&state=standard`;
+const STEPUP_AUTH_URL = `${BASE_URL}/auth?client_id=${AUTH_SERVICES_CONSTANTS.client_id}&redirect_uri=${AUTH_SERVICES_CONSTANTS.redirect_uri}&scope=${AUTH_SERVICES_CONSTANTS.scope}&response_type=${AUTH_SERVICES_CONSTANTS.response_type}&state=stepup`;
+
 //const LOGOUT_URL = `${BASE_URL}/logout?client_id=${AUTH_SERVICES_CONSTANTS.client_id}&post_logout_redirect_uri=${window.location.origin}&id_token_hint=${getLocalAccessTokens() ? getLocalAccessTokens().id_token : ""}`;
 
 
@@ -69,6 +71,20 @@ function getLocalAccessTokens() {
   const lsString = window.localStorage.getItem("APP_ACCESS_TOKENS");
   const response = JSON.parse(lsString);
   return response;
+}
+
+function getLocalUserHandle() {
+  const lsString = window.localStorage.getItem("USER_INFO");
+  const response = JSON.parse(lsString);
+  //console.log(response);
+  return response.sub;
+}
+
+function getLocalUsername() {
+  const lsString = window.localStorage.getItem("USER_INFO");
+  const response = JSON.parse(lsString);
+  //console.log(response);
+  return response.preferred_username;
 }
 
 const stillAuthenticated = async () => {
@@ -135,10 +151,13 @@ const getLogoutUri = () => {
 const AuthServices = {
   AUTH_SERVICES_CONSTANTS,
   AUTH_URL,
+  STEPUP_AUTH_URL,
   getAccessToken,
   stillAuthenticated,
   getLogoutUri,
-  getLocalAccessTokens
+  getLocalAccessTokens,
+  getLocalUserHandle,
+  getLocalUsername
 }
 
 export default AuthServices;

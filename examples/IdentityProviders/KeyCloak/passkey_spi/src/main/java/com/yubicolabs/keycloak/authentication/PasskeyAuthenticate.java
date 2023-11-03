@@ -38,9 +38,18 @@ public class PasskeyAuthenticate implements Authenticator {
 
   @Override
   public void authenticate(AuthenticationFlowContext context) {
-    Response form = context.form()
-        .createForm("passkey-authenticate.ftl");
-    context.challenge(form);
+    if (context.getHttpRequest().getUri().getQueryParameters().get("username") != null
+        && !context.getHttpRequest().getUri().getQueryParameters().get("username").isEmpty()) {
+      String currentUser = context.getHttpRequest().getUri().getQueryParameters().get("username").get(0);
+      Response form = context.form()
+          .setAttribute("username", currentUser)
+          .createForm("passkey-stepup.ftl");
+      context.challenge(form);
+    } else {
+      Response form = context.form()
+          .createForm("passkey-authenticate.ftl");
+      context.challenge(form);
+    }
   }
 
   @Override

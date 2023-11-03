@@ -4,7 +4,25 @@ import Col from "react-bootstrap/Col";
 import HomeNav from "../../components/home_nav";
 import AccountBalance from "../../components/account_balance";
 
+import AuthServices from "../../services/AuthServices";
+
 export default function Home() {
+  const popupOpen = () => {
+    window.open(
+      AuthServices.STEPUP_AUTH_URL +
+        `&username=${AuthServices.getLocalUsername()}`,
+      "targetWindow",
+      `toolbar=no,
+     location=no,
+     status=no,
+     menubar=no,
+     scrollbars=yes,
+     resizable=yes,
+     width=500px,
+     height=500px`
+    );
+  };
+
   return (
     <Row>
       <Col md={12} lg={5}>
@@ -60,6 +78,9 @@ export default function Home() {
               </Row>
             </div>
           </div>
+        </Row>
+        <Row>
+          <button onClick={popupOpen}>open popup</button>
         </Row>
         <HomeNav />
       </Col>
