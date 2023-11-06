@@ -43,10 +43,14 @@ public class PasskeyAuthenticate implements Authenticator {
       String currentUser = context.getHttpRequest().getUri().getQueryParameters().get("username").get(0);
       Response form = context.form()
           .setAttribute("username", currentUser)
+          .setAttribute("action_type", "STEPUP")
+          .setAttribute("alert_message", "")
           .createForm("passkey-stepup.ftl");
       context.challenge(form);
     } else {
       Response form = context.form()
+          .setAttribute("action_type", "STANDARD")
+          .setAttribute("alert_message", "")
           .createForm("passkey-authenticate.ftl");
       context.challenge(form);
     }
@@ -66,14 +70,9 @@ public class PasskeyAuthenticate implements Authenticator {
           .build();
 
       HttpResponse<String> response = HttpClient.newBuilder().build().send(request, BodyHandlers.ofString());
-      System.out.println(response.toString());
-      System.out.println(response.statusCode() + "   :   " + HttpStatus.SC_OK);
-      System.out.println(response.body());
 
       if (response.statusCode() == HttpStatus.SC_OK) {
         UserModel um = context.getSession().users().getUserById(context.getRealm(), userHandle);
-
-        System.out.println(um.toString());
 
         context.setUser(um);
 
@@ -96,7 +95,6 @@ public class PasskeyAuthenticate implements Authenticator {
          */
         AcrStore acrStore = new AcrStore(context.getAuthenticationSession());
         acrStore.setLevelAuthenticated(assertionResponse.getLoa());
-        System.out.println("User LoA: " + acrStore.getLevelOfAuthenticationFromCurrentAuthentication());
         context.success();
       } else {
         throw new Exception("The HTTP call did not return 200: " + response.body());
@@ -104,6 +102,31 @@ public class PasskeyAuthenticate implements Authenticator {
     } catch (Exception e) {
       e.printStackTrace();
       context.failure(AuthenticationFlowError.INVALID_CREDENTIALS);
+      String actionType = getActionType(context);
+
+      if (actionType.equals("STEPUP")) {
+        String currentUser = getUsername(context);
+        System.out.println(currentUser);
+        Response form = context.form()
+            .setAttribute("username", currentUser)
+            .setAttribute("action_type", "STEPUP")
+            .setAttribute("alert_message", "There was an issue authenticating, please try again")
+            .createForm("passkey-stepup.ftl");
+        context.challenge(form);
+      } else if (actionType.equals("STANDARD")) {
+        Response form = context.form()
+            .setAttribute("action_type", "STANDARD")
+            .setAttribute("alert_message", "There was an issue authenticating, please try again")
+            .createForm("passkey-authenticate.ftl");
+        context.challenge(form);
+      } else {
+        Response form = context.form()
+            .setAttribute("action_type", "STANDARD")
+            .setAttribute("alert_message", "There was an issue authenticating, please try again")
+            .createForm("passkey-authenticate.ftl");
+        context.challenge(form);
+      }
+
     }
   }
 
@@ -132,6 +155,18 @@ public class PasskeyAuthenticate implements Authenticator {
     MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
     String secret = formData.getFirst("userHandle");
     return secret;
+  }
+
+  private String getUsername(AuthenticationFlowContext context) {
+    MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
+    String secret = formData.getFirst("username");
+    return secret;
+  }
+
+  private String getActionType(AuthenticationFlowContext context) {
+    MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
+    String action_type = formData.getFirst("action_type");
+    return action_type;
   }
 
 }
