@@ -13,11 +13,11 @@
         <div class="col-md-5 action_parent" style="padding-right: 0; padding-left: 0">
           <div class="action splash">
             <div class="header_login">
-              <h2>Welcome to MSBS</h2>
-              <span class="body_2_default">Sign in or create an account to continue.</span>     
+              <h2>MSBS Step-up Authentication</h2>
+              <span class="body_2_default">You are attempting to perform a sensative action. Please use your security key so that we can be sure it's you!</span>     
             </div>
             <div class="username">
-              <button class="button_basic" onclick="authenticateClick()">Press to authenticate</button>
+              <button class="button_basic" onclick="authenticateClick()">UNLOCK WITH SECURITY KEY</button>
             </div> 
           </div>
         </div>

@@ -152,6 +152,13 @@ async function createTransactions(accountId, type, amount, description) {
       `${baseURL}/account/${accountId}/transactions`,
       requestOptions
     );
+
+    if(response.status !== 200) {
+      const responseJSON = await response.json();
+      responseJSON.status_code = 401;
+      console.log(responseJSON);
+      throw responseJSON;
+    }
     const responseJSON = await response.json();
 
     console.info(`Printing transactions for ${accountId}`);
@@ -159,9 +166,15 @@ async function createTransactions(accountId, type, amount, description) {
 
     return responseJSON;
   } catch (e) {
-    console.error("API call failed. See the message below for details");
-    console.error(e.message);
-    throw e;
+    if(e.status_code === 401) {
+      console.error("User unauthorized, please reauthenticate");
+      console.error(e);
+      throw e;
+    } else {
+      console.error("API call failed. See the message below for details");
+      console.error(e);
+      throw e;
+    }
   }
 }
 

@@ -100,6 +100,7 @@ const stillAuthenticated = async () => {
   
     if(!accessCodeStillValid) {
       const refreshSuccess = await getAccessToken("REFRESH", accessToken.refresh_token);
+      await testAccessToken(refreshSuccess.access_token)
       console.log("Refresh success: " + refreshSuccess);
       if(!refreshSuccess) {
         throw new Error("Refresh token could not be used");

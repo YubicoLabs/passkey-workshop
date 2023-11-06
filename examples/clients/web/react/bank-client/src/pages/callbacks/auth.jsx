@@ -43,8 +43,15 @@ export default function AuthCallback({ callbackInfo }) {
   });
 
   return (
-    <Spinner animation="border" role="status">
-      <span className="visually-hidden">Loading...</span>
-    </Spinner>
+    <div style={{ textAlign: "center", marginTop: "24px" }}>
+      <Spinner
+        animation="border"
+        role="status"
+        size="lg"
+        className="spinner-custom"></Spinner>
+      <div style={{ marginTop: "24px" }}>
+        <h2 className="">Loading...</h2>
+      </div>
+    </div>
   );
 }
