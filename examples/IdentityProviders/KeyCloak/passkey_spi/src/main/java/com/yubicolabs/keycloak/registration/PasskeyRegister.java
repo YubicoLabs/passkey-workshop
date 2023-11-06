@@ -40,6 +40,7 @@ public class PasskeyRegister implements Authenticator {
   public void authenticate(AuthenticationFlowContext context) {
     Response form = context.form()
         .setAttribute("action_type", "USERNAME")
+        .setAttribute("alert_message", "")
         .createForm("passkey-register-username.ftl");
 
     context.challenge(form);
@@ -51,10 +52,8 @@ public class PasskeyRegister implements Authenticator {
 
     if (actionType.equals("USERNAME")) {
       String chosenUsername = getUsername(context);
-      System.out.println(chosenUsername);
 
       if (chooseUsername_Action(context, chosenUsername)) {
-        System.out.println("Username valid");
         Response form = context.form()
             .setAttribute("action_type", "PASSKEY_CREATE")
             .setAttribute("username", chosenUsername)
@@ -63,11 +62,16 @@ public class PasskeyRegister implements Authenticator {
 
         context.challenge(form);
       } else {
-        System.out.println("Username NOT valid");
-        context.failure(AuthenticationFlowError.INVALID_CREDENTIALS);
-        /*
-         * Return form, with a message noting that the username is not available
+        /**
+         * Username not valid. Display error to user asking them to select another
          */
+        context.failure(AuthenticationFlowError.INVALID_CREDENTIALS);
+        Response form = context.form()
+            .setAttribute("action_type", "USERNAME")
+            .setAttribute("alert_message", "The username you selected is not available")
+            .createForm("passkey-register-username.ftl");
+
+        context.challenge(form);
       }
     } else if (actionType.equals("PASSKEY_CREATE")) {
       try {
@@ -97,7 +101,15 @@ public class PasskeyRegister implements Authenticator {
 
           AcrStore acrStore = new AcrStore(context.getAuthenticationSession());
           acrStore.setLevelAuthenticated(attestationResponse.getCredential().isHighAssurance() ? 2 : 1);
-          System.out.println("User LoA: " + acrStore.getLevelOfAuthenticationFromCurrentAuthentication());
+
+          /**
+           * At this stage is when we need to create the bank account on behalf of the
+           * user
+           * 
+           * Generate an access token that can be used by Keycloak to call to the bank API
+           * Call to the bank API
+           * Confirm success, and report an error if something happened
+           */
 
           context.success();
         } else {
@@ -106,6 +118,12 @@ public class PasskeyRegister implements Authenticator {
       } catch (Exception e) {
         e.printStackTrace();
         context.failure(AuthenticationFlowError.INVALID_CREDENTIALS);
+        Response form = context.form()
+            .setAttribute("action_type", "USERNAME")
+            .setAttribute("alert_message", "There was an unknown error, please try again")
+            .createForm("passkey-register-username.ftl");
+
+        context.challenge(form);
       }
     }
   }

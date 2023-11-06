@@ -352,6 +352,26 @@ h3 {
   height: 67px;
 }
 
+.error-alert {
+  display: inline-flex;
+  padding: 12px 16px;
+  align-items: flex-start;
+  gap: 16px;
+
+  border-radius: 8px;
+  background: var(--message-error, #FF4445);
+
+  color: var(--text-text-1, #F2F0FF);
+
+  /* Body 1/Default */
+  font-family: Helvetica Neue;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* 150% */
+}
+
 /* The Modal (background) */
 .modal {
   display: none;
