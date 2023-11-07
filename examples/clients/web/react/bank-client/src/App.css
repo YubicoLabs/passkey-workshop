@@ -59,7 +59,7 @@ body {
   border-right: 1px solid #F2F0FF;
 }
 
-.nav-link {
+.nav-link span {
   font-family: 'Helvetica Neue';
   font-size: 12px;
   font-weight: 500;
@@ -68,6 +68,16 @@ body {
   text-align: center;
   color: #F2F0FF;
   margin: 0 3em;
+}
+
+.nav-link-selected {
+  display: flex;
+  padding: 4px 24px;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  border-radius: 30px;
+  background: var(--primary-default, #1145FF);
 }
 
 .nav-notification {

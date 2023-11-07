@@ -21,7 +21,7 @@ export default function Transactions() {
   const navigate = useNavigate();
   const [account, setAccount] = useState(null);
   const [transactionType, setTransactionType] = useState("deposit");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(undefined);
   const [to, setTo] = useState("");
 
   const [showModal, setShowModal] = useState(false);
@@ -72,12 +72,19 @@ export default function Transactions() {
     try {
       if (account === null) {
         throw new Error("User is not signed in with a valid account");
+      } else if (amount === undefined) {
+        throw new Error("No amount was provided for the transaction");
       }
+      let transaction = to;
+      if (transaction === "") {
+        transaction = "New transaction";
+      }
+
       const createTransactionResult = await BankServices.createTransactions(
         account.accountId,
         transactionType,
         amount,
-        to
+        transaction
       );
 
       if (createTransactionResult.status === "complete") {
