@@ -31,6 +31,7 @@ export default function Transactions() {
   const [stepUpAuthState, setStepUpAuthState] = useState({
     stepUpAuthAttempted: false,
   });
+  const [authInProgress, setAuthInProgress] = useState(false);
 
   useEffect(() => {
     getUserAccount();
@@ -119,6 +120,7 @@ export default function Transactions() {
   };
 
   const openStepUpWindow = () => {
+    setAuthInProgress(true);
     const authWindow = window.open(
       AuthServices.STEPUP_AUTH_URL +
         `&username=${AuthServices.getLocalUsername()}`,
@@ -136,8 +138,9 @@ export default function Transactions() {
     const timeLoop = setInterval(async function () {
       if (authWindow.closed) {
         clearInterval(timeLoop);
+        setAuthInProgress(false);
         setShowModal(false);
-        await Utils.timeoutUtil(500);
+        await Utils.timeoutUtil(50);
         setStepUpAuthState({
           stepUpAuthAttempted: true,
         });
@@ -298,12 +301,31 @@ export default function Transactions() {
               </span>
             </div>
           )}
-          <span>Blurb about stepup authentication</span>
+          {authInProgress ? (
+            <span>
+              Step-up authentication in progress. Please follow the instructions
+              on the pop-up window
+            </span>
+          ) : (
+            <span>Blurb about stepup authentication</span>
+          )}
         </Modal.Body>
         <Modal.Footer>
-          <button className="button-primary" onClick={openStepUpWindow}>
-            UNLOCK WITH SECURITY KEY
-          </button>
+          {authInProgress ? (
+            <button
+              className="button-primary"
+              onClick={openStepUpWindow}
+              disabled={authInProgress}>
+              <Spinner></Spinner>
+            </button>
+          ) : (
+            <button
+              className="button-primary"
+              onClick={openStepUpWindow}
+              disabled={authInProgress}>
+              UNLOCK WITH SECURITY KEY
+            </button>
+          )}
           <button className="button-text" onClick={stepUpFailed}>
             CANCEL
           </button>
