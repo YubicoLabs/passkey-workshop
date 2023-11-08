@@ -7,6 +7,8 @@
         <div>
           <input type="hidden" id="assertionResult_String" name="assertionResult_String" />
           <input type="hidden" id="userHandle" name="userHandle" />
+          <input type="hidden" id="username" name="username" />
+          <input type="hidden" id="action_type" name="action_type" />
         </div>
       </form>
       <div class="row" style="margin-left: 0; margin-right:0">
@@ -14,6 +16,29 @@
           <div class="action splash">
             <div class="header_login">
               <h2>MSBS Step-up Authentication</h2>
+              <#if alert_message != "">
+              <div class="error-alert" id="alert_message_display">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none">
+                  <g clip-path="url(#clip0_11_895)">
+                    <path
+                      d="M12 5.99L19.53 19H4.47L12 5.99ZM12 2L1 21H23L12 2ZM13 16H11V18H13V16ZM13 10H11V14H13V10Z"
+                      fill="#F2F0FF"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_11_895">
+                      <rect width="24" height="24" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+                <span id="alert_message_display_content">${alert_message}</span>
+              </div>
+            </#if>
               <span class="body_2_default">You are attempting to perform a sensative action. Please use your security key so that we can be sure it's you!</span>     
             </div>
             <div class="username">
@@ -146,8 +171,9 @@
                 assertionResult: assertionResult_base64url
               })
             );
-
+            $("#action_type").val("${action_type}");
             $("#userHandle").val(assertionResult_base64url.response.userHandle);
+            $("#username").val(username);
             $("#authenticate").submit();
 
           } catch(e) {

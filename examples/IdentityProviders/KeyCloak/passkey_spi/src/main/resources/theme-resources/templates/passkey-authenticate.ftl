@@ -7,6 +7,7 @@
         <div>
           <input type="hidden" id="assertionResult_String" name="assertionResult_String" />
           <input type="hidden" id="userHandle" name="userHandle" />
+          <input type="hidden" id="action_type" name="action_type" />
         </div>
       </form>
       <div class="row" style="margin-left: 0; margin-right:0">
@@ -16,6 +17,29 @@
               <h2>Welcome to MSBS</h2>
               <span class="body_2_default">Sign in or create an account to continue.</span>     
             </div>
+            <#if alert_message != "">
+              <div class="error-alert" id="alert_message_display">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none">
+                  <g clip-path="url(#clip0_11_895)">
+                    <path
+                      d="M12 5.99L19.53 19H4.47L12 5.99ZM12 2L1 21H23L12 2ZM13 16H11V18H13V16ZM13 10H11V14H13V10Z"
+                      fill="#F2F0FF"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_11_895">
+                      <rect width="24" height="24" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+                <span id="alert_message_display_content">${alert_message}</span>
+              </div>
+            </#if>
             <div class="username">
               <input autocomplete="username webauthn" class="username_input body_2_default" type="text" id="username_input" name="username_input" placeholder="Username" />
               <button class="button_basic" onclick="authenticateClick()">Press to authenticate</button>
@@ -210,7 +234,7 @@
             );
 
             $("#userHandle").val(assertionResult_base64url.response.userHandle);
-
+            $("#action_type").val("${action_type}");
             $("#authenticate").submit();
 
           } catch(e) {

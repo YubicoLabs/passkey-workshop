@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
   const [email, setEmail] = useState("");
+  const [currentPath, setCurrentPath] = useState(
+    window.location.pathname.toUpperCase()
+  );
+  const location = useLocation();
 
   useEffect(() => {
     const lsString = window.localStorage.getItem("USER_INFO");
@@ -15,7 +19,16 @@ export default function Header() {
         ? response.preferred_username
         : ""
     );
-  }, []);
+    setCurrentPath(window.location.pathname.toUpperCase());
+  }, [location]);
+
+  const matchPath = (navItem) => {
+    if (currentPath.includes(navItem.toUpperCase())) {
+      return "nav-link-selected";
+    } else {
+      return "";
+    }
+  };
 
   return (
     <Navbar expand="md">
@@ -34,13 +47,13 @@ export default function Header() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Link className="nav-link" to="/dashboard">
-              HOME
+              <span className={matchPath("dashboard")}>HOME</span>
             </Link>
             <Link className="nav-link" to="/transactions/deposit">
-              PAYMENTS
+              <span className={matchPath("transactions")}>PAYMENTS</span>
             </Link>
             <Link className="nav-link" to="account">
-              SETTINGS
+              <span className={matchPath("account")}>SETTINGS</span>
             </Link>
           </Nav>
           <Nav className="justify-content-end">
