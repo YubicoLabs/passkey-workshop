@@ -231,7 +231,7 @@
               })
             }
 
-            const url = "http://localhost:8080/v1/attestation/options"
+            const url = "${webauthnAPI}" + "/attestation/options";
 
             const response = await fetch(url, request);
             const attestationOptions = await response.json();

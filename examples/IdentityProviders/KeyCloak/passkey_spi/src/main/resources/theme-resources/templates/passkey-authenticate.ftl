@@ -63,7 +63,7 @@
               })
             }
 
-            const url = "http://localhost:8080/v1/assertion/options"
+            const url = "${webauthnAPI}" + "/assertion/options";
 
             const response = await fetch(url, request);
             const assertionOptions = await response.json();

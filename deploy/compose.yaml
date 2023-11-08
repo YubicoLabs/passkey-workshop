@@ -21,7 +21,9 @@ services:
     image: bank_client
     environment:
       REACT_APP_API: "${REACT_APP_API}"
-      BANK_APP_API: "${BANK_APP_API}"
+      REACT_APP_BANK_API: "${REACT_APP_BANK_API}"
+      REACT_APP_KEYCLOAK_URL: "${REACT_APP_KEYCLOAK_URL}"
+      REACT_APP_CLIENT_ID: "${REACT_APP_CLIENT_ID}"
     ports:
       - 3002:3002
 
@@ -96,6 +98,8 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       CLIENT_URL: "${CLIENT_URL}"
+      BANK_CLIENT_URL: "${BANK_CLIENT_URL}"
+      RP_API: "${RP_API}"
     ports:
       - "8081:8080"
     expose:

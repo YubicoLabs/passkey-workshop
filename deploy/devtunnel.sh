@@ -65,7 +65,18 @@ fi
 if [[ ! -d keycloak/source ]] ; then
   echo "### copying keycloak passkey authenticator source code"
   cp -r ../examples/IdentityProviders/KeyCloak/passkey_authenticator/ keycloak/source/
+  cp -r ../examples/IdentityProviders/KeyCloak/passkey_spi/ keycloak/bank_source/
 fi
+
+# bank application
+echo "### copying bank application source code"
+cp -r ../examples/clients/web/react/bank-client/ bank-react-app/source/
+cp -r ../examples/high_assurance/bank_app/ bank-java-app/source/
+
+docker compose up -d
+
+
+
 
 # modify and rebuild the web app
 rebuild=$(grep A6586UA84V react-app/source/public/.well-known/apple-app-site-association)
@@ -93,10 +104,13 @@ echo "### setting up ports"
 devtunnel port list $TUNNELID | grep '^3000\b' || devtunnel port create $TUNNELID  -p 3000 --description 'app'
 devtunnel port list $TUNNELID | grep '^8080\b' || devtunnel port create $TUNNELID  -p 8080 --description 'api'
 devtunnel port list $TUNNELID | grep '^8081\b' || devtunnel port create $TUNNELID  -p 8081 --description 'idp'
+devtunnel port list $TUNNELID | grep '^3002\b' || devtunnel port create $TUNNELID  -p 3002 --description 'bank-client'
+devtunnel port list $TUNNELID | grep '^8082\b' || devtunnel port create $TUNNELID  -p 8082 --description 'bank-api'
 
 echo "### editing .env file"
-sed -i '' "s#http://localhost#https://$hostname#"	".env"
-sed -i '' "s/localhost/$hostname/"	".env"
+sed -i '' "s#http://localhost#https://$hostname#g"	".env"
+sed -i '' "s#http://host.docker.internal#https://$hostname#g"	".env"
+sed -i '' "s/localhost/$hostname/g"	".env"
 
 echo "### editing Pawskey sources"
 sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/"	../examples/clients/mobile/iOS/PawsKey/PawsKey.xcodeproj/project.pbxproj
@@ -115,7 +129,7 @@ docker compose up -d
 echo please find your web application here:
 echo https://$hostname:3000/test_panel
 
-echo "### starting devtunnel. Type ^C to stop the tunnel"
+echo "### starting devtunnel. Type ^C to stop the tunnel and take down all containers"
 devtunnel host $TUNNELID
 
 docker compose down

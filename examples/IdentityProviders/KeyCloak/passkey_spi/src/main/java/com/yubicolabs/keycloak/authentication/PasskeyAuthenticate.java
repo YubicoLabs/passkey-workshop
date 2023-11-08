@@ -29,7 +29,22 @@ public class PasskeyAuthenticate implements Authenticator {
 
   ObjectMapper mapper = new ObjectMapper();
 
+  public static final String DEFAULT_WEBAUTHN_API_URL = "http://host.docker.internal:8080/v1";
+
   private static final Logger logger = Logger.getLogger(PasskeyAuthenticate.class);
+
+  private String getWebAuthnAPIurl(AuthenticationFlowContext context) {
+    String webauthnAPIurl = null;
+
+    if (context.getAuthenticatorConfig() != null) {
+      webauthnAPIurl = context.getAuthenticatorConfig().getConfig().get(PasskeyAuthenticateFactory.CONFIG_WEBAUTHN_API_URL);
+    }
+    if (webauthnAPIurl == null) {
+      webauthnAPIurl = DEFAULT_WEBAUTHN_API_URL;
+    }
+    logger.info("Using WebAuthn API URL: " + webauthnAPIurl);
+    return webauthnAPIurl;  
+  }
 
   @Override
   public void close() {
@@ -38,15 +53,21 @@ public class PasskeyAuthenticate implements Authenticator {
 
   @Override
   public void authenticate(AuthenticationFlowContext context) {
+    String url = getWebAuthnAPIurl(context);
+    if( url.startsWith("http://host.docker.internal", 0) ) {
+      url = url.replaceFirst("host.docker.internal", "localhost"); // kludge when running in a docker container
+    }
     if (context.getHttpRequest().getUri().getQueryParameters().get("username") != null
         && !context.getHttpRequest().getUri().getQueryParameters().get("username").isEmpty()) {
       String currentUser = context.getHttpRequest().getUri().getQueryParameters().get("username").get(0);
       Response form = context.form()
           .setAttribute("username", currentUser)
+          .setAttribute("webauthnAPI", url)
           .createForm("passkey-stepup.ftl");
       context.challenge(form);
     } else {
       Response form = context.form()
+          .setAttribute("webauthnAPI", url)
           .createForm("passkey-authenticate.ftl");
       context.challenge(form);
     }
@@ -57,9 +78,10 @@ public class PasskeyAuthenticate implements Authenticator {
     try {
       String formResult = getFormResult(context);
       String userHandle = getUserHandle(context);
+      String webauthnAPIurl = getWebAuthnAPIurl(context);
 
       HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create("http://host.docker.internal:8080/v1/assertion/result"))
+          .uri(URI.create(webauthnAPIurl + "/assertion/result"))
           .header(HTTP.CONTENT_TYPE, "application/json")
           .header("accept", "application/json")
           .POST(BodyPublishers.ofString(formResult))

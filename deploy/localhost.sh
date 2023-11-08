@@ -12,6 +12,5 @@ cp -r ../examples/IdentityProviders/KeyCloak/passkey_authenticator/ keycloak/sou
 cp -r ../examples/clients/web/react/bank-client/ bank-react-app/source/
 cp -r ../examples/high_assurance/bank_app/ bank-java-app/source/
 cp -r ../examples/IdentityProviders/KeyCloak/passkey_spi/ keycloak/bank_source/
-cp -r ../examples/IdentityProviders/KeyCloak/realm_exports/bank_realm_export.json keycloak/bank_realm_export.json
 
 docker compose up -d

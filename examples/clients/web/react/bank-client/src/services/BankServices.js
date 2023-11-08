@@ -9,7 +9,7 @@ const BankServices = {
   getAccount
 };
 
-const baseURL = process.env.BANK_APP_API || "http://localhost:8082/v1";
+const baseURL = process.env.REACT_APP_BANK_API || "http://localhost:8082/v1";
 
 async function getAdvancedProtectionStatus(accountId) {
   /**

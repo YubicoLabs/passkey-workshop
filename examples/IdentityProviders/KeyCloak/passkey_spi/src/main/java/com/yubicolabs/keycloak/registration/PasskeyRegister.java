@@ -29,11 +29,26 @@ public class PasskeyRegister implements Authenticator {
 
   ObjectMapper mapper = new ObjectMapper();
 
+  public static final String DEFAULT_WEBAUTHN_API_URL = "http://host.docker.intetnal:8080/v1";
+
   private static final Logger logger = Logger.getLogger(PasskeyRegister.class);
 
   @Override
   public void close() {
     // NOP
+  }
+
+  private String getWebAuthnAPIurl(AuthenticationFlowContext context) {
+    String webauthnAPIurl = null;
+
+    if (context.getAuthenticatorConfig() != null) {
+      webauthnAPIurl = context.getAuthenticatorConfig().getConfig().get(PasskeyRegisterFactory.CONFIG_WEBAUTHN_API_URL);
+    }
+    if (webauthnAPIurl == null) {
+      webauthnAPIurl = DEFAULT_WEBAUTHN_API_URL;
+    }
+    logger.info("Using WebAuthn API URL: " + webauthnAPIurl);
+    return webauthnAPIurl;
   }
 
   @Override
@@ -48,6 +63,7 @@ public class PasskeyRegister implements Authenticator {
   @Override
   public void action(AuthenticationFlowContext context) {
     String actionType = getActionType(context);
+    String webauthnAPIurl = getWebAuthnAPIurl(context);
 
     if (actionType.equals("USERNAME")) {
       String chosenUsername = getUsername(context);
@@ -55,10 +71,16 @@ public class PasskeyRegister implements Authenticator {
 
       if (chooseUsername_Action(context, chosenUsername)) {
         System.out.println("Username valid");
+        String url = webauthnAPIurl;
+        if( url.startsWith("http://host.docker.internal", 0) ) {
+          url = url.replaceFirst("host.docker.internal", "localhost"); // kludge when running in a docker container
+        }
+        logger.info("Using frontend WebAuthn API URL: " + url);
         Response form = context.form()
             .setAttribute("action_type", "PASSKEY_CREATE")
             .setAttribute("username", chosenUsername)
             .setAttribute("ATTESTATION_OPTIONS", chosenUsername)
+            .setAttribute("webauthnAPI", url)
             .createForm("passkey-register.ftl");
 
         context.challenge(form);
@@ -74,7 +96,7 @@ public class PasskeyRegister implements Authenticator {
         String formResult = getFormResult(context);
 
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://host.docker.internal:8080/v1/attestation/result"))
+            .uri(URI.create(webauthnAPIurl + "/attestation/result"))
             .header(HTTP.CONTENT_TYPE, "application/json")
             .header("accept", "application/json")
             .POST(BodyPublishers.ofString(formResult))

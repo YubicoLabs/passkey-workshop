@@ -1,5 +1,5 @@
-const baseUrl_env = process.env.KEYCLOAK_URL || "http://localhost:8081";
-const client_id_env = process.env.CLIENT_ID || "BankApp";
+const baseUrl_env = process.env.REACT_APP_KEYCLOAK_URL || "http://localhost:8081";
+const client_id_env = process.env.REACT_APP_CLIENT_ID || "BankApp";
 
 const AUTH_SERVICES_CONSTANTS = {
   baseUrl: baseUrl_env,

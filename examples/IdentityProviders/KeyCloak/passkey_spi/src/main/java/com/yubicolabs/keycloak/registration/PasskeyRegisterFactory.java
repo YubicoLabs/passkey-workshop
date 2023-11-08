@@ -1,5 +1,6 @@
 package com.yubicolabs.keycloak.registration;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +22,8 @@ import org.keycloak.provider.ProviderConfigProperty;
 public class PasskeyRegisterFactory implements AuthenticatorFactory {
 
   private static final Authenticator AUTHENTICATOR_INSTANCE = new PasskeyRegister();
+
+  public static final String CONFIG_WEBAUTHN_API_URL = "webauthn-api-url";
 
   private static final String ID = "passkey-register";
 
@@ -90,7 +93,15 @@ public class PasskeyRegisterFactory implements AuthenticatorFactory {
     name.setLabel("Register a new user with a passkey");
     name.setHelpText("Register a new user with a passkey");
 
-    return Collections.singletonList(name);
+    ProviderConfigProperty p = new ProviderConfigProperty(
+      CONFIG_WEBAUTHN_API_URL, 
+      "WebAuthn API URL",
+      "URL of the webauthn API", 
+      STRING_TYPE, PasskeyRegister.DEFAULT_WEBAUTHN_API_URL
+    );
+
+    return Arrays.asList(name, p);
+
   }
 
 }

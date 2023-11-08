@@ -1,5 +1,6 @@
 package com.yubicolabs.keycloak.authentication;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +22,8 @@ import org.keycloak.provider.ProviderConfigProperty;
 public class PasskeyAuthenticateFactory implements AuthenticatorFactory {
 
   private static final Authenticator AUTHENTICATOR_INSTANCE = new PasskeyAuthenticate();
+
+  public static final String CONFIG_WEBAUTHN_API_URL = "webauthn-api-url";
 
   private static final String ID = "passkey-authenticate";
 
@@ -68,8 +71,7 @@ public class PasskeyAuthenticateFactory implements AuthenticatorFactory {
 
   @Override
   public Requirement[] getRequirementChoices() {
-    return new AuthenticationExecutionModel.Requirement[] { AuthenticationExecutionModel.Requirement.REQUIRED,
-        AuthenticationExecutionModel.Requirement.ALTERNATIVE };
+    return new AuthenticationExecutionModel.Requirement[] { AuthenticationExecutionModel.Requirement.REQUIRED };
   }
 
   @Override
@@ -79,7 +81,7 @@ public class PasskeyAuthenticateFactory implements AuthenticatorFactory {
 
   @Override
   public String getHelpText() {
-    return "Authenticate with passkey";
+    return "Authenticate user with passkey";
   }
 
   @Override
@@ -88,10 +90,17 @@ public class PasskeyAuthenticateFactory implements AuthenticatorFactory {
 
     name.setType(STRING_TYPE);
     name.setName("Passkey authenticate 1");
-    name.setLabel("Authenticate with a passkey");
-    name.setHelpText("Authenticate with a passkey");
+    name.setLabel("Authenticate user with a passkey");
+    name.setHelpText("Authenticate user with a passkey");
 
-    return Collections.singletonList(name);
+    ProviderConfigProperty p = new ProviderConfigProperty(
+        CONFIG_WEBAUTHN_API_URL, 
+        "WebAuthn API URL",
+        "URL of the webauthn API", 
+        STRING_TYPE, PasskeyAuthenticate.DEFAULT_WEBAUTHN_API_URL
+    );
+
+    return Arrays.asList(name, p);
   }
 
 }
