@@ -138,9 +138,9 @@ export default function Transactions() {
     const timeLoop = setInterval(async function () {
       if (authWindow.closed) {
         clearInterval(timeLoop);
-        setAuthInProgress(false);
         setShowModal(false);
-        await Utils.timeoutUtil(50);
+        setAuthInProgress(false);
+        await Utils.timeoutUtil(200);
         setStepUpAuthState({
           stepUpAuthAttempted: true,
         });
