@@ -307,7 +307,20 @@ export default function Transactions() {
               on the pop-up window
             </span>
           ) : (
-            <span>Blurb about stepup authentication</span>
+            <div>
+              <p>
+                It seems that you are attempting to perform a sensitive action,
+                and we want to be sure it's you!
+              </p>
+              <p>
+                Please reauthenticate with your security key. We will process
+                your transaction once you have been verified.
+              </p>
+              <p>
+                If you have not registered a security key, please visit our
+                support page to get in contact with an associate.
+              </p>
+            </div>
           )}
         </Modal.Body>
         <Modal.Footer>

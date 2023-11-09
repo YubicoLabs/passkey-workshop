@@ -15,7 +15,7 @@
         <div class="col-md-5 action_parent" style="padding-right: 0; padding-left: 0">
           <div class="action splash">
             <div class="header_login">
-              <h2>MSBS Step-up Authentication</h2>
+              <h2>MSBS needs to validate your security key!</h2>
               <#if alert_message != "">
               <div class="error-alert" id="alert_message_display">
                 <svg
@@ -39,7 +39,17 @@
                 <span id="alert_message_display_content">${alert_message}</span>
               </div>
             </#if>
-              <span class="body_2_default">You are attempting to perform a sensative action. Please use your security key so that we can be sure it's you!</span>     
+              <div class="body_2_default">
+                <p>Follow the instructions below to sign in with your security key.</p>
+                <ol>
+                  <li>Click the unlock with security key button</li>
+                  <li>Grab your security key, and plug it into your device</li>
+                  <li>If prompted, activate your security key, or select the security key option from the pop-up menu</li>
+                  <li>If prompted, enter your device PIN</li>
+                  <li>Wait for your passkey to validate</li>
+                  <li>If valid, your transaction will be processed!</li>
+                </ol>
+              </div>    
             </div>
             <div class="username">
               <button class="button_basic" onclick="authenticateClick()">UNLOCK WITH SECURITY KEY</button>

@@ -82,11 +82,11 @@
               </div>
               <div class="collapsible_content_inner_item">
                 <span class="body_1_bold">What are passkeys?</span>
-                <span class="body_1_default" >Passkeys are encrypted digital keys you create using your fingerprint, face, or screen lock.</span>            
+                <span class="body_1_default" >Passkeys are phishing-resistant digital keys you create using your fingerprint, face, screen lock, or security key.</span>            
               </div>
               <div class="collapsible_content_inner_item">
                 <span class="body_1_bold">Where are passkeys saved?</span>
-                <span class="body_1_default">Passkeys are saved to your password manager, so you can sign in on other devices</span>              
+                <span class="body_1_default">Passkeys are saved to your personal devices, security keys, or password managers</span>              
               </div>
             </div>
           </div> 
@@ -101,8 +101,16 @@
                     </svg>
                     <h3>Register using device biometrics</h3>
                   </div>
-                  <div>
-                    <span class="body_2_default">Blurb here about what security keys are. <br/> What to expect from the registration process.</span>
+                  <div class="body_2_default">
+                    <p>Use the secure biometric capabilities in your devices (Face ID, fingerprint, or PIN).</p>
+                    <p>The passkey may be synced using your preferred password manager</p>
+                    <p>Logging in with biometrics will only allow you to process transactions up to $1000</p>
+                    <ol>
+                      <li>Click the register biometrics button</li>
+                      <li>When prompted, sign in to your device using your biometric scan on PIN</li>
+                      <li>Wait for your passkey to register</li>
+                      <li>Begin using your new account!</li>
+                    </ol>
                   </div>
                   <button class="button_secondary" onclick="registerPasskey('platform')">REGISTER WITH BIOMETRICS</button>
                 </div>
@@ -122,8 +130,17 @@
                     </svg>
                     <h3>Register using a security key</h3>
                   </div>
-                  <div>
-                    <span class="body_2_default">Blurb here about what security keys are. <br/> What to expect from the registration process.</span>
+                  <div class="body_2_default">
+                    <p>Security keys are a personal hardware token that can be used to seamlessly authenticate between all of your devices.</p>
+                    <p>Security keys provide the highest degree of security, and will allow you to process ANY bank transaction</p>
+                    <ol>
+                      <li>Click the register security key button</li>
+                      <li>Grab your security key, and plug it into your device</li>
+                      <li>If prompted, activate your security key, or select the security key option from the pop-up menu</li>
+                      <li>If prompted, enter your device PIN</li>
+                      <li>Wait for your passkey to register</li>
+                      <li>Begin using your new account!</li>
+                    </ol>
                   </div>
                   <button class="button_secondary" onclick="registerPasskey('cross-platform')">REGISTER WITH SECURITY KEY</button>
                 </div>

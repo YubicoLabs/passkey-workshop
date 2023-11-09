@@ -145,7 +145,6 @@ body {
     linear-gradient(45deg, #0803FF 0%, #7a64ff99 100%),
     url('/public/img/backsplash.jpeg');
   width: 438px;
-  height: 264px;
   background-size: cover;
   color: white;
 
