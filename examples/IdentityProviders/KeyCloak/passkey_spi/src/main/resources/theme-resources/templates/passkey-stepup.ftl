@@ -13,7 +13,7 @@
       </form>
       <div class="row" style="margin-left: 0; margin-right:0">
         <div class="col-md-5 action_parent" style="padding-right: 0; padding-left: 0">
-          <div class="action splash">
+          <div class="action stepup-passkey splash">
             <div class="header_login">
               <h2>MSBS needs to validate your security key!</h2>
               <#if alert_message != "">

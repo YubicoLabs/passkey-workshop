@@ -10,7 +10,7 @@ export default function Account() {
 
   return (
     <Row>
-      <Col md={12} lg={2}>
+      <Col md={12} lg={2} style={{ paddingBottom: "2em" }}>
         <PageSideNav title="Settings" linkObjects={pageSideNavProps} />
       </Col>
       <Col md={12} lg={9}>

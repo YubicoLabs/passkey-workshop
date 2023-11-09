@@ -178,7 +178,7 @@ export default function Transactions() {
   return (
     <div>
       <Row>
-        <Col md={12} lg={2}>
+        <Col md={12} lg={2} style={{ paddingBottom: "2em" }}>
           <PageSideNav title="Payments" linkObjects={pageSideNavProps} />
         </Col>
         <Col md={12} lg={9}>
@@ -374,7 +374,9 @@ export default function Transactions() {
           </svg>
         </Modal.Header>
         <Modal.Body>
-          <span className="text-1">Success!</span>
+          <span className="text-1" style={{ marginBottom: "16px" }}>
+            Success!
+          </span>
           <span className="text-2">
             Your transaction posted successfully. Click the button below to
             return to your account screen.

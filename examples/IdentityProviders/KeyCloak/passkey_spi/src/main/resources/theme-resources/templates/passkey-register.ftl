@@ -65,7 +65,7 @@
 
       </div>
 
-      <div class="action" style="width: 90%;">
+      <div class="action register-passkey">
         <div class="header_login">
           <h2>Add a new passkey</h2>
           <div class="collapsible collapse_div" onclick="triggerCollapse()">
@@ -91,7 +91,7 @@
             </div>
           </div> 
         </div>
-          <div class="row" style="row-gap: 48px; width: 100%;">
+          <div class="row" style="row-gap: 48px; width: 100%; justify-content: center;">
             <div class="col-sm-12 col-md-5">
               <div class="register_option">
                 <div class="register_option_inner">
@@ -116,7 +116,7 @@
                 </div>
               </div>  
             </div>
-            <div class="col-sm-12 col-md-2">
+            <div class="col-sm-12 col-md-1">
               <div>
                 <h2>Or</h2>
               </div>

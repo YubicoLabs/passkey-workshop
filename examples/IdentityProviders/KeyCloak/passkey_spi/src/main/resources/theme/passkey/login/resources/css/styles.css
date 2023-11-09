@@ -49,7 +49,7 @@ h2 {
 
   /* H2 Heading/Default */
   font-family: Helvetica Neue;
-  font-size: 28px;
+  font-size: 32px;
   font-style: normal;
   font-weight: 700;
   line-height: 42px;
@@ -63,7 +63,7 @@ h3 {
 
   /* H3 Heading/Bold */
   font-family: Helvetica Neue;
-  font-size: 20px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 700;
   line-height: 30px;
@@ -75,10 +75,10 @@ h3 {
 
   /* Body 1/Default */
   font-family: Helvetica Neue;
-  font-size: 16px;
+  font-size: 22px;
   font-style: normal;
   font-weight: 400;
-  line-height: 24px;
+  line-height: 28px;
   /* 150% */
 }
 
@@ -87,10 +87,10 @@ h3 {
 
   /* Body 1/Bold */
   font-family: Helvetica Neue;
-  font-size: 16px;
+  font-size: 22px;
   font-style: normal;
   font-weight: 700;
-  line-height: 24px;
+  line-height: 28px;
   /* 150% */
 }
 
@@ -99,10 +99,10 @@ h3 {
 
   /* Body 2/Default */
   font-family: Helvetica Neue;
-  font-size: 12px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
-  line-height: 18px;
+  line-height: 24px;
   /* 150% */
 }
 
@@ -123,7 +123,6 @@ h3 {
   border-radius: 4px;
   border: 1px solid var(--background-light, #F2F0FF);
 
-  height: 18px;
   color: var(--text-text-1, #F2F0FF);
   background: none;
 }
@@ -142,7 +141,6 @@ h3 {
   text-transform: uppercase;
 
   display: flex;
-  height: 42px;
   padding: 6px 32px;
   justify-content: center;
   align-items: center;
@@ -197,7 +195,7 @@ h3 {
 
   /* Button/Basic */
   font-family: Helvetica Neue;
-  font-size: 12px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 500;
   line-height: 24px;
@@ -314,7 +312,7 @@ h3 {
 
 .register_option {
   display: flex;
-  width: 362px;
+  width: 70%;
   padding: 64px 24px;
   flex-direction: column;
   align-items: center;
@@ -431,6 +429,9 @@ h3 {
   cursor: pointer;
 }
 
+.action.register-passkey {
+  width: 90%;
+}
 
 /* Uncomment and set these variables to customize the grid. */
 
@@ -900,6 +901,69 @@ h3 {
 @media only screen and (max-width: 62em) {
   .col-md-7.hero.action_parent {
     display: none;
+  }
+
+  .col-md-5 .action {
+    width: 80%;
+  }
+
+  .action.register-passkey {
+    top: 0;
+    left: 0;
+    transform: none;
+    padding-bottom: 10rem;
+    padding-top: 5rem;
+    width: 100%
+  }
+
+  .action.stepup-passkey {
+    width: 80%;
+    gap: 2em;
+  }
+
+  .action.stepup-passkey h2 {
+    font-size: 2em;
+    line-height: 42px;
+  }
+
+  .action.stepup-passkey .body_2_default {
+    font-size: 1em;
+    line-height: 1.7em;
+  }
+
+  .action.stepup-passkey .button_basic {
+    font-size: 1em;
+    line-height: 1.2em;
+  }
+
+  h2 {
+    font-size: 3em;
+    line-height: 3.3em;
+  }
+
+  h3 {
+    font-size: 2.3em;
+    line-height: 2em;
+  }
+
+  .body_2_default {
+    font-size: 2em;
+    line-height: 1.5em;
+  }
+
+  .button_basic {
+    font-size: 1.7em;
+    line-height: 2em;
+  }
+
+  .button_outlined {
+    font-size: 1.7em;
+    line-height: 2em;
+  }
+
+  .button_secondary {
+    font-size: 1.7em;
+    line-height: 2em;
   }
 }
 
