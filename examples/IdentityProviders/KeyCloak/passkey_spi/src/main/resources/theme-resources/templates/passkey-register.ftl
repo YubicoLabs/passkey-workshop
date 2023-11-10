@@ -125,9 +125,7 @@
               <div class="register_option">
                 <div class="register_option_inner">
                   <div class="register_option_inner_heading">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
-                      <path d="M34.9998 16.6667H21.0832C19.7165 12.7833 16.0165 10 11.6665 10C6.14984 10 1.6665 14.4833 1.6665 20C1.6665 25.5167 6.14984 30 11.6665 30C16.0165 30 19.7165 27.2167 21.0832 23.3333H21.6665L24.9998 26.6667L28.3332 23.3333L31.6665 26.6667L38.3332 19.9333L34.9998 16.6667ZM11.6665 25C8.9165 25 6.6665 22.75 6.6665 20C6.6665 17.25 8.9165 15 11.6665 15C14.4165 15 16.6665 17.25 16.6665 20C16.6665 22.75 14.4165 25 11.6665 25Z" fill="white"/>
-                    </svg>
+                    <img class="security-key-img" src="${url.resourcesPath}/img/security-key.png"/>
                     <h3>Register using a security key</h3>
                   </div>
                   <div class="body_2_default">

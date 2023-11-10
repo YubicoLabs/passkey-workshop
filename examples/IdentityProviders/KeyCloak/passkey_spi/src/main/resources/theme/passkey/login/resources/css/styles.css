@@ -438,6 +438,10 @@ h3 {
   width: auto;
 }
 
+.security-key-img {
+  height: 40px;
+}
+
 /* Uncomment and set these variables to customize the grid. */
 
 .container-fluid {
