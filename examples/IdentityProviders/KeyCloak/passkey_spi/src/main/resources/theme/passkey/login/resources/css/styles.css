@@ -430,7 +430,12 @@ h3 {
 }
 
 .action.register-passkey {
-  width: 90%;
+  top: 0;
+  left: 0;
+  transform: none;
+  padding-bottom: 10rem;
+  padding-top: 5rem;
+  width: auto;
 }
 
 /* Uncomment and set these variables to customize the grid. */
