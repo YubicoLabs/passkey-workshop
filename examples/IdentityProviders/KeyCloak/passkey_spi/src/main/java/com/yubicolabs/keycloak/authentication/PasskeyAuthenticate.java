@@ -9,6 +9,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yubicolabs.keycloak.Utils.SpiUtils;
 import com.yubicolabs.keycloak.models.AssertionResponse;
 
 import java.net.URI;
@@ -33,17 +34,20 @@ public class PasskeyAuthenticate implements Authenticator {
 
   private static final Logger logger = Logger.getLogger(PasskeyAuthenticate.class);
 
+  private SpiUtils spiUtils = new SpiUtils();
+
   private String getWebAuthnAPIurl(AuthenticationFlowContext context) {
     String webauthnAPIurl = null;
 
     if (context.getAuthenticatorConfig() != null) {
-      webauthnAPIurl = context.getAuthenticatorConfig().getConfig().get(PasskeyAuthenticateFactory.CONFIG_WEBAUTHN_API_URL);
+      webauthnAPIurl = context.getAuthenticatorConfig().getConfig()
+          .get(PasskeyAuthenticateFactory.CONFIG_WEBAUTHN_API_URL);
     }
     if (webauthnAPIurl == null) {
       webauthnAPIurl = DEFAULT_WEBAUTHN_API_URL;
     }
     logger.info("Using WebAuthn API URL: " + webauthnAPIurl);
-    return webauthnAPIurl;  
+    return webauthnAPIurl;
   }
 
   @Override
@@ -54,7 +58,7 @@ public class PasskeyAuthenticate implements Authenticator {
   @Override
   public void authenticate(AuthenticationFlowContext context) {
     String url = getWebAuthnAPIurl(context);
-    if( url.startsWith("http://host.docker.internal", 0) ) {
+    if (url.startsWith("http://host.docker.internal", 0)) {
       url = url.replaceFirst("host.docker.internal", "localhost"); // kludge when running in a docker container
     }
     if (context.getHttpRequest().getUri().getQueryParameters().get("username") != null
@@ -128,7 +132,6 @@ public class PasskeyAuthenticate implements Authenticator {
 
       if (actionType.equals("STEPUP")) {
         String currentUser = getUsername(context);
-        System.out.println(currentUser);
         Response form = context.form()
             .setAttribute("username", currentUser)
             .setAttribute("action_type", "STEPUP")

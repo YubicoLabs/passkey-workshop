@@ -9,6 +9,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yubicolabs.keycloak.Utils.SpiUtils;
 import com.yubicolabs.keycloak.models.AttestationResponse;
 
 import java.net.URI;
@@ -32,6 +33,8 @@ public class PasskeyRegister implements Authenticator {
   public static final String DEFAULT_WEBAUTHN_API_URL = "http://host.docker.internal:8080/v1";
 
   private static final Logger logger = Logger.getLogger(PasskeyRegister.class);
+
+  private SpiUtils spiUtils = new SpiUtils();
 
   @Override
   public void close() {
@@ -70,9 +73,8 @@ public class PasskeyRegister implements Authenticator {
       String chosenUsername = getUsername(context);
 
       if (chooseUsername_Action(context, chosenUsername)) {
-        System.out.println("Username valid");
         String url = webauthnAPIurl;
-        if( url.startsWith("http://host.docker.internal", 0) ) {
+        if (url.startsWith("http://host.docker.internal", 0)) {
           url = url.replaceFirst("host.docker.internal", "localhost"); // kludge when running in a docker container
         }
         logger.info("Using frontend WebAuthn API URL: " + url);
@@ -133,6 +135,10 @@ public class PasskeyRegister implements Authenticator {
            * Call to the bank API
            * Confirm success, and report an error if something happened
            */
+
+          System.out.println("---------------Token call---------------");
+          String brandNewToken = spiUtils.getAccessToken(context, um);
+          System.out.println(brandNewToken);
 
           context.success();
         } else {
