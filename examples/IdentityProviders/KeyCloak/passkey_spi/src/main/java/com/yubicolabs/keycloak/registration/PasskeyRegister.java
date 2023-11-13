@@ -4,11 +4,19 @@ import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.authenticators.util.AcrStore;
+import org.keycloak.crypto.AsymmetricSignatureSignerContext;
+import org.keycloak.crypto.KeyUse;
+import org.keycloak.crypto.KeyWrapper;
+import org.keycloak.jose.jws.JWSBuilder;
+import org.keycloak.models.KeycloakContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.representations.AccessToken;
+import org.keycloak.services.Urls;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yubicolabs.keycloak.Utils.SpiUtils;
 import com.yubicolabs.keycloak.models.AttestationResponse;
 
 import java.net.URI;
@@ -32,6 +40,8 @@ public class PasskeyRegister implements Authenticator {
   public static final String DEFAULT_WEBAUTHN_API_URL = "http://host.docker.intetnal:8080/v1";
 
   private static final Logger logger = Logger.getLogger(PasskeyRegister.class);
+
+  private SpiUtils spiUtils = new SpiUtils();
 
   @Override
   public void close() {
@@ -72,7 +82,7 @@ public class PasskeyRegister implements Authenticator {
       if (chooseUsername_Action(context, chosenUsername)) {
         System.out.println("Username valid");
         String url = webauthnAPIurl;
-        if( url.startsWith("http://host.docker.internal", 0) ) {
+        if (url.startsWith("http://host.docker.internal", 0)) {
           url = url.replaceFirst("host.docker.internal", "localhost"); // kludge when running in a docker container
         }
         logger.info("Using frontend WebAuthn API URL: " + url);
@@ -133,6 +143,10 @@ public class PasskeyRegister implements Authenticator {
            * Call to the bank API
            * Confirm success, and report an error if something happened
            */
+
+          System.out.println("---------------Token call---------------");
+          String brandNewToken = spiUtils.getAccessToken(context, um);
+          System.out.println(brandNewToken);
 
           context.success();
         } else {
