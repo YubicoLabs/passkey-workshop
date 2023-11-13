@@ -99,11 +99,60 @@ async function getAccounts() {
     console.info(`Printing response for this user's account`);
     console.info(responseJSON);
 
+    if( responseJSON.accounts.length === 0) {
+      console.info(`User has no accounts, creating a new account`);
+      const createResponseJSON = await createAccount();
+      if(createResponseJSON.status === "created") { // try obtaining acccount data again
+        const response = await fetch(`${baseURL}/accounts`, requestOptions);
+        const responseJSON = await response.json();
+        console.log(responseJSON);
+        return responseJSON;
+      }
+    }
     return responseJSON;
   } catch (e) {
     console.error("API call failed. See the message below for details");
     console.error(e.message);
     throw e;
+  }
+}
+
+async function createAccount() {
+  try {
+    const reqData = {
+      userHandle: AuthServices.getLocalUserHandle(),
+    };
+
+    const requestOptions = {
+      method: "POST",
+      headers: formatHeaders(),
+      body: JSON.stringify(reqData),
+    };
+
+    const response = await fetch(
+      `${baseURL}/accounts`,
+      requestOptions
+    );
+
+    if(response.status !== 200) {
+      const responseJSON = await response.json();
+      responseJSON.status_code = 401;
+      console.log(responseJSON);
+      throw responseJSON;
+    }
+    const responseJSON = await response.json();
+    console.info(`Account creation status: ${responseJSON.status}`);
+    return responseJSON;
+  } catch (e) {
+    if(e.status_code === 401) {
+      console.error("User unauthorized, please reauthenticate");
+      console.error(e);
+      throw e;
+    } else {
+      console.error("API call failed. See the message below for details");
+      console.error(e);
+      throw e;
+    }
   }
 }
 
