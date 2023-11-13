@@ -117,11 +117,8 @@ RP_ID=$REGION
 echo "### RP_ID is: $RP_ID"
 
 echo "### editing .env file"
-#sed -i '' "s#http://localhost#https://$hostname#g"	".env"
 sed -i '' -E "/^#/!s#localhost:([0-9]+)#$HOST-\1.$REGION#g" .env
-#sed -i '' "s#http://host.docker.internal#https://$hostname#g"	".env"
 sed -i '' -E "s#host.docker.internal:([0-9]+)#$HOST-\1.$REGION#g" .env
-#sed -i '' "s/localhost/$hostname/g"	".env"
 sed -i '' 's#http://#https://#' .env
 sed -i '' "/^RP_ID=/s/localhost/$RP_ID/" .env
 
@@ -141,8 +138,6 @@ docker compose up -d
 
 echo please find your web application here:
 echo https://$hostname:3000/test_panel
-
-exit
 
 echo "### starting devtunnel. Type ^C to stop the tunnel and take down all containers"
 devtunnel host $TUNNELID
