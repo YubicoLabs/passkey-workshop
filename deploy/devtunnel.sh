@@ -97,9 +97,6 @@ if [[ -z "$TUNNELID" ]] ; then
 fi
 TUNNELID=$(devtunnel list --tags passkey-workshop --limit 1 | grep passkey-workshop | awk '{ print $1; }')
 
-hostname=$TUNNELID.devtunnels.ms
-echo "### tunnel hostname is: $(tput bold) $hostname $(tput sgr0)"
-
 echo "### setting up ports"
 devtunnel port list $TUNNELID | grep '^3000\b' || devtunnel port create $TUNNELID  -p 3000 --description 'app'
 devtunnel port list $TUNNELID | grep '^8080\b' || devtunnel port create $TUNNELID  -p 8080 --description 'api'
@@ -107,10 +104,26 @@ devtunnel port list $TUNNELID | grep '^8081\b' || devtunnel port create $TUNNELI
 devtunnel port list $TUNNELID | grep '^3002\b' || devtunnel port create $TUNNELID  -p 3002 --description 'bank-client'
 devtunnel port list $TUNNELID | grep '^8082\b' || devtunnel port create $TUNNELID  -p 8082 --description 'bank-api'
 
+hostname=$TUNNELID.devtunnels.ms
+echo "### tunnel hostname is: $(tput bold) $hostname $(tput sgr0)"
+
+# hostname is of the form <host>.<region>.devtunnels.ms
+HOST=$(echo $hostname | cut -d. -f1)
+REGION=$(echo $hostname | cut -d. -f2-)
+# Note: as passkeys can be both registered in Keycloak _and_ added from the banking client, they need to share an RP_ID
+# When using devtunnels, this means the RP_ID must match <region>.devtunnels.ms. Beware that when your tunnel endpoint changes,
+#	passkeys from previous tunnels will be shared as well. You may want to remove those first.
+RP_ID=$REGION
+echo "### RP_ID is: $RP_ID"
+
 echo "### editing .env file"
-sed -i '' "s#http://localhost#https://$hostname#g"	".env"
-sed -i '' "s#http://host.docker.internal#https://$hostname#g"	".env"
-sed -i '' "s/localhost/$hostname/g"	".env"
+#sed -i '' "s#http://localhost#https://$hostname#g"	".env"
+sed -i '' -E "/^#/!s#localhost:([0-9]+)#$HOST-\1.$REGION#g" .env
+#sed -i '' "s#http://host.docker.internal#https://$hostname#g"	".env"
+sed -i '' -E "s#host.docker.internal:([0-9]+)#$HOST-\1.$REGION#g" .env
+#sed -i '' "s/localhost/$hostname/g"	".env"
+sed -i '' 's#http://#https://#' .env
+sed -i '' "/^RP_ID=/s/localhost/$RP_ID/" .env
 
 echo "### editing Pawskey sources"
 sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/"	../examples/clients/mobile/iOS/PawsKey/PawsKey.xcodeproj/project.pbxproj
@@ -128,6 +141,8 @@ docker compose up -d
 
 echo please find your web application here:
 echo https://$hostname:3000/test_panel
+
+exit
 
 echo "### starting devtunnel. Type ^C to stop the tunnel and take down all containers"
 devtunnel host $TUNNELID
