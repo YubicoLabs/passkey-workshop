@@ -106,8 +106,8 @@
                     <p>The passkey may be synced using your preferred password manager</p>
                     <p>Logging in with biometrics will only allow you to process transactions up to $1000</p>
                     <ol>
-                      <li>Click the register biometrics button</li>
-                      <li>When prompted, sign in to your device using your biometric scan on PIN</li>
+                      <li>Click the register with biometrics button</li>
+                      <li>When prompted, sign in to your device using your biometric scan or PIN</li>
                       <li>Wait for your passkey to register</li>
                       <li>Begin using your new account!</li>
                     </ol>
@@ -132,7 +132,7 @@
                     <p>Security keys are a personal hardware token that can be used to seamlessly authenticate between all of your devices.</p>
                     <p>Security keys provide the highest degree of security, and will allow you to process ANY bank transaction</p>
                     <ol>
-                      <li>Click the register security key button</li>
+                      <li>Click the register with security key button</li>
                       <li>Grab your security key, and plug it into your device</li>
                       <li>If prompted, activate your security key, or select the security key option from the pop-up menu</li>
                       <li>If prompted, enter your device PIN</li>

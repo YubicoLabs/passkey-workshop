@@ -20,7 +20,7 @@ export default function Home() {
                     height="24"
                     className="d-inline-block align-top"
                   />{" "}
-                  Morning Star Banking Solution
+                  Passkey Banking Solution
                 </div>
               </Row>
               <Row className="card-gap-1">

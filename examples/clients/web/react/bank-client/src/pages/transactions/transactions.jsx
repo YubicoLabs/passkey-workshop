@@ -21,7 +21,7 @@ export default function Transactions() {
   const navigate = useNavigate();
   const [account, setAccount] = useState(null);
   const [transactionType, setTransactionType] = useState("deposit");
-  const [amount, setAmount] = useState(undefined);
+  const [amount, setAmount] = useState("");
   const [to, setTo] = useState("");
 
   const [showModal, setShowModal] = useState(false);
@@ -317,8 +317,9 @@ export default function Transactions() {
                 your transaction once you have been verified.
               </p>
               <p>
-                If you have not registered a security key, please visit our
-                support page to get in contact with an associate.
+                If you have not registered a security key, please visit your
+                account settings page and register a passkey from your security
+                key.
               </p>
             </div>
           )}
@@ -377,10 +378,7 @@ export default function Transactions() {
           <span className="text-1" style={{ marginBottom: "16px" }}>
             Success!
           </span>
-          <span className="text-2">
-            Your transaction posted successfully. Click the button below to
-            return to your account screen.
-          </span>
+          <span className="text-2">Your transaction posted successfully!</span>
         </Modal.Body>
         <Modal.Footer>
           <button className="button-primary" onClick={returnToAccount}>

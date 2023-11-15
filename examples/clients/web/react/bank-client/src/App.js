@@ -20,6 +20,7 @@ function App() {
         <Container>
           <Routes>
             <Route path="/" element={<ProtectedRoutes />}>
+              <Route path="/" element={<Home />} />
               <Route path="/dashboard" element={<Home />} />
               <Route path="/account" element={<Account />} />
               <Route path="/transactions/*" element={<Transactions />} />

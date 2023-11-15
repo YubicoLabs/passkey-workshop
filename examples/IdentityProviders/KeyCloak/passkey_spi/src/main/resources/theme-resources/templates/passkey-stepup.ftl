@@ -15,7 +15,7 @@
         <div class="col-md-5 action_parent" style="padding-right: 0; padding-left: 0">
           <div class="action stepup-passkey splash">
             <div class="header_login">
-              <h2>MSBS needs to validate your security key!</h2>
+              <h2>PKBS needs to validate your security key!</h2>
               <#if alert_message != "">
               <div class="error-alert" id="alert_message_display">
                 <svg
@@ -60,7 +60,7 @@
           <div class="action splash" style="width: auto">
               <div class="header_login">
                 <img class="logo_image" src="${url.resourcesPath}/img/logo.png"/>
-                <h2 class="splash_logo">Morning Star Banking Solution</h2>
+                <h2 class="splash_logo">Passkey Banking Solution</h2>
               </div>
             </div>
         </div>

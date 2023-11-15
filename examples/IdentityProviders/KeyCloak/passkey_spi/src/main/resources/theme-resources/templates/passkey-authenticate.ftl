@@ -14,7 +14,7 @@
         <div class="col-md-5 action_parent" style="padding-right: 0; padding-left: 0">
           <div class="action splash">
             <div class="header_login">
-              <h2>Welcome to MSBS</h2>
+              <h2>Welcome to PKBS</h2>
               <span class="body_2_default">Sign in or create an account to continue.</span>     
             </div>
             <#if alert_message != "">
@@ -51,7 +51,7 @@
           <div class="action splash" style="width: auto">
               <div class="header_login">
                 <img class="logo_image" src="${url.resourcesPath}/img/logo.png"/>
-                <h2 class="splash_logo">Morning Star Banking Solution</h2>
+                <h2 class="splash_logo">Passkey Banking Solution</h2>
               </div>
             </div>
         </div>

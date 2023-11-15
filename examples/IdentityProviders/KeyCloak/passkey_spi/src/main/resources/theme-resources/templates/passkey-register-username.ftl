@@ -15,7 +15,7 @@
           <div class="action splash">
             <div class="header_login">
               <h2>Create your account</h2>
-              <span class="body_2_default">Create a free account in order to access MSBS</span>     
+              <span class="body_2_default">Create a free account in order to access PKBS</span>     
             </div>
             <#if alert_message != "">
               <div class="error-alert" id="alert_message_display">
@@ -51,7 +51,7 @@
           <div class="action splash" style="width: auto">
               <div class="header_login">
                 <img class="logo_image" src="${url.resourcesPath}/img/logo.png"/>
-                <h2 class="splash_logo">Morning Star Banking Solution</h2>
+                <h2 class="splash_logo">Passkey Banking Solution</h2>
               </div>
             </div>
         </div>

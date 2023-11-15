@@ -41,7 +41,7 @@ export default function Header() {
             height="30"
             className="d-inline-block align-top"
           />{" "}
-          MSBS
+          PKBS
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
