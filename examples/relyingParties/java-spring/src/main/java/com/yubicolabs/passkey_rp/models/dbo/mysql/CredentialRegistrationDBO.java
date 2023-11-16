@@ -61,6 +61,11 @@ public class CredentialRegistrationDBO {
   @Column(columnDefinition = "boolean default false")
   boolean isHighAssurance;
 
+  @Getter
+  @Setter
+  @Column(columnDefinition = "text")
+  String state;
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;

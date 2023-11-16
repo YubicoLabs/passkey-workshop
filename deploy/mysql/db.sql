@@ -70,6 +70,13 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    hibernate_sequence (next_val BIGINT NOT NULL);
+    advanced_protection_status (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        user_handle NVARCHAR(256) NOT NULL,
+        is_advanced_protection BOOL DEFAULT FALSE,
+        PRIMARY KEY (id)
+    );
+
+CREATE TABLE hibernate_sequence (next_val BIGINT NOT NULL);
 
 INSERT INTO hibernate_sequence (next_val) VALUES (0);

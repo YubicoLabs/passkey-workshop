@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.yubicolabs.passkey_rp.interfaces.AdvancedProtectionStatusStorage;
 import com.yubicolabs.passkey_rp.interfaces.AssertionRequestStorage;
 import com.yubicolabs.passkey_rp.interfaces.AttestationRequestStorage;
 import com.yubicolabs.passkey_rp.interfaces.CredentialStorage;
@@ -25,6 +26,9 @@ public class StorageInstance {
   @Autowired
   private CredentialRegistrationStorageFactoryBean credentialRegistrationStorageFactoryBean;
 
+  @Autowired
+  private AdvancedProtectionStatusStorageFactoryBean advancedProtectionStatusStorageFactoryBean;
+
   @Getter
   private AssertionRequestStorage assertionRequestStorage;
 
@@ -34,10 +38,14 @@ public class StorageInstance {
   @Getter
   private CredentialStorage credentialStorage;
 
+  @Getter
+  private AdvancedProtectionStatusStorage advancedProtectionStatusStorage;
+
   @PostConstruct
   private void setStorageInstance() {
     this.assertionRequestStorage = assertionRequestStorageFactoryBean.getObject();
     this.attestationRequestStorage = attestationRequestStorageFactoryBean.getObject();
     this.credentialStorage = credentialRegistrationStorageFactoryBean.getObject();
+    this.advancedProtectionStatusStorage = advancedProtectionStatusStorageFactoryBean.getObject();
   }
 }

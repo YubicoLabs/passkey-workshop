@@ -58,11 +58,11 @@ import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdate;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdateResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponseCredentialsInner;
-import com.yubicolabs.passkey_rp.models.api.UserDeleteResponse;
 import com.yubicolabs.passkey_rp.models.api.AssertionResultResponse.loaEnum;
 import com.yubicolabs.passkey_rp.models.common.AssertionOptions;
 import com.yubicolabs.passkey_rp.models.common.AttestationOptions;
 import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;
+import com.yubicolabs.passkey_rp.models.common.CredentialRegistration.StateEnum;
 
 @Service
 @Scope("singleton")
@@ -175,6 +175,7 @@ public class PasskeyOperations {
                 .lastUsedTime(toStore.getLastUsedTime().atOffset(ZoneOffset.UTC))
                 .iconURI((toStore.getIconURI().isPresent() ? toStore.getIconURI().get() : null))
                 .isHighAssurance(toStore.isHighAssurance())
+                .state(toStore.getState().getValue())
                 .build());
       } else {
         throw new Exception("There was an unknown issue creating your credential");
@@ -198,11 +199,12 @@ public class PasskeyOperations {
       optionsBuilder.userVerification(UserVerificationRequirement.PREFERRED).timeout(180000);
 
       /*
-       * Check if the user has a credential stored in the DB
+       * Check if the user has an active credential stored in the DB
        */
 
       Collection<CredentialRegistration> credentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
-          .getRegistrationsByUsername(request.getUserName());
+          .getRegistrationsByUsername(request.getUserName()).stream()
+          .filter(reg -> reg.getState().equals(StateEnum.ENABLED.getValue())).collect(Collectors.toList());
 
       if (credentials.size() != 0 || request.getUserName() != "") {
         /*
@@ -308,7 +310,8 @@ public class PasskeyOperations {
       // @TODO - remember to add a mechanism to verify the user making the request is
       // the same whose creds are being queried
       Collection<CredentialRegistration> credentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
-          .getRegistrationsByUsername(userName);
+          .getRegistrationsByUsername(userName).stream()
+          .filter(reg -> reg.getState().getValue().equals(StateEnum.ENABLED.getValue())).collect(Collectors.toList());
 
       List<UserCredentialsResponseCredentialsInner> credList = credentials.stream()
           .map(cred -> UserCredentialsResponseCredentialsInner.builder()
@@ -319,6 +322,7 @@ public class PasskeyOperations {
               .lastUsedTime(cred.getLastUsedTime().atOffset(ZoneOffset.UTC))
               .iconURI((cred.getIconURI().isPresent() ? cred.getIconURI().get() : null))
               .isHighAssurance(cred.isHighAssurance())
+              .state(cred.getState().getValue())
               .build())
           .collect(Collectors.toList());
 
@@ -445,6 +449,7 @@ public class PasskeyOperations {
             .build())
         .iconURI(Optional.ofNullable(iconURI))
         .isHighAssurance(isHighAssurance)
+        .state(StateEnum.ENABLED)
         .build();
   }
 
@@ -473,9 +478,6 @@ public class PasskeyOperations {
 
   public UserCredentialDeleteResponse deleteCredential(UserCredentialDelete credential) throws Exception {
     try {
-      // @TODO - remember to add a mechanism to verify the user making the request is
-      // the same whose creds are being queried
-
       Collection<CredentialRegistration> credentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
           .getByCredentialId(ByteArray.fromBase64Url(credential.getId()));
 
