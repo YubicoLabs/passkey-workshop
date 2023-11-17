@@ -41,6 +41,7 @@ import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria.AuthenticatorSelectionCriteriaBuilder;
 import com.yubicolabs.passkey_rp.helpers.AssertionOptionsResponseConverter;
 import com.yubicolabs.passkey_rp.helpers.AttestationOptionsResponseConverter;
+import com.yubicolabs.passkey_rp.models.api.AdvancedProtection;
 import com.yubicolabs.passkey_rp.models.api.AssertionOptionsRequest;
 import com.yubicolabs.passkey_rp.models.api.AssertionOptionsResponse;
 import com.yubicolabs.passkey_rp.models.api.AssertionResultRequest;
@@ -52,6 +53,7 @@ import com.yubicolabs.passkey_rp.models.api.AttestationOptionsResponse;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultRequest;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultRequestMakeCredentialResult;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultResponse;
+import com.yubicolabs.passkey_rp.models.api.UpdateAdvancedProtectionStatusRequest;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDelete;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDeleteResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdate;
@@ -59,6 +61,7 @@ import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdateResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponseCredentialsInner;
 import com.yubicolabs.passkey_rp.models.api.AssertionResultResponse.loaEnum;
+import com.yubicolabs.passkey_rp.models.common.AdvancedProtectionStatus;
 import com.yubicolabs.passkey_rp.models.common.AssertionOptions;
 import com.yubicolabs.passkey_rp.models.common.AttestationOptions;
 import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;
@@ -164,6 +167,17 @@ public class PasskeyOperations {
               .build());
 
       CredentialRegistration toStore = buildCredentialDBO(options.getAttestationRequest(), newCred);
+
+      Optional<AdvancedProtectionStatus> maybeUserInAdvancedProtection = relyingPartyInstance.getStorageInstance()
+          .getAdvancedProtectionStatusStorage()
+          .getIfPresent(options.getAttestationRequest().getUser().getId().getBase64Url());
+
+      if (!maybeUserInAdvancedProtection.isPresent()) {
+        relyingPartyInstance.getStorageInstance().getAdvancedProtectionStatusStorage().insert(
+            AdvancedProtectionStatus.builder()
+                .userHandle(options.getAttestationRequest().getUser().getId().getBase64Url())
+                .isAdvancedProtection(false).build());
+      }
 
       if (relyingPartyInstance.getStorageInstance().getCredentialStorage().addRegistration(toStore)) {
         return new AttestationResultResponse().status("created").credential(
@@ -526,6 +540,57 @@ public class PasskeyOperations {
     } catch (Exception e) {
       e.printStackTrace();
       throw new Exception("There was an issue updating your credentials nickname: " + e.getMessage());
+    }
+  }
+
+  public AdvancedProtection getAdvancedProtectionStatus(String userHandle) throws Exception {
+    try {
+      /**
+       * Check if the user exists
+       * If not, throw error
+       */
+
+      Optional<AdvancedProtectionStatus> maybeStatus = relyingPartyInstance.getStorageInstance()
+          .getAdvancedProtectionStatusStorage().getIfPresent(userHandle);
+
+      if (maybeStatus.isPresent()) {
+        return AdvancedProtection.builder().userHandle(maybeStatus.get().getUserHandle())
+            .enabled(maybeStatus.get().isAdvancedProtection()).build();
+      } else {
+        throw new Exception("This resource does not exist");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new Exception("There was an issue getting the advanced protection status for the user");
+    }
+  }
+
+  public AdvancedProtection updateAdvancedProtectionStatus(String userHandle,
+      UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) throws Exception {
+    try {
+      boolean didUpdate = relyingPartyInstance.getStorageInstance().getAdvancedProtectionStatusStorage()
+          .setAdvancedProtection(userHandle, updateAdvancedProtectionStatusRequest.getEnabled());
+
+      if (didUpdate) {
+        // No need to check optional, we know the record exists
+        AdvancedProtectionStatus updated = relyingPartyInstance.getStorageInstance()
+            .getAdvancedProtectionStatusStorage().getIfPresent(userHandle).get();
+        /*
+         * If true, go into credential registrations, and set all low assurance enabled
+         * credentials as disabled
+         * 
+         * If false, go into credential registrations, and set all the disabled
+         * credentials as enabled
+         */
+
+        return AdvancedProtection.builder().userHandle(updated.getUserHandle())
+            .enabled(updated.isAdvancedProtection()).build();
+      } else {
+        throw new Exception("The items did not update correctly");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new Exception("There was an issue updating the advanced protection status for the user");
     }
   }
 

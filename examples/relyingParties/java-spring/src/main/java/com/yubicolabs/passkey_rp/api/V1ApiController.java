@@ -5,6 +5,7 @@ import com.yubicolabs.passkey_rp.models.api.AssertionResultRequest;
 import com.yubicolabs.passkey_rp.models.api.AttestationOptionsRequest;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultRequest;
 import com.yubicolabs.passkey_rp.models.api.Error;
+import com.yubicolabs.passkey_rp.models.api.UpdateAdvancedProtectionStatusRequest;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDelete;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdate;
 import com.yubicolabs.passkey_rp.services.passkey.PasskeyOperations;
@@ -118,6 +119,30 @@ public class V1ApiController implements V1Api {
         try {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(passkeyOperations.updateCredentialNickname(userCredentialUpdate));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
+        }
+    }
+
+    @Override
+    public ResponseEntity advancedProtectionStatus(String userHandle) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(passkeyOperations.getAdvancedProtectionStatus(userHandle));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
+        }
+    }
+
+    @Override
+    public ResponseEntity updateAdvancedProtectionStatus(String userHandle,
+            UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(passkeyOperations.updateAdvancedProtectionStatus(userHandle,
+                            updateAdvancedProtectionStatusRequest));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());

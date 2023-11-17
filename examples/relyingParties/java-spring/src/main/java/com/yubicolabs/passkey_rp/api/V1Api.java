@@ -6,6 +6,7 @@
 package com.yubicolabs.passkey_rp.api;
 
 import com.yubicolabs.passkey_rp.models.api.APIStatus;
+import com.yubicolabs.passkey_rp.models.api.AdvancedProtection;
 import com.yubicolabs.passkey_rp.models.api.AssertionOptionsRequest;
 import com.yubicolabs.passkey_rp.models.api.AssertionOptionsResponse;
 import com.yubicolabs.passkey_rp.models.api.AssertionResultRequest;
@@ -15,6 +16,7 @@ import com.yubicolabs.passkey_rp.models.api.AttestationOptionsResponse;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultRequest;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultResponse;
 import com.yubicolabs.passkey_rp.models.api.Error;
+import com.yubicolabs.passkey_rp.models.api.UpdateAdvancedProtectionStatusRequest;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDelete;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDeleteResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdate;
@@ -25,6 +27,7 @@ import com.yubicolabs.passkey_rp.models.api.UserDeleteResponse;
 import com.yubicolabs.passkey_rp.models.api.UserProfileResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -351,6 +354,78 @@ public interface V1Api {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "{ \"displayName\" : \"Jane Doe\", \"id\" : 34545132, \"lastLoginDate\" : \"2023-01-09T13:44:02Z\", \"userName\" : \"janedoe@example.com\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * GET /v1/user/advanced-protection/{id} : Get advanced protection
+     * status for account
+     *
+     * @param userHandle userHandle of account for advanced protection status
+     *                   (required)
+     * @return Advanced protection status response is (true|false) (status code 200)
+     *         or Failed request response (status code 400)
+     */
+    @Operation(operationId = "advancedProtectionStatus", summary = "Get advanced protection status for user", responses = {
+            @ApiResponse(responseCode = "200", description = "Advanced protection status response is (true|false)", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = AdvancedProtection.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Failed request response", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
+            })
+    })
+    @RequestMapping(method = RequestMethod.GET, value = "/v1/user/advanced-protection/{userHandle}", produces = {
+            "application/json" })
+    default ResponseEntity<AdvancedProtection> advancedProtectionStatus(
+            @Parameter(name = "userHandle", description = "User handle of account for advanced protection status", required = true, in = ParameterIn.PATH) @PathVariable("userHandle") String userHandle) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"accountId\" : 1349, \"enabled\" : true }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * PUT /v1/user/advanced-protection/{id} : Update/Set advanced
+     * protection status for account
+     *
+     * @param userHandle                            User handle of account for
+     *                                              advanced protection status
+     *                                              (required)
+     * @param updateAdvancedProtectionStatusRequest Update advanced protection
+     *                                              status for account (required)
+     * @return Successful advanced protection status response (status code 200)
+     *         or Failed request response (status code 400)
+     */
+    @Operation(operationId = "updateAdvancedProtectionStatus", summary = "Update/Set advanced protection status for user", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful advanced protection status response", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = AdvancedProtection.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Failed request response", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
+            })
+    })
+    @RequestMapping(method = RequestMethod.PUT, value = "/v1/user/advanced-protection/{userHandle}", produces = {
+            "application/json" }, consumes = { "application/json" })
+    default ResponseEntity<AdvancedProtection> updateAdvancedProtectionStatus(
+            @Parameter(name = "userHandle", description = "User handle of account for advanced protection status", required = true, in = ParameterIn.PATH) @PathVariable("userHandle") String userHandle,
+            @Parameter(name = "UpdateAdvancedProtectionStatusRequest", description = "Update advanced protection status for account", required = true) @Valid @RequestBody UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"userHandle\" : \"someUserHandle\", \"enabled\" : true }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
