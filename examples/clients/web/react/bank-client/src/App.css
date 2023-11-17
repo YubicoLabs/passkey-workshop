@@ -283,6 +283,10 @@ h3 {
   color: var(--message-error, #FF4445) !important;
 }
 
+.text-success {
+  color: var(--message-error, #6EC500) !important;
+}
+
 a .text-1 {
   text-decoration: none;
 }

@@ -3,7 +3,9 @@ const PasskeyServices = {
   sendAttestationResult,
   getCredentials,
   deleteCredential,
-  updateCredential
+  updateCredential,
+  getAdvancedProtectionStatus,
+  setAdvancedProtectionStatus
 }
 
 const baseURL = process.env.REACT_APP_API || "http://localhost:8080/v1";
@@ -150,6 +152,63 @@ async function updateCredential(credentialId, newNickname) {
   } catch (e) {
     console.error("There was an issue getting your credentials")
     console.error(e.message)
+    throw e;
+  }
+}
+
+async function getAdvancedProtectionStatus(userHandle) {
+
+  try {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }};
+
+    const response = await fetch(
+      `${baseURL}/user/advanced-protection/${userHandle}`,
+      requestOptions
+    );
+    const responseJSON = await response.json();
+
+    console.info(`Printing response for ${userHandle}`);
+    console.info(responseJSON);
+
+    return responseJSON;
+  } catch (e) {
+    console.error("API call failed. See the message below for details");
+    console.error(e.message);
+    throw e;
+  }
+}
+
+async function setAdvancedProtectionStatus(userHandle, newSetting) {
+  try {
+    const reqData = {
+      enabled: newSetting,
+    };
+
+    const requestOptions = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(reqData),
+    };
+
+    const response = await fetch(
+      `${baseURL}/user/advanced-protection/${userHandle}`,
+      requestOptions
+    );
+    const responseJSON = await response.json();
+
+    console.info(`Printing response for ${userHandle}`);
+    console.info(responseJSON);
+
+    return responseJSON;
+  } catch (e) {
+    console.error("API call failed. See the message below for details");
+    console.error(e.message);
     throw e;
   }
 }

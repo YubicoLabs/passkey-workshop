@@ -30,11 +30,14 @@ public class AttestationResponseCredential {
   @JsonProperty("isHighAssurance")
   boolean isHighAssurance;
 
+  @JsonProperty("state")
+  String state;
+
   @JsonCreator
   public AttestationResponseCredential(@JsonProperty("id") String id, @JsonProperty("type") String type,
       @JsonProperty("nickName") String nickName, @JsonProperty("registrationTime") String registrationTime,
       @JsonProperty("lastUsedTime") String lastUsedTime, @JsonProperty("iconURI") String iconURI,
-      @JsonProperty("isHighAssurance") boolean isHighAssurance) {
+      @JsonProperty("isHighAssurance") boolean isHighAssurance, @JsonProperty("state") String state) {
     this.id = id;
     this.type = type;
     this.nickName = nickName;
@@ -42,6 +45,7 @@ public class AttestationResponseCredential {
     this.lastUsedTime = lastUsedTime;
     this.iconURI = iconURI;
     this.isHighAssurance = isHighAssurance;
+    this.state = state;
   }
 
 }
