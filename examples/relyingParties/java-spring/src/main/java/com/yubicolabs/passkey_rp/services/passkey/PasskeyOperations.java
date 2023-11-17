@@ -177,6 +177,13 @@ public class PasskeyOperations {
             AdvancedProtectionStatus.builder()
                 .userHandle(options.getAttestationRequest().getUser().getId().getBase64Url())
                 .isAdvancedProtection(false).build());
+      } else {
+        if (relyingPartyInstance.getStorageInstance().getAdvancedProtectionStatusStorage()
+            .getIfPresent(options.getAttestationRequest().getUser().getId().getBase64Url()).get()
+            .isAdvancedProtection() && !newCred.isAttestationTrusted()) {
+          throw new Exception(
+              "This credential cannot be registered as you are enrolled in advanced protection. All new registrations should be made using a security key");
+        }
       }
 
       if (relyingPartyInstance.getStorageInstance().getCredentialStorage().addRegistration(toStore)) {
