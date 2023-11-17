@@ -4,7 +4,8 @@ import java.util.Collection;
 
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.data.ByteArray;
-import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;;
+import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;
+import com.yubicolabs.passkey_rp.models.common.CredentialRegistration.StateEnum;;
 
 public interface CredentialStorage extends CredentialRepository {
   /**
@@ -70,4 +71,21 @@ public interface CredentialStorage extends CredentialRepository {
   public Boolean updateCredentialNickname(ByteArray credentialId, String newNickname);
 
   // TODO = Add method for getAll()
+
+  /**
+   * Updates the state of a credential; Meant to allow for the reactivation of
+   * disabled credentials to support advanced protection
+   * 
+   * Allows for the state to be set to deleted, which is similar to the
+   * functionality in removeRegistration
+   * 
+   * Note, the method will not allow for a credential with the DELETED state to be
+   * re-enabled, or deactivated
+   * 
+   * @param credentialId ID of the credential to be updated
+   * @param userHandle   User handle of the user attempting to make the request
+   * @param newState     New state of the credential
+   * @return true if the operation was successful, false otherwise
+   */
+  public Boolean updateCredentialStatus(ByteArray credentialId, ByteArray userHandle, StateEnum newState);
 }

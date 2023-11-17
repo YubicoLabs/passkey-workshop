@@ -105,6 +105,22 @@ public class CredentialStorage_Local implements CredentialStorage {
   }
 
   @Override
+  public Boolean updateCredentialStatus(ByteArray credentialId, ByteArray userHandle, StateEnum newState) {
+
+    credentialRepository.stream()
+        .filter(reg -> reg.getCredential().getCredentialId().equals(credentialId)
+            && reg.getUserIdentity().getId().equals(userHandle))
+        .forEach(reg -> {
+          if (!reg.getState().stateEqual(StateEnum.DELETED)) {
+            reg.setState(newState);
+          }
+        });
+
+    return getByCredentialId(credentialId).stream().findFirst().get().getState().getValue()
+        .equals(StateEnum.DELETED.getValue());
+  }
+
+  @Override
   public Boolean updateCredentialNickname(ByteArray credentialId, String newNickname) {
     /*
      * @TODO - Implement

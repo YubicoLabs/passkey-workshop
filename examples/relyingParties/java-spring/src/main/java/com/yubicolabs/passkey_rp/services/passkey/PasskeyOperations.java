@@ -568,6 +568,19 @@ public class PasskeyOperations {
   public AdvancedProtection updateAdvancedProtectionStatus(String userHandle,
       UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) throws Exception {
     try {
+      /**
+       * Check if the user is eligible for advanced protection
+       */
+      if (updateAdvancedProtectionStatusRequest.getEnabled()) {
+        int numberOfHighAssuranceCredentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
+            .getRegistrationsByUserHandle(ByteArray.fromBase64Url(userHandle)).stream()
+            .filter(credential -> credential.isHighAssurance()).collect(Collectors.toList()).size();
+
+        if (numberOfHighAssuranceCredentials < 2) {
+          throw new Exception("The user does not qualify for advanced protection status");
+        }
+      }
+
       boolean didUpdate = relyingPartyInstance.getStorageInstance().getAdvancedProtectionStatusStorage()
           .setAdvancedProtection(userHandle, updateAdvancedProtectionStatusRequest.getEnabled());
 
@@ -583,6 +596,8 @@ public class PasskeyOperations {
          * credentials as enabled
          */
 
+        updateCredentialsForAdvancedProtection(updated.getUserHandle(), updated.isAdvancedProtection());
+
         return AdvancedProtection.builder().userHandle(updated.getUserHandle())
             .enabled(updated.isAdvancedProtection()).build();
       } else {
@@ -590,7 +605,30 @@ public class PasskeyOperations {
       }
     } catch (Exception e) {
       e.printStackTrace();
-      throw new Exception("There was an issue updating the advanced protection status for the user");
+      throw new Exception("There was an issue updating the advanced protection status for the user: " + e.getMessage());
+    }
+  }
+
+  private void updateCredentialsForAdvancedProtection(String userHandle, Boolean isAdvancedProtection)
+      throws Exception {
+    Collection<CredentialRegistration> credList = relyingPartyInstance.getStorageInstance().getCredentialStorage()
+        .getRegistrationsByUserHandle(ByteArray.fromBase64Url(userHandle));
+    if (!credList.isEmpty()) {
+      credList.forEach(credential -> {
+        try {
+          if (!credential.isHighAssurance() && !credential.getState().stateEqual(StateEnum.DELETED)) {
+            relyingPartyInstance.getStorageInstance().getCredentialStorage()
+                .updateCredentialStatus(credential.getCredential().getCredentialId(),
+                    ByteArray.fromBase64Url(userHandle),
+                    isAdvancedProtection ? StateEnum.DISABLED : StateEnum.ENABLED);
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+
+      });
+    } else {
+      throw new Exception("This user has no credentials");
     }
   }
 

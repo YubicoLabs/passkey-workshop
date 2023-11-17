@@ -76,5 +76,15 @@ public class CredentialRegistration {
       throw new IllegalArgumentException("Unexpected value " + value);
     }
 
+    public boolean stateEqual(Object o) {
+      if (o instanceof StateEnum) {
+        StateEnum s = (StateEnum) o;
+
+        return s.value.equals(this.value);
+      } else {
+        return false;
+      }
+    }
+
   }
 }

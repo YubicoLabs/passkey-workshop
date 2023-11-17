@@ -94,7 +94,6 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
       credentialRegistrationRepositoryMySql.save(newItem);
       return true;
     } catch (Exception e) {
-      System.out.println("There was an issue saving your registration");
       e.printStackTrace();
       return false;
     }
@@ -120,7 +119,6 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
           .map(regDBO -> buildCredentialRegistration(regDBO)).collect(Collectors.toList());
 
     } catch (Exception e) {
-      System.out.println("There was an issue generating a list of credentials");
       e.printStackTrace();
       return new ArrayList<CredentialRegistration>();
     }
@@ -201,6 +199,54 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
     }
   }
 
+  /**
+   * Method that replaces removeRegisterion
+   * 
+   * The registration no longer needs to be deleted by the database, and instead
+   * requires that the status changes
+   * A credential can have three status'
+   * 
+   * ENABLED - The credential is registered and can be used for authentication
+   * DISABLED - The credential was deactivated when the user enrolled in advanced
+   * protection. The credential can be re enabled, but for now can't be used for
+   * authentication
+   * DELETED - The user deleted the credential and SHOULD NOT be re-enabled
+   * 
+   * @param credentialId
+   * @param userHandle
+   * @return
+   */
+  @Override
+  public Boolean updateCredentialStatus(ByteArray credentialId, ByteArray userHandle, StateEnum newState) {
+    try {
+      Collection<CredentialRegistration> credList = getRegistrationsByUserHandle(userHandle);
+
+      if (!credList.isEmpty()) {
+        CredentialRegistrationDBO dboItem = credentialRegistrationRepositoryMySql
+            .findByCredentialID(credentialId.getBase64Url()).get(0);
+
+        if (dboItem.getState().equals(StateEnum.DELETED.getValue())) {
+          throw new Exception("Cannot change the state of a deleted credential");
+        }
+
+        dboItem.setState(newState.getValue());
+
+        CredentialRegistrationDBO newDbo = credentialRegistrationRepositoryMySql.save(dboItem);
+
+        if (newDbo.getState().equals(newState.getValue())) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
   @Override
   public Boolean updateCredentialNickname(ByteArray credentialId, String newNickname) {
     try {
@@ -223,7 +269,6 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
       }
     } catch (Exception e) {
       e.printStackTrace();
-      System.out.println("There was a failure updating the id");
       return false;
     }
   }
