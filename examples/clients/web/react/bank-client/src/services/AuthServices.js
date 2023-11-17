@@ -47,11 +47,6 @@ const getAccessToken = async(type, code) => {
       }
     );
 
-    if(response.status !== 200) {
-      window.localStorage.removeItem("USER_INFO");
-      throw new Error("Access token not found");
-    }
-
     const responseJSON = await response.json();
 
     window.localStorage.setItem(
@@ -96,10 +91,14 @@ const stillAuthenticated = async () => {
       return false
     } 
     
+    console.log("Checking access token");
     const accessCodeStillValid = await testAccessToken(accessToken.access_token);
   
     if(!accessCodeStillValid) {
+      console.log("Access token not valid, refreshing");
       const refreshSuccess = await getAccessToken("REFRESH", accessToken.refresh_token);
+
+      console.log("Testing refreshed token");
       await testAccessToken(refreshSuccess.access_token)
       console.log("Refresh success: " + refreshSuccess);
       if(!refreshSuccess) {
@@ -124,10 +123,8 @@ const testAccessToken = async (code) => {
         }
       }
     )
-    if(response.status !== 200) {
-      window.localStorage.removeItem("USER_INFO");
-      throw new Error("This access token is no longer valid");
-    }
+    console.log("Test access token status: " + response.status);
+
     const responseJSON = await response.json();
     
     window.localStorage.setItem(

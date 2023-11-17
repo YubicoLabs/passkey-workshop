@@ -4,6 +4,7 @@ export default function LogoutContainer() {
   const logoutButton = () => {
     const logout_uri = AuthServices.getLogoutUri();
     localStorage.removeItem("APP_ACCESS_TOKENS");
+    localStorage.removeItem("USER_INFO");
     window.location.replace(logout_uri);
   };
 
