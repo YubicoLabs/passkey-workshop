@@ -2,64 +2,37 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import PasskeyServices from "../services/PasskeyServices";
 import { useEffect, useState } from "react";
+import AuthServices from "../services/AuthServices";
 
-export default function AdvancedProtectionContainer() {
+export default function AdvancedProtectionContainer({
+  isAdvancedProtectionEligible,
+  refreshCredentialListCallback,
+}) {
   const [hasAdvancedProtection, setHasAdvancedProtection] = useState(false);
-  const [advancedProtectionEligable, setAdvancedProtectionEligable] =
-    useState(false);
 
   /**
    * Return true if the account can enroll in AP, false otherwise
    */
   useEffect(() => {
-    const determineAdvancedProtectionEligable = async () => {
-      // Call to RP to get the list of credentials
-      //Iterate through credentials, count the # of HA credentials
-      //If < 2, allow the button to be triggered, display green message
-      const lsString = window.localStorage.getItem("USER_INFO");
-      const response = JSON.parse(lsString);
-      const username = response.preferred_username;
-      const passkeyList = await PasskeyServices.getCredentials(username);
-
-      let highAssuranceCount = 0;
-
-      passkeyList.credentials.forEach((element) => {
-        console.log(element);
-        if (element.isHighAssurance) {
-          highAssuranceCount++;
-        }
-      });
-
-      if (highAssuranceCount >= 2) {
-        setAdvancedProtectionEligable(true);
-      }
-    };
-
     const checkHasAdvancedProtection = async () => {
-      const lsString = window.localStorage.getItem("USER_INFO");
-      const response = JSON.parse(lsString);
-      const userHandle = response.sub;
       const status = await PasskeyServices.getAdvancedProtectionStatus(
-        userHandle
+        AuthServices.getLocalUserHandle()
       );
 
       setHasAdvancedProtection(status.enabled);
     };
 
     checkHasAdvancedProtection();
-    determineAdvancedProtectionEligable();
   }, []);
 
   const changeAdvancedProtectionStatus = async () => {
-    const lsString = window.localStorage.getItem("USER_INFO");
-    const response = JSON.parse(lsString);
-    const userHandle = response.sub;
     const result = await PasskeyServices.setAdvancedProtectionStatus(
-      userHandle,
+      AuthServices.getLocalUserHandle(),
       !hasAdvancedProtection
     );
 
     setHasAdvancedProtection(result.enabled);
+    await refreshCredentialListCallback();
   };
 
   return (
@@ -71,7 +44,7 @@ export default function AdvancedProtectionContainer() {
             <Col lg={10} xs={12}>
               <div className="ap-meta-info">
                 <h3>Enable advanced protection</h3>
-                {advancedProtectionEligable ? (
+                {isAdvancedProtectionEligible ? (
                   <div className="body-2 text-success">
                     Your account is eligible for advanced protection.
                   </div>
@@ -105,7 +78,7 @@ export default function AdvancedProtectionContainer() {
             <Col lg={2} xs={12}>
               <label className="switch">
                 <input
-                  disabled={!advancedProtectionEligable}
+                  disabled={!isAdvancedProtectionEligible}
                   type="checkbox"
                   checked={hasAdvancedProtection}
                   onChange={changeAdvancedProtectionStatus}
