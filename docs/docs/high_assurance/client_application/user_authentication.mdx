@@ -1,0 +1,34 @@
+---
+sidebar_position: 2
+---
+
+import ReactPlayer from "react-player";
+
+# User authentication
+
+This section will cover how a user will authenticate into their account.
+
+## Demonstration
+
+The videos below will demonstrate how a user authenticates in the application.
+
+:::tip
+The flows shown below don't differ much from what was shown in the previous section on [authentication flows](/docs/web-client/user-flows#authentication). Our example application leverages the same mechanisms, just presented with different styling.
+:::
+
+This first video will demonstrate how a user will authenticate into an account using autofill/conditional mediation
+
+This second video will demonstrate how a user will authenticate simply by pressing the **Sign in with passkey** button
+
+This third video will demonstrate how a user can authenticate by first providing their username. This flow can be used to support both passkeys and non-discoverable credentials (which are both valid WebAuthn credentials).
+
+## UX Considerations
+
+Below is a list of different user experience notes based on the demonstration above
+
+1. The experience for authenticating with passkeys should be consistent to help promote adoption. Try to not differ from the authentication patterns shown above to prevent confusion among users
+2. Autofill for passkeys was created as a way to encourage the use of passkeys by providing a mental model that is familiar to non-technical users. It is our recommendation to leverage autofill for your initial implementation to increase the adoption of passkeys among your users. There should be some eventual transition to the use of the "button-only" flow as a username input field will no longer be needed in a world where everyone is leveraging a passkey.
+
+## Implementation guidance
+
+As mentioned previously, please refer to the earlier section on [implementation guidance for authentication flows](/docs/web-client/auth-flow) to learn how to build the different authentication flows shown in the demonstration.
