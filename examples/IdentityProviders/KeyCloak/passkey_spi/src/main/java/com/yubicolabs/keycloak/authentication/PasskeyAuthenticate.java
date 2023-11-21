@@ -129,6 +129,10 @@ public class PasskeyAuthenticate implements Authenticator {
       e.printStackTrace();
       context.failure(AuthenticationFlowError.INVALID_CREDENTIALS);
       String actionType = getActionType(context);
+      String url = getWebAuthnAPIurl(context);
+      if (url.startsWith("http://host.docker.internal", 0)) {
+        url = url.replaceFirst("host.docker.internal", "localhost"); // kludge when running in a docker container
+      }
 
       if (actionType.equals("STEPUP")) {
         String currentUser = getUsername(context);
@@ -136,18 +140,21 @@ public class PasskeyAuthenticate implements Authenticator {
             .setAttribute("username", currentUser)
             .setAttribute("action_type", "STEPUP")
             .setAttribute("alert_message", "There was an issue authenticating, please try again")
+            .setAttribute("webauthnAPI", url)
             .createForm("passkey-stepup.ftl");
         context.challenge(form);
       } else if (actionType.equals("STANDARD")) {
         Response form = context.form()
             .setAttribute("action_type", "STANDARD")
             .setAttribute("alert_message", "There was an issue authenticating, please try again")
+            .setAttribute("webauthnAPI", url)
             .createForm("passkey-authenticate.ftl");
         context.challenge(form);
       } else {
         Response form = context.form()
             .setAttribute("action_type", "STANDARD")
             .setAttribute("alert_message", "There was an issue authenticating, please try again")
+            .setAttribute("webauthnAPI", url)
             .createForm("passkey-authenticate.ftl");
         context.challenge(form);
       }
