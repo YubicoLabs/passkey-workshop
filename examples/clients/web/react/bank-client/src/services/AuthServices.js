@@ -71,14 +71,12 @@ function getLocalAccessTokens() {
 function getLocalUserHandle() {
   const lsString = window.localStorage.getItem("USER_INFO");
   const response = JSON.parse(lsString);
-  //console.log(response);
   return response.sub;
 }
 
 function getLocalUsername() {
   const lsString = window.localStorage.getItem("USER_INFO");
   const response = JSON.parse(lsString);
-  //console.log(response);
   return response.preferred_username;
 }
 
@@ -91,16 +89,12 @@ const stillAuthenticated = async () => {
       return false
     } 
     
-    console.log("Checking access token");
     const accessCodeStillValid = await testAccessToken(accessToken.access_token);
   
     if(!accessCodeStillValid) {
-      console.log("Access token not valid, refreshing");
       const refreshSuccess = await getAccessToken("REFRESH", accessToken.refresh_token);
 
-      console.log("Testing refreshed token");
       await testAccessToken(refreshSuccess.access_token)
-      console.log("Refresh success: " + refreshSuccess);
       if(!refreshSuccess) {
         throw new Error("Refresh token could not be used");
       }
@@ -123,7 +117,6 @@ const testAccessToken = async (code) => {
         }
       }
     )
-    console.log("Test access token status: " + response.status);
 
     const responseJSON = await response.json();
     

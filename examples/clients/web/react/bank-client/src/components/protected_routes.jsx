@@ -1,21 +1,21 @@
 import { Outlet } from "react-router-dom";
 import AuthServices from "../services/AuthServices";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const ProtectedRoutes = ({ children }) => {
-  useEffect(() => {
-    const checkAuthenticated = async () => {
-      const isAuth = await AuthServices.stillAuthenticated();
-      console.log("Current auth status: " + isAuth);
-      if (!isAuth) {
-        localStorage.removeItem("APP_ACCESS_TOKENS");
-        localStorage.removeItem("USER_INFO");
-        window.location = AuthServices.AUTH_URL;
-      }
-    };
+  const [loading, setLoading] = useState(true);
 
-    checkAuthenticated();
-  }, []);
+  const checkAuthenticated = async () => {
+    console.log("This method should be called");
+    const isAuth = await AuthServices.stillAuthenticated();
+    if (!isAuth) {
+      localStorage.removeItem("APP_ACCESS_TOKENS");
+      localStorage.removeItem("USER_INFO");
+      window.location = AuthServices.AUTH_URL;
+    }
+  };
 
-  return <Outlet />;
+  checkAuthenticated();
+
+  return loading ? <div></div> : <Outlet />;
 };

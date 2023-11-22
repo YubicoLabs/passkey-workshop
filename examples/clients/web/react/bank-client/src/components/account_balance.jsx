@@ -1,6 +1,5 @@
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import BankServices from "../services/BankServices";
@@ -11,6 +10,7 @@ import Utils from "../services/Utils";
 export default function AccountBalance() {
   const [account, setAccount] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [error, setError] = useState(false);
 
   const getUserAccount = async () => {
     try {
@@ -20,7 +20,6 @@ export default function AccountBalance() {
        * Always get the first account found in the list
        */
       const currentAccount = accountsList.accounts[0];
-      console.log(currentAccount);
       if (currentAccount !== null && currentAccount !== undefined) {
         setAccount(currentAccount);
       } else {
@@ -30,6 +29,7 @@ export default function AccountBalance() {
       /**
        * Need to do something if the account cannot be found
        */
+      setError(true);
       console.error(e.message);
     }
   };
@@ -43,7 +43,6 @@ export default function AccountBalance() {
      * Always get the first account found in the list
      */
     if (transactionsList.transactions !== null) {
-      console.log(transactionsList.transactions);
       setTransactions(transactionsList.transactions);
     } else {
       setTransactions([]);
@@ -100,23 +99,34 @@ export default function AccountBalance() {
               ))}
             </div>
           </div>
-          {/*          <div>
-            <Link className="account-balance-link text-1" to="/payments">
-              View all{""}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none">
+        </div>
+      ) : error ? (
+        <div>
+          <div className="error-alert">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none">
+              <g clipPath="url(#clip0_11_895)">
                 <path
-                  d="M9.99984 6L8.58984 7.41L13.1698 12L8.58984 16.59L9.99984 18L15.9998 12L9.99984 6Z"
-                  fill="white"
+                  d="M12 5.99L19.53 19H4.47L12 5.99ZM12 2L1 21H23L12 2ZM13 16H11V18H13V16ZM13 10H11V14H13V10Z"
+                  fill="#F2F0FF"
                 />
-              </svg>
-            </Link>
+              </g>
+              <defs>
+                <clipPath id="clip0_11_895">
+                  <rect width="24" height="24" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+            <span>
+              There was an issue finding your account. Please refresh the page,
+              or attempt to logout and sign back in to your account. Please
+              contact your administrator if the problem persists.
+            </span>
           </div>
-          */}
         </div>
       ) : (
         <Spinner animation="border" role="status">

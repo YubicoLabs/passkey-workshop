@@ -15,11 +15,15 @@ export default function AdvancedProtectionContainer({
    */
   useEffect(() => {
     const checkHasAdvancedProtection = async () => {
-      const status = await PasskeyServices.getAdvancedProtectionStatus(
-        AuthServices.getLocalUserHandle()
-      );
+      try {
+        const status = await PasskeyServices.getAdvancedProtectionStatus(
+          AuthServices.getLocalUserHandle()
+        );
 
-      setHasAdvancedProtection(status.enabled);
+        setHasAdvancedProtection(status.enabled);
+      } catch (e) {
+        setHasAdvancedProtection(false);
+      }
     };
 
     checkHasAdvancedProtection();

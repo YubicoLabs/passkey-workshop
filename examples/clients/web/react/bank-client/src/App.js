@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, redirect } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 
 import Header from "./components/header";
@@ -27,6 +27,7 @@ function App() {
             </Route>
             <Route path="/callback/auth" element={<AuthCallback />} />
             <Route path="/error" element={<h1>ERROR</h1>} />
+            <Route path='*' element={<Navigate to='/' />} />
           </Routes>
         </Container>
       </BrowserRouter>

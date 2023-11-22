@@ -23,6 +23,7 @@ export default function Transactions() {
   const [transactionType, setTransactionType] = useState("deposit");
   const [amount, setAmount] = useState("");
   const [to, setTo] = useState("");
+  const [accountError, setAccountError] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
@@ -58,7 +59,9 @@ export default function Transactions() {
       } else {
         throw new Error("There was an issue getting the user's account");
       }
-    } catch (e) {}
+    } catch (e) {
+      setAccountError(true);
+    }
   };
 
   const isTransactionType = (type) => {
@@ -260,6 +263,34 @@ export default function Transactions() {
                 <button className="button-text" onClick={stepUpFailed}>
                   CANCEL
                 </button>
+              </div>
+            </div>
+          ) : accountError ? (
+            <div>
+              <div className="error-alert">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none">
+                  <g clipPath="url(#clip0_11_895)">
+                    <path
+                      d="M12 5.99L19.53 19H4.47L12 5.99ZM12 2L1 21H23L12 2ZM13 16H11V18H13V16ZM13 10H11V14H13V10Z"
+                      fill="#F2F0FF"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_11_895">
+                      <rect width="24" height="24" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+                <span>
+                  There was an issue finding your account. Please refresh the
+                  page, or attempt to logout and sign back in to your account.
+                  Please contact your administrator if the problem persists.
+                </span>
               </div>
             </div>
           ) : (

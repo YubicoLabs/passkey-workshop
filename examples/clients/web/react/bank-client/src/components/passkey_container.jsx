@@ -24,8 +24,6 @@ export default function PasskeyContainer({
           makeCredentialResult
         );
 
-      console.log(credentialCreateResult.status);
-
       if (credentialCreateResult.status === "created") {
         await refreshCredentialListCallback();
       } else {

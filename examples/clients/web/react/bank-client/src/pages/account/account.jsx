@@ -32,24 +32,24 @@ export default function Account() {
   };
 
   const checkAdvancedProtectionEligibility = async () => {
-    const passkeyList = await PasskeyServices.getCredentials(
-      AuthServices.getLocalUsername()
-    );
+    try {
+      const passkeyList = await PasskeyServices.getCredentials(
+        AuthServices.getLocalUsername()
+      );
 
-    let highAssuranceCount = 0;
-    console.log(passkeyList.credentials.length);
-    passkeyList.credentials.forEach((element) => {
-      console.log(element);
-      if (element.isHighAssurance) {
-        highAssuranceCount++;
+      let highAssuranceCount = 0;
+      passkeyList.credentials.forEach((element) => {
+        if (element.isHighAssurance) {
+          highAssuranceCount++;
+        }
+      });
+
+      if (highAssuranceCount >= 2) {
+        setIsAdvancedProtectionEligible(true);
+      } else {
+        setIsAdvancedProtectionEligible(false);
       }
-    });
-
-    console.log("HA Passkeys: " + highAssuranceCount);
-
-    if (highAssuranceCount >= 2) {
-      setIsAdvancedProtectionEligible(true);
-    } else {
+    } catch (e) {
       setIsAdvancedProtectionEligible(false);
     }
   };
