@@ -13,6 +13,7 @@ export const ProtectedRoutes = ({ children }) => {
       localStorage.removeItem("USER_INFO");
       window.location = AuthServices.AUTH_URL;
     }
+    setLoading(false);
   };
 
   checkAuthenticated();
