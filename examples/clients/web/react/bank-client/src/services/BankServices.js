@@ -133,7 +133,7 @@ async function createTransactions(accountId, type, amount, description) {
 
     if(response.status !== 200) {
       const responseJSON = await response.json();
-      responseJSON.status_code = 401;
+      responseJSON.status_code = response.status;
       console.log(responseJSON);
       throw responseJSON;
     }
@@ -182,7 +182,6 @@ async function getAccount(accountId) {
 
 function formatHeaders() {
   const accessToken = AuthServices.getLocalAccessTokens().access_token;
-  console.log("Access token: " + accessToken);
   return {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${accessToken}`

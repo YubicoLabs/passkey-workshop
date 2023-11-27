@@ -80,14 +80,17 @@ export default function Transactions() {
         throw new Error("No amount was provided for the transaction");
       }
       let transaction = to;
+      let thisAmount;
       if (transaction === "") {
         transaction = "New transaction";
       }
 
+      thisAmount = amount === "" ? 0 : Number(amount);
+
       const createTransactionResult = await BankServices.createTransactions(
         account.accountId,
         transactionType,
-        amount,
+        thisAmount,
         transaction
       );
 
@@ -200,7 +203,7 @@ export default function Transactions() {
                 <div>
                   <input
                     className="standard-input"
-                    type="text"
+                    type="number"
                     placeholder="Amount"
                     style={{ marginRight: "35px" }}
                     value={amount}

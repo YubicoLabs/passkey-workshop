@@ -3,8 +3,11 @@ import Col from "react-bootstrap/Col";
 
 import HomeNav from "../../components/home_nav";
 import AccountBalance from "../../components/account_balance";
+import Utils from "../../services/Utils";
+import AuthServices from "../../services/AuthServices";
 
 export default function Home() {
+  const cardName = Utils.cardName(AuthServices.getLocalUserHandle());
   return (
     <Row>
       <Col md={12} lg={5}>
@@ -26,7 +29,7 @@ export default function Home() {
               <Row className="card-gap-1">
                 <Col xs={6}>
                   <span className="caption-default">Name</span>
-                  <span className="card-text-name">Finn the Human</span>
+                  <span className="card-text-name">{cardName}</span>
                 </Col>
                 <Col xs={6}>
                   <span className="caption-default">Number</span>
