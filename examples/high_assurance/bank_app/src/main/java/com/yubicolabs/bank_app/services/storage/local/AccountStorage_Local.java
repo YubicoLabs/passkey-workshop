@@ -15,12 +15,11 @@ public class AccountStorage_Local implements AccountStorage {
   private Collection<Account> accountRepository = new HashSet<Account>();
 
   @Override
-  public Account create(String userhandle, boolean isAdvancedProtection, double balance, Instant createTime)
+  public Account create(String userhandle, double balance, Instant createTime)
       throws Exception {
 
     Account new_account = Account.builder()
         .userHandle(userhandle)
-        .advancedProtection(isAdvancedProtection)
         .balance(balance)
         .createTime(createTime)
         .id(ThreadLocalRandom.current().nextLong(100)).build();
@@ -44,14 +43,6 @@ public class AccountStorage_Local implements AccountStorage {
     return accountRepository.stream()
         .filter(account -> account.getId() == accountId)
         .findFirst();
-  }
-
-  @Override
-  public boolean setAdvancedProtection(int accountId, boolean setting) {
-    accountRepository.stream()
-        .filter(account -> account.getId() == accountId)
-        .forEach(account -> account.setAdvancedProtection(setting));
-    return setting == get(accountId).get().isAdvancedProtection();
   }
 
   @Override

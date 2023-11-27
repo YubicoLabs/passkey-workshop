@@ -11,15 +11,14 @@ public interface AccountStorage {
   /**
    * Creates a new user account
    * 
-   * @param userhandle           ID of the user
-   * @param isAdvancedProtection setting for advanced protection (default false)
-   * @param balance              balance to enter into account
-   * @param createTime           time of creation
+   * @param userhandle ID of the user
+   * @param balance    balance to enter into account
+   * @param createTime time of creation
    * 
    * @return new Account that was created
    * @throws Exception if account creation not successful
    */
-  public Account create(String userhandle, boolean isAdvancedProtection, double balance, Instant createTime)
+  public Account create(String userhandle, double balance, Instant createTime)
       throws Exception;
 
   /**
@@ -37,18 +36,6 @@ public interface AccountStorage {
    * @return Account object
    */
   public Optional<Account> get(int accountId);
-
-  /**
-   * Update the setting of an accounts advanced protection setting
-   * 
-   * @param accountId The ID of the account being updated
-   * @param setting   The desired AP setting for the account
-   *                  Note - It is possible to set an account with true to true,
-   *                  this will still result in a successful request (same with
-   *                  false to false)
-   * @return true if the account was updated, false otherwise
-   */
-  public boolean setAdvancedProtection(int accountId, boolean setting);
 
   /**
    * Process a withdraw or deposit for a specific account

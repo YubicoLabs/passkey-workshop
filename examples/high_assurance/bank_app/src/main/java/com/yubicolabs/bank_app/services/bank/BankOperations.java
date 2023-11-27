@@ -17,10 +17,8 @@ import com.yubicolabs.bank_app.models.api.AccountDetailListResponse;
 import com.yubicolabs.bank_app.models.api.AccountResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionListResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionResponse;
-import com.yubicolabs.bank_app.models.api.AdvancedProtectionStatusResponse;
 import com.yubicolabs.bank_app.models.api.CreateAccountResponse;
 import com.yubicolabs.bank_app.models.api.TransactionCreateResponse;
-import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusResponse;
 import com.yubicolabs.bank_app.models.common.Account;
 import com.yubicolabs.bank_app.models.common.AccountTransaction;
 import com.yubicolabs.bank_app.services.storage.StorageInstance;
@@ -47,7 +45,6 @@ public class BankOperations {
 
     List<AccountResponse> responseList = accountList.stream().map(account -> AccountResponse.builder()
         .accountId(account.getId().intValue())
-        .advancedProtection(account.isAdvancedProtection())
         .balance(BigDecimal.valueOf(account.getBalance()))
         .build()).collect(Collectors.toList());
 
@@ -77,7 +74,6 @@ public class BankOperations {
     return AccountResponse.builder()
         .accountId(account.getId().intValue())
         .balance(BigDecimal.valueOf(account.getBalance()))
-        .advancedProtection(account.isAdvancedProtection())
         .build();
   }
 
@@ -119,31 +115,6 @@ public class BankOperations {
     return AccountTransactionListResponse.builder().transactions(final_list).build();
   }
 
-  public AdvancedProtectionStatusResponse getAdvancedProtectionStatus(int accountId, String userhandle)
-      throws Exception {
-    Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(accountId);
-
-    /**
-     * Check that an account exists
-     */
-    if (!maybeAccount.isPresent()) {
-      throw new Exception("The account does not exist");
-    }
-
-    Account account = maybeAccount.get();
-
-    /**
-     * Check that the requestor is the owner of the account
-     * TODO, update the string passed into this method
-     */
-    if (!account.getUserHandle().equals(userhandle)) {
-      throw new Exception("Your account is not authorized to access this resource");
-    }
-
-    return AdvancedProtectionStatusResponse.builder().enabled(account.isAdvancedProtection()).build();
-
-  }
-
   public CreateAccountResponse createAccount(String userhandle) throws Exception {
     /**
      * Consider adding a check where we check both the username and userhandle
@@ -155,7 +126,7 @@ public class BankOperations {
         throw new Exception("This user already has an account");
       }
 
-      storageInstance.getAccountStorage().create(userhandle, false, 3000, Instant.now());
+      storageInstance.getAccountStorage().create(userhandle, 3000, Instant.now());
 
       return CreateAccountResponse.builder().status("created").build();
     } catch (Exception e) {
@@ -214,37 +185,4 @@ public class BankOperations {
       throw new Exception("[Error] there was an issue recording the transaction");
     }
   }
-
-  public UpdateAdvancedProtectionStatusResponse updateAdvancedProtection(int accountId, boolean enabled,
-      String userhandle)
-      throws Exception {
-    Optional<Account> maybeAccount = storageInstance.getAccountStorage().get(accountId);
-
-    /**
-     * Check that an account exists
-     */
-    if (!maybeAccount.isPresent()) {
-      throw new Exception("The account does not exist");
-    }
-
-    Account account = maybeAccount.get();
-
-    /**
-     * Check that the requestor is the owner of the account
-     * TODO, update the string passed into this method
-     */
-    if (!account.getUserHandle().equals(userhandle)) {
-      throw new Exception("Your account is not authorized to access this resource");
-    }
-
-    boolean didUpdate = storageInstance.getAccountStorage().setAdvancedProtection(accountId, enabled);
-
-    if (didUpdate) {
-      return UpdateAdvancedProtectionStatusResponse.builder().enabled(true).build();
-    } else {
-      throw new Exception("There was an issue updating your account");
-    }
-
-  }
-
 }

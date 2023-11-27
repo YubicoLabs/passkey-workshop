@@ -31,10 +31,6 @@ public class AccountDBO {
 
   @Getter
   @Setter
-  Boolean advancedProtection;
-
-  @Getter
-  @Setter
   double balance;
 
   @Getter

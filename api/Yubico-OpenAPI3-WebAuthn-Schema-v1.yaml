@@ -220,6 +220,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /v1/user/advanced-protection/{userHandle}:
+    get:
+      summary: Get advanced protection status for a user
+      operationId: AdvancedProtectionStatus
+      parameters:
+        - in: path
+          name: userHandle
+          schema:
+            type: string
+          required: true
+          description: User handle of the user account for advanced protection status
+      security:
+        - OAuth2: []
+      responses:
+        "200":
+          description: Advanced protection status response is (true|false)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdvancedProtectionStatusResponse"
+        "400":
+          description: Failed request response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: Update/Set advanced protection status for account
+      operationId: UpdateAdvancedProtectionStatus
+      parameters:
+        - in: path
+          name: userHandle
+          schema:
+            type: text
+          required: true
+          description: User handle of the user account for advanced protection status
+      requestBody:
+        description: Update advanced protection status for account
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAdvancedProtectionStatusRequest"
+      security:
+        - OAuth2: []
+      responses:
+        "200":
+          description: Successful advanced protection status response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateAdvancedProtectionStatusResponse"
+        "400":
+          description: Failed request response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   # Schemas
   schemas:
@@ -599,6 +657,29 @@ components:
           type: string
           example: DthUeofXNtlMevkt_M7aiD3cm70...
     UserCredentialDeleteResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          example: deleted
+    AdvancedProtection:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          example: 1349
+        enabled:
+          type: boolean
+          example: true
+    UpdateAdvancedProtectionStatusRequest:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+    AdvancedProtectionStatusResponse:
+      $ref: "#/components/schemas/AdvancedProtection"
+    UpdateAdvancedProtectionStatusResponse:
       type: object
       properties:
         result:

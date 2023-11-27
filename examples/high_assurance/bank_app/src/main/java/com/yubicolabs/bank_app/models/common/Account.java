@@ -15,10 +15,6 @@ public class Account {
 
   @Getter
   @Setter
-  boolean advancedProtection;
-
-  @Getter
-  @Setter
   double balance;
 
   @Getter

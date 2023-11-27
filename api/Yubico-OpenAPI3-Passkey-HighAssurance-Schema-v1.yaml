@@ -1,17 +1,17 @@
 openapi: "3.0.0"
 info:
   title: Passkey WebAuthn High Assurance API by Yubico
-  description: | 
+  description: |
     This REST API allows a developer to interact with a ficticious bank application through any web, mobile, or commandline client
   version: 1.0.2
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-servers: 
-- url: https://{api_endpoint}
-  variables:
-    api_endpoint:
-      default: api.pkbank.io
+servers:
+  - url: https://{api_endpoint}
+    variables:
+      api_endpoint:
+        default: api.pkbank.io
 
 paths:
   /v1/status:
@@ -149,64 +149,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /v1/account/{accountId}/advanced-protection:
-    get:
-      summary: Get advanced protection status for account
-      operationId: AdvancedProtectionStatus
-      parameters:
-        - in: path
-          name: accountId
-          schema:
-            type: integer
-          required: true
-          description: ID of account for advanced protection status
-      security:
-        - OAuth2: []
-      responses:
-        "200":
-          description: Advanced protection status response is (true|false)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AdvancedProtectionStatusResponse"
-        "400":
-          description: Failed request response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    put:
-      summary: Update/Set advanced protection status for account
-      operationId: UpdateAdvancedProtectionStatus
-      parameters:
-        - in: path
-          name: accountId
-          schema:
-            type: integer
-          required: true
-          description: ID of bank account to return
-      requestBody:
-        description: Update advanced protection status for account
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateAdvancedProtectionStatusRequest"
-      security:
-        - OAuth2: []
-      responses:
-        "200":
-          description: Successful advanced protection status response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UpdateAdvancedProtectionStatusResponse"
-        "400":
-          description: Failed request response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
 components:
   # Schemas
   schemas:
@@ -225,9 +167,6 @@ components:
         balance:
           type: number
           example: $498.02
-        advancedProtection:
-          type: boolean
-          example: false
     CreateAccountRequest:
       type: object
       properties:
@@ -295,29 +234,6 @@ components:
           example: birthday gift
     TransactionCreateResponse:
       $ref: "#/components/schemas/AccountTransaction"
-    AdvancedProtection:
-      type: object
-      properties:
-        accountId:
-          type: integer
-          example: 1349
-        enabled:
-          type: boolean
-          example: true
-    UpdateAdvancedProtectionStatusRequest:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-    AdvancedProtectionStatusResponse:
-      $ref: "#/components/schemas/AdvancedProtection"
-    UpdateAdvancedProtectionStatusResponse:
-      type: object
-      properties:
-        result:
-          type: string
-          example: deleted
     AttestationOptionsRequest:
       type: object
       properties:

@@ -15,10 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.yubicolabs.bank_app.models.api.AccountTransactionListResponse;
-import com.yubicolabs.bank_app.models.api.AdvancedProtectionStatusResponse;
 import com.yubicolabs.bank_app.models.api.CreateAccountResponse;
 import com.yubicolabs.bank_app.models.api.TransactionCreateResponse;
-import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusResponse;
 import com.yubicolabs.bank_app.models.common.Account;
 import com.yubicolabs.bank_app.models.common.AccountTransaction;
 import com.yubicolabs.bank_app.services.bank.BankOperations;

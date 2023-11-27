@@ -10,11 +10,9 @@ import com.yubicolabs.bank_app.models.api.AccountResponse;
 import com.yubicolabs.bank_app.models.api.AccountDetailListResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionResponse;
 import com.yubicolabs.bank_app.models.api.AccountTransactionListResponse;
-import com.yubicolabs.bank_app.models.api.AdvancedProtection;
 import com.yubicolabs.bank_app.models.api.CreateAccountRequest;
 import com.yubicolabs.bank_app.models.api.Error;
 import com.yubicolabs.bank_app.models.api.TransactionCreateRequest;
-import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -91,7 +89,7 @@ public interface V1Api {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"accountId\" : 1234, \"advancedProtection\" : false, \"balance\" : 0.8008281904610115 }";
+                    String exampleString = "{ \"accountId\" : 1234, \"balance\" : 0.8008281904610115 }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -135,39 +133,6 @@ public interface V1Api {
     }
 
     /**
-     * GET /v1/account/{accountId}/advanced-protection : Get advanced protection
-     * status for account
-     *
-     * @param accountId ID of account for advanced protection status (required)
-     * @return Advanced protection status response is (true|false) (status code 200)
-     *         or Failed request response (status code 400)
-     */
-    @Operation(operationId = "advancedProtectionStatus", summary = "Get advanced protection status for account", responses = {
-            @ApiResponse(responseCode = "200", description = "Advanced protection status response is (true|false)", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = AdvancedProtection.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Failed request response", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
-            })
-    })
-    @RequestMapping(method = RequestMethod.GET, value = "/v1/account/{accountId}/advanced-protection", produces = {
-            "application/json" })
-    default ResponseEntity<AdvancedProtection> advancedProtectionStatus(
-            @Parameter(name = "accountId", description = "ID of account for advanced protection status", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"accountId\" : 1349, \"enabled\" : true }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
-    /**
      * POST /v1/accounts : Admin API to create a new bank account for user
      *
      * @param body Create a new account by specifying userHandle (required)
@@ -189,7 +154,7 @@ public interface V1Api {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"accountId\" : 1234, \"advancedProtection\" : false, \"balance\" : 0.8008281904610115 }";
+                    String exampleString = "{ \"accountId\" : 1234, \"balance\" : 0.8008281904610115 }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -216,7 +181,7 @@ public interface V1Api {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"accounts\" : [ { \"accountId\" : 1234, \"advancedProtection\" : false, \"balance\" : 0.8008281904610115 }, { \"accountId\" : 1234, \"advancedProtection\" : false, \"balance\" : 0.8008281904610115 } ] }";
+                    String exampleString = "{ \"accounts\" : [ { \"accountId\" : 1234, \"balance\" : 0.8008281904610115 }, { \"accountId\" : 1234, \"balance\" : 0.8008281904610115 } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -259,42 +224,4 @@ public interface V1Api {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
-
-    /**
-     * PUT /v1/account/{accountId}/advanced-protection : Update/Set advanced
-     * protection status for account
-     *
-     * @param accountId                             ID of bank account to return
-     *                                              (required)
-     * @param updateAdvancedProtectionStatusRequest Update advanced protection
-     *                                              status for account (required)
-     * @return Successful advanced protection status response (status code 200)
-     *         or Failed request response (status code 400)
-     */
-    @Operation(operationId = "updateAdvancedProtectionStatus", summary = "Update/Set advanced protection status for account", responses = {
-            @ApiResponse(responseCode = "200", description = "Successful advanced protection status response", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = AdvancedProtection.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Failed request response", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
-            })
-    })
-    @RequestMapping(method = RequestMethod.PUT, value = "/v1/account/{accountId}/advanced-protection", produces = {
-            "application/json" }, consumes = { "application/json" })
-    default ResponseEntity<AdvancedProtection> updateAdvancedProtectionStatus(
-            @Parameter(name = "accountId", description = "ID of bank account to return", required = true, in = ParameterIn.PATH) @PathVariable("accountId") Integer accountId,
-            @Parameter(name = "UpdateAdvancedProtectionStatusRequest", description = "Update advanced protection status for account", required = true) @Valid @RequestBody UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"accountId\" : 1349, \"enabled\" : true }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
 }

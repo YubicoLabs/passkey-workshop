@@ -19,18 +19,16 @@ public class AccountStorage_mysql implements AccountStorage {
   AccountStorageRepositoryMysql accountStorageRepositoryMysql;
 
   @Override
-  public Account create(String userhandle, boolean isAdvancedProtection, double balance, Instant createTime)
+  public Account create(String userhandle, double balance, Instant createTime)
       throws Exception {
     try {
 
       AccountDBO newItem = AccountDBO.builder().userHandle(userhandle)
-          .advancedProtection(isAdvancedProtection)
           .balance(balance).build();
 
       accountStorageRepositoryMysql.save(newItem);
 
-      Account account = Account.builder().userHandle(userhandle)
-          .advancedProtection(isAdvancedProtection).id(newItem.getId())
+      Account account = Account.builder().userHandle(userhandle).id(newItem.getId())
           .balance(balance).createTime(newItem.getCreateTime().toInstant()).build();
       return account;
     } catch (Exception e) {
@@ -57,38 +55,6 @@ public class AccountStorage_mysql implements AccountStorage {
       return Optional.of(buildAccount(maybeItem.get()));
     } else {
       return Optional.ofNullable(null);
-    }
-  }
-
-  @Override
-  public boolean setAdvancedProtection(int accountId, boolean setting) {
-    try {
-      /**
-       * Check if account is valid
-       */
-      Optional<Account> maybeAccount = get(accountId);
-
-      if (maybeAccount.isPresent()) {
-        AccountDBO updateDBO = accountStorageRepositoryMysql
-            .findById(new Long(accountId)).get();
-
-        updateDBO.setAdvancedProtection(setting);
-
-        AccountDBO newDBO = accountStorageRepositoryMysql.save(updateDBO);
-
-        if (newDBO.getAdvancedProtection() == setting) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } else {
-        return false;
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println("[Error]: Setting advanced protection failed at MySQL");
-      return false;
     }
   }
 
@@ -123,7 +89,6 @@ public class AccountStorage_mysql implements AccountStorage {
   private Account buildAccount(AccountDBO accountDBO) {
     return Account.builder()
         .userHandle(accountDBO.getUserHandle())
-        .advancedProtection(accountDBO.getAdvancedProtection())
         .balance(accountDBO.getBalance())
         .createTime(accountDBO.getCreateTime().toInstant())
         .id(accountDBO.getId())

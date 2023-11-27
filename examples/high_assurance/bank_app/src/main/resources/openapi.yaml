@@ -152,68 +152,7 @@ paths:
       summary: Create a new transaction
       x-content-type: application/json
       x-accepts: application/json
-  /v1/account/{accountId}/advanced-protection:
-    get:
-      operationId: AdvancedProtectionStatus
-      parameters:
-        - description: ID of account for advanced protection status
-          explode: false
-          in: path
-          name: accountId
-          required: true
-          schema:
-            type: integer
-          style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AdvancedProtectionStatusResponse"
-          description: Advanced protection status response is (true|false)
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-          description: Failed request response
-      summary: Get advanced protection status for account
-      x-accepts: application/json
-    put:
-      operationId: UpdateAdvancedProtectionStatus
-      parameters:
-        - description: ID of bank account to return
-          explode: false
-          in: path
-          name: accountId
-          required: true
-          schema:
-            type: integer
-          style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateAdvancedProtectionStatusRequest"
-        description: Update advanced protection status for account
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UpdateAdvancedProtectionStatusResponse"
-          description: Successful advanced protection status response
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-          description: Failed request response
-      summary: Update/Set advanced protection status for account
-      x-content-type: application/json
-      x-accepts: application/json
-components:
+  components:
   schemas:
     APIStatus:
       example:
@@ -226,7 +165,6 @@ components:
     Account:
       example:
         accountId: 1234
-        advancedProtection: false
         balance: 0.8008281904610115
       properties:
         accountId:
@@ -234,9 +172,6 @@ components:
           type: integer
         balance:
           type: number
-        advancedProtection:
-          example: false
-          type: boolean
       type: object
     CreateAccountRequest:
       properties:
@@ -252,10 +187,8 @@ components:
       example:
         accounts:
           - accountId: 1234
-            advancedProtection: false
             balance: 0.8008281904610115
           - accountId: 1234
-            advancedProtection: false
             balance: 0.8008281904610115
       properties:
         accounts:
@@ -330,30 +263,6 @@ components:
       type: object
     TransactionCreateResponse:
       $ref: "#/components/schemas/AccountTransaction"
-    AdvancedProtection:
-      example:
-        accountId: 1349
-        enabled: true
-      properties:
-        accountId:
-          example: 1349
-          type: integer
-        enabled:
-          example: true
-          type: boolean
-      type: object
-    UpdateAdvancedProtectionStatusRequest:
-      example:
-        enabled: true
-      properties:
-        enabled:
-          example: true
-          type: boolean
-      type: object
-    AdvancedProtectionStatusResponse:
-      $ref: "#/components/schemas/AdvancedProtection"
-    UpdateAdvancedProtectionStatusResponse:
-      $ref: "#/components/schemas/AdvancedProtection"
     Error:
       properties:
         status:

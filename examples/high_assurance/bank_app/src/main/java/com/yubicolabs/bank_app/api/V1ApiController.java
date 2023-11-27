@@ -3,7 +3,6 @@ package com.yubicolabs.bank_app.api;
 import com.yubicolabs.bank_app.models.api.CreateAccountRequest;
 import com.yubicolabs.bank_app.models.api.Error;
 import com.yubicolabs.bank_app.models.api.TransactionCreateRequest;
-import com.yubicolabs.bank_app.models.api.UpdateAdvancedProtectionStatusRequest;
 import com.yubicolabs.bank_app.services.bank.BankOperations;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,18 +64,6 @@ public class V1ApiController implements V1Api {
     }
 
     @Override
-    public ResponseEntity advancedProtectionStatus(
-            Integer accountId) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(bankOperations.getAdvancedProtectionStatus(accountId.intValue(), getUserHandleFromJwt()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
-        }
-    }
-
-    @Override
     public ResponseEntity createAccountRequest(CreateAccountRequest body) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
@@ -108,19 +95,6 @@ public class V1ApiController implements V1Api {
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Error.builder().status("error").errorMessage(e.getMessage()).build());
-        }
-    }
-
-    @Override
-    public ResponseEntity updateAdvancedProtectionStatus(Integer accountId,
-            UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(bankOperations.updateAdvancedProtection(accountId.intValue(),
-                            updateAdvancedProtectionStatusRequest.getEnabled(), getUserHandleFromJwt()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Error.builder().status("error").errorMessage(e.getMessage()).build());

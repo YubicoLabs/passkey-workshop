@@ -28,9 +28,6 @@ public class AccountResponse {
   @JsonProperty("balance")
   private BigDecimal balance;
 
-  @JsonProperty("advancedProtection")
-  private Boolean advancedProtection;
-
   public AccountResponse accountId(Integer accountId) {
     this.accountId = accountId;
     return this;
@@ -71,26 +68,6 @@ public class AccountResponse {
     this.balance = balance;
   }
 
-  public AccountResponse advancedProtection(Boolean advancedProtection) {
-    this.advancedProtection = advancedProtection;
-    return this;
-  }
-
-  /**
-   * Get advancedProtection
-   * 
-   * @return advancedProtection
-   */
-
-  @Schema(name = "advancedProtection", example = "false", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  public Boolean getAdvancedProtection() {
-    return advancedProtection;
-  }
-
-  public void setAdvancedProtection(Boolean advancedProtection) {
-    this.advancedProtection = advancedProtection;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -101,13 +78,12 @@ public class AccountResponse {
     }
     AccountResponse account = (AccountResponse) o;
     return Objects.equals(this.accountId, account.accountId) &&
-        Objects.equals(this.balance, account.balance) &&
-        Objects.equals(this.advancedProtection, account.advancedProtection);
+        Objects.equals(this.balance, account.balance);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(accountId, balance, advancedProtection);
+    return Objects.hash(accountId, balance);
   }
 
   @Override
@@ -116,7 +92,6 @@ public class AccountResponse {
     sb.append("class Account {\n");
     sb.append("    accountId: ").append(toIndentedString(accountId)).append("\n");
     sb.append("    balance: ").append(toIndentedString(balance)).append("\n");
-    sb.append("    advancedProtection: ").append(toIndentedString(advancedProtection)).append("\n");
     sb.append("}");
     return sb.toString();
   }
