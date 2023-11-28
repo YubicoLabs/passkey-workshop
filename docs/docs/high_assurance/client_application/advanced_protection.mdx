@@ -12,11 +12,39 @@ This section will cover the topic of advanced protection. Advanced protection al
 
 This first video starts with a user in their account security settings. Note how the user only has a single low assurance passkey enabled for their account. At the bottom of the page is a section for high assurance, with the text in red that shows that the account IS NOT eligible for advanced protection; the switch is also not clickable by the user. We will start by adding two high assurance passkeys to the user's account, as denoted by the instructions presented to the user. Note how when the second high assurance passkey is added, the text turns green indicating that advanced protection is ready to be enabled.
 
+<ReactPlayer
+  controls
+  width="100%"
+  height="100%"
+  url="/passkey-workshop/videos/ha_ap_eli.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
 The second video will show what happens once advanced protection is enabled. The first thing to note is that the number of passkeys in the user's account list goes from three to two. These two passkeys are the two high assurance ones that were added in the previous step. The user then logs out of their account, and attempt to authenticate.
+
+//TODO - Remove my name at 0:28
+
+<ReactPlayer
+  controls
+  width="100%"
+  height="100%"
+  url="/passkey-workshop/videos/ha_ap_enabled.mp4"
+  style={{ marginBottom: "2em" }}
+/>
 
 We will start by attempting to authenticate with our low assurance passkey, which will fail. We will then attempt to authenticate with one of our high assurance passkeys, which will succeed.
 
 The third video will show what happens once a user disables advanced protection. Note how the user's passkey list returns to three items, which includes the low assurance passkey that was originally available to their account prior to enabling advanced protection.
+
+//TODO - Remove name at 0:19
+
+<ReactPlayer
+  controls
+  width="100%"
+  height="100%"
+  url="/passkey-workshop/videos/ha_ap_dis.mp4"
+  style={{ marginBottom: "2em" }}
+/>
 
 ## UX considerations
 
