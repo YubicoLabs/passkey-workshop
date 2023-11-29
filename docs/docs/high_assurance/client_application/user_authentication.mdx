@@ -6,17 +6,13 @@ import ReactPlayer from "react-player";
 
 # User authentication
 
-This section will cover how a user will authenticate into their account.
+This section will cover the authentication flow for a user to access their account.
 
 ## Demonstration
 
-The videos below will demonstrate how a user authenticates in the application.
+The videos below will a user authenticating into the application.
 
-:::tip
-The flows shown below don't differ much from what was shown in the previous section on [authentication flows](/docs/web-client/user-flows#authentication). Our example application leverages the same mechanisms, just presented with different styling.
-:::
-
-This first video will demonstrate how a user will authenticate into an account using autofill/conditional mediation
+This first video will demonstrate a user authenticating into an account using autofill/conditional mediation
 
 <ReactPlayer
   controls
@@ -26,7 +22,7 @@ This first video will demonstrate how a user will authenticate into an account u
   style={{ marginBottom: "2em" }}
 />
 
-This second video will demonstrate how a user will authenticate simply by clicking the **Press to authenticate** button
+This second video demonstrates a user authenticating by clicking the **Press to authenticate** button
 
 <ReactPlayer
   controls
@@ -36,7 +32,7 @@ This second video will demonstrate how a user will authenticate simply by clicki
   style={{ marginBottom: "2em" }}
 />
 
-This third video will demonstrate how a user can authenticate by first providing their username. This flow can be used to support both passkeys and non-discoverable credentials (which are both valid WebAuthn credentials).
+This third video demonstrates a user authenticating by providing their username. This flow can be used to support both passkeys and non-discoverable credentials (which are both valid WebAuthn credentials).
 
 <ReactPlayer
   controls
@@ -55,4 +51,4 @@ Below is a list of different user experience notes based on the demonstration ab
 
 ## Implementation guidance
 
-As mentioned previously, please refer to the earlier section on [implementation guidance for authentication flows](/docs/web-client/auth-flow) to learn how to build the different authentication flows shown in the demonstration.
+Please refer to the earlier section on [implementation guidance for authentication flows](/docs/web-client/auth-flow) to learn how to build a web page that leverages the patterns shown in the demonstration videos above.
