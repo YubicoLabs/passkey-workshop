@@ -136,9 +136,11 @@ public class PasskeyRegister implements Authenticator {
            * Confirm success, and report an error if something happened
            */
 
-          System.out.println("---------------Token call---------------");
-          String brandNewToken = spiUtils.getAccessToken(context, um);
-          System.out.println(brandNewToken);
+          /**
+           * System.out.println("---------------Token call---------------");
+           * String brandNewToken = spiUtils.getAccessToken(context, um);
+           * System.out.println(brandNewToken);
+           */
 
           context.success();
         } else {

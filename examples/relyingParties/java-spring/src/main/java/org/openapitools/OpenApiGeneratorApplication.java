@@ -46,7 +46,6 @@ public class OpenApiGeneratorApplication implements CommandLineRunner {
         System.out.println(storageType);
 
         if (storageType.equals("local")) {
-            System.out.println("Here");
 
             System.setProperty("datasource.type", "local");
 

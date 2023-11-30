@@ -184,8 +184,6 @@ public class RelyingPartyInstance {
 
         FidoMetadataService mds = mdsServiceBuilder.build();
 
-        System.out.println("Pre-filtered MDS size: " + mds.findEntries(blob -> true).size());
-
         return mds;
       } catch (Exception e) {
         e.printStackTrace();
