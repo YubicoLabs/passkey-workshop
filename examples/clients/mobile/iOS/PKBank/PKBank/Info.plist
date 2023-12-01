@@ -11,7 +11,7 @@
 			<string>pkbank</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>pkbank://</string>
+				<string>pkbank</string>
 			</array>
 		</dict>
 	</array>
