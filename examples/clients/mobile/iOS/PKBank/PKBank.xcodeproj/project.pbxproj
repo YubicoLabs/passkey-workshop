@@ -7,62 +7,72 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		266AB1892B035A3300FF3298 /* PKBankApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266AB1882B035A3300FF3298 /* PKBankApp.swift */; };
-		266AB18B2B035A3300FF3298 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266AB18A2B035A3300FF3298 /* ContentView.swift */; };
-		266AB18D2B035A3400FF3298 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 266AB18C2B035A3400FF3298 /* Assets.xcassets */; };
-		266AB1902B035A3400FF3298 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 266AB18F2B035A3400FF3298 /* Preview Assets.xcassets */; };
+		2684DEB52B0DFEA700DF7659 /* iosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2684DEB42B0DFEA700DF7659 /* iosApp.swift */; };
+		2684DEB72B0DFEA700DF7659 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2684DEB62B0DFEA700DF7659 /* ContentView.swift */; };
+		2684DEB92B0DFEA700DF7659 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2684DEB82B0DFEA700DF7659 /* Assets.xcassets */; };
+		2684DEBC2B0DFEA700DF7659 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2684DEBB2B0DFEA700DF7659 /* Preview Assets.xcassets */; };
+		26857DB32B15E31D0085439B /* URLEncodedFormEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26857DB22B15E31D0085439B /* URLEncodedFormEncoder.swift */; };
+		26E9B8832B19650600FC8B3A /* SimpleKeychain in Frameworks */ = {isa = PBXBuildFile; productRef = 26E9B8822B19650600FC8B3A /* SimpleKeychain */; };
+		26E9B8852B19653300FC8B3A /* CredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9B8842B19653300FC8B3A /* CredentialManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		266AB1852B035A3300FF3298 /* PKBank.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PKBank.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		266AB1882B035A3300FF3298 /* PKBankApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKBankApp.swift; sourceTree = "<group>"; };
-		266AB18A2B035A3300FF3298 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		266AB18C2B035A3400FF3298 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		266AB18F2B035A3400FF3298 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		2684DEB12B0DFEA700DF7659 /* PKBank.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PKBank.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2684DEB42B0DFEA700DF7659 /* iosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosApp.swift; sourceTree = "<group>"; };
+		2684DEB62B0DFEA700DF7659 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2684DEB82B0DFEA700DF7659 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2684DEBB2B0DFEA700DF7659 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		2684DEC22B0DFEBD00DF7659 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		26857DB22B15E31D0085439B /* URLEncodedFormEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLEncodedFormEncoder.swift; sourceTree = "<group>"; };
+		26E9B8842B19653300FC8B3A /* CredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		266AB1822B035A3300FF3298 /* Frameworks */ = {
+		2684DEAE2B0DFEA700DF7659 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26E9B8832B19650600FC8B3A /* SimpleKeychain in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		266AB17C2B035A3300FF3298 = {
+		2684DEA82B0DFEA700DF7659 = {
 			isa = PBXGroup;
 			children = (
-				266AB1872B035A3300FF3298 /* PKBank */,
-				266AB1862B035A3300FF3298 /* Products */,
+				2684DEB32B0DFEA700DF7659 /* PKBank */,
+				2684DEB22B0DFEA700DF7659 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		266AB1862B035A3300FF3298 /* Products */ = {
+		2684DEB22B0DFEA700DF7659 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				266AB1852B035A3300FF3298 /* PKBank.app */,
+				2684DEB12B0DFEA700DF7659 /* PKBank.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		266AB1872B035A3300FF3298 /* PKBank */ = {
+		2684DEB32B0DFEA700DF7659 /* PKBank */ = {
 			isa = PBXGroup;
 			children = (
-				266AB1882B035A3300FF3298 /* PKBankApp.swift */,
-				266AB18A2B035A3300FF3298 /* ContentView.swift */,
-				266AB18C2B035A3400FF3298 /* Assets.xcassets */,
-				266AB18E2B035A3400FF3298 /* Preview Content */,
+				2684DEC22B0DFEBD00DF7659 /* Info.plist */,
+				2684DEB42B0DFEA700DF7659 /* iosApp.swift */,
+				2684DEB62B0DFEA700DF7659 /* ContentView.swift */,
+				2684DEB82B0DFEA700DF7659 /* Assets.xcassets */,
+				2684DEBA2B0DFEA700DF7659 /* Preview Content */,
+				26857DB22B15E31D0085439B /* URLEncodedFormEncoder.swift */,
+				26E9B8842B19653300FC8B3A /* CredentialManager.swift */,
 			);
 			path = PKBank;
 			sourceTree = "<group>";
 		};
-		266AB18E2B035A3400FF3298 /* Preview Content */ = {
+		2684DEBA2B0DFEA700DF7659 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				266AB18F2B035A3400FF3298 /* Preview Assets.xcassets */,
+				2684DEBB2B0DFEA700DF7659 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -70,39 +80,42 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		266AB1842B035A3300FF3298 /* PKBank */ = {
+		2684DEB02B0DFEA700DF7659 /* PKBank */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 266AB1932B035A3400FF3298 /* Build configuration list for PBXNativeTarget "PKBank" */;
+			buildConfigurationList = 2684DEBF2B0DFEA700DF7659 /* Build configuration list for PBXNativeTarget "PKBank" */;
 			buildPhases = (
-				266AB1812B035A3300FF3298 /* Sources */,
-				266AB1822B035A3300FF3298 /* Frameworks */,
-				266AB1832B035A3300FF3298 /* Resources */,
+				2684DEAD2B0DFEA700DF7659 /* Sources */,
+				2684DEAE2B0DFEA700DF7659 /* Frameworks */,
+				2684DEAF2B0DFEA700DF7659 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = PKBank;
-			productName = PKBank;
-			productReference = 266AB1852B035A3300FF3298 /* PKBank.app */;
+			packageProductDependencies = (
+				26E9B8822B19650600FC8B3A /* SimpleKeychain */,
+			);
+			productName = ios;
+			productReference = 2684DEB12B0DFEA700DF7659 /* PKBank.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		266AB17D2B035A3300FF3298 /* Project object */ = {
+		2684DEA92B0DFEA700DF7659 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					266AB1842B035A3300FF3298 = {
+					2684DEB02B0DFEA700DF7659 = {
 						CreatedOnToolsVersion = 15.0.1;
 					};
 				};
 			};
-			buildConfigurationList = 266AB1802B035A3300FF3298 /* Build configuration list for PBXProject "PKBank" */;
+			buildConfigurationList = 2684DEAC2B0DFEA700DF7659 /* Build configuration list for PBXProject "PKBank" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -110,42 +123,47 @@
 				en,
 				Base,
 			);
-			mainGroup = 266AB17C2B035A3300FF3298;
-			productRefGroup = 266AB1862B035A3300FF3298 /* Products */;
+			mainGroup = 2684DEA82B0DFEA700DF7659;
+			packageReferences = (
+				26E9B8812B19650600FC8B3A /* XCRemoteSwiftPackageReference "SimpleKeychain" */,
+			);
+			productRefGroup = 2684DEB22B0DFEA700DF7659 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				266AB1842B035A3300FF3298 /* PKBank */,
+				2684DEB02B0DFEA700DF7659 /* PKBank */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		266AB1832B035A3300FF3298 /* Resources */ = {
+		2684DEAF2B0DFEA700DF7659 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				266AB1902B035A3400FF3298 /* Preview Assets.xcassets in Resources */,
-				266AB18D2B035A3400FF3298 /* Assets.xcassets in Resources */,
+				2684DEBC2B0DFEA700DF7659 /* Preview Assets.xcassets in Resources */,
+				2684DEB92B0DFEA700DF7659 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		266AB1812B035A3300FF3298 /* Sources */ = {
+		2684DEAD2B0DFEA700DF7659 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				266AB18B2B035A3300FF3298 /* ContentView.swift in Sources */,
-				266AB1892B035A3300FF3298 /* PKBankApp.swift in Sources */,
+				26E9B8852B19653300FC8B3A /* CredentialManager.swift in Sources */,
+				2684DEB72B0DFEA700DF7659 /* ContentView.swift in Sources */,
+				26857DB32B15E31D0085439B /* URLEncodedFormEncoder.swift in Sources */,
+				2684DEB52B0DFEA700DF7659 /* iosApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		266AB1912B035A3400FF3298 /* Debug */ = {
+		2684DEBD2B0DFEA700DF7659 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -208,7 +226,7 @@
 			};
 			name = Debug;
 		};
-		266AB1922B035A3400FF3298 /* Release */ = {
+		2684DEBE2B0DFEA700DF7659 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -264,7 +282,7 @@
 			};
 			name = Release;
 		};
-		266AB1942B035A3400FF3298 /* Debug */ = {
+		2684DEC02B0DFEA700DF7659 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -275,18 +293,18 @@
 				DEVELOPMENT_TEAM = FC263886LH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PKBank/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.pkbank.PKBank;
+				PRODUCT_BUNDLE_IDENTIFIER = PKBank.pkbank.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -294,7 +312,7 @@
 			};
 			name = Debug;
 		};
-		266AB1952B035A3400FF3298 /* Release */ = {
+		2684DEC12B0DFEA700DF7659 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -305,18 +323,18 @@
 				DEVELOPMENT_TEAM = FC263886LH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PKBank/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.pkbank.PKBank;
+				PRODUCT_BUNDLE_IDENTIFIER = PKBank.pkbank.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -327,25 +345,44 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		266AB1802B035A3300FF3298 /* Build configuration list for PBXProject "PKBank" */ = {
+		2684DEAC2B0DFEA700DF7659 /* Build configuration list for PBXProject "PKBank" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				266AB1912B035A3400FF3298 /* Debug */,
-				266AB1922B035A3400FF3298 /* Release */,
+				2684DEBD2B0DFEA700DF7659 /* Debug */,
+				2684DEBE2B0DFEA700DF7659 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		266AB1932B035A3400FF3298 /* Build configuration list for PBXNativeTarget "PKBank" */ = {
+		2684DEBF2B0DFEA700DF7659 /* Build configuration list for PBXNativeTarget "PKBank" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				266AB1942B035A3400FF3298 /* Debug */,
-				266AB1952B035A3400FF3298 /* Release */,
+				2684DEC02B0DFEA700DF7659 /* Debug */,
+				2684DEC12B0DFEA700DF7659 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		26E9B8812B19650600FC8B3A /* XCRemoteSwiftPackageReference "SimpleKeychain" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/auth0/SimpleKeychain";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		26E9B8822B19650600FC8B3A /* SimpleKeychain */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 26E9B8812B19650600FC8B3A /* XCRemoteSwiftPackageReference "SimpleKeychain" */;
+			productName = SimpleKeychain;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 266AB17D2B035A3300FF3298 /* Project object */;
+	rootObject = 2684DEA92B0DFEA700DF7659 /* Project object */;
 }
