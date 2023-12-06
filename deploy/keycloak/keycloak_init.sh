@@ -48,6 +48,7 @@ REALM_NAME=BankApp
 AUTH_FLOW_NAME="Passkey_auth"
 REG_FLOW_NAME="Passkey_reg"
 CLIENT_NAME=BankApp
+MOBILE_CLIENT_NAME=BankAppMobile
 
 # RP API URL default:
 RP_API=http://localhost:8080/v1
@@ -58,6 +59,11 @@ echo "Configuring RP API backend URL on $RP_API"
 BANK_CLIENT_URL=http://localhost:3002
 [[ -z "$3" ]] || BANK_CLIENT_URL=$3
 echo "Configuring keycloak bank client on $BANK_CLIENT_URL"
+
+# Bank mobile client URI default:
+BANK_MOBILE_CLIENT_URI=pkbank://
+[[ -z "$3" ]] || BANK_CLIENT_URL=$3
+echo "Configuring keycloak bank mobile client on $BANK_MOBILE_CLIENT_URI"
 
 /opt/keycloak/bin/kcadm.sh create realms \
 	-s realm=$REALM_NAME \
@@ -113,7 +119,18 @@ CLIENT_ID=$(/opt/keycloak/bin/kcadm.sh create clients \
 	--id)
 echo Client ID: $CLIENT_ID
 
+MOBILE_CLIENT_ID=$(/opt/keycloak/bin/kcadm.sh create clients \
+	-r $REALM_NAME \
+	-s clientId=$MOBILE_CLIENT_NAME \
+	-s protocol=openid-connect \
+	-s enabled=true \
+	-s "redirectUris=[\"$BANK_MOBILE_CLIENT_URI*\"]" \
+	-s "webOrigins=[\"$BANK_MOBILE_CLIENT_URI\"]" \
+	--id)
+echo Client ID: $MOBILE_CLIENT_ID
+
 /opt/keycloak/bin/kcadm.sh update clients/$CLIENT_ID -r $REALM_NAME -s "attributes={\"post.logout.redirect.uris\": \"$BANK_CLIENT_URL\"}"
+/opt/keycloak/bin/kcadm.sh update clients/$MOBILE_CLIENT_ID -r $REALM_NAME -s "attributes={\"post.logout.redirect.uris\": \"$BANK_MOBILE_CLIENT_URI\"}"
 
 # Set login theme
 /opt/keycloak/bin/kcadm.sh update realms/$REALM_NAME -s loginTheme=passkey
