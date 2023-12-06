@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2647B64C2B1AA23D000E0A75 /* BankAPIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647B64B2B1AA23D000E0A75 /* BankAPIManager.swift */; };
+		2647B64E2B1AA5F8000E0A75 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647B64D2B1AA5F8000E0A75 /* Constants.swift */; };
 		2684DEB52B0DFEA700DF7659 /* iosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2684DEB42B0DFEA700DF7659 /* iosApp.swift */; };
 		2684DEB72B0DFEA700DF7659 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2684DEB62B0DFEA700DF7659 /* ContentView.swift */; };
 		2684DEB92B0DFEA700DF7659 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2684DEB82B0DFEA700DF7659 /* Assets.xcassets */; };
@@ -17,6 +19,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2647B64B2B1AA23D000E0A75 /* BankAPIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankAPIManager.swift; sourceTree = "<group>"; };
+		2647B64D2B1AA5F8000E0A75 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		2647B64F2B1AA864000E0A75 /* Constants.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Constants.xcconfig; sourceTree = "<group>"; };
 		2684DEB12B0DFEA700DF7659 /* PKBank.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PKBank.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2684DEB42B0DFEA700DF7659 /* iosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosApp.swift; sourceTree = "<group>"; };
 		2684DEB62B0DFEA700DF7659 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -42,6 +47,7 @@
 		2684DEA82B0DFEA700DF7659 = {
 			isa = PBXGroup;
 			children = (
+				2647B64F2B1AA864000E0A75 /* Constants.xcconfig */,
 				2684DEB32B0DFEA700DF7659 /* PKBank */,
 				2684DEB22B0DFEA700DF7659 /* Products */,
 			);
@@ -65,6 +71,8 @@
 				2684DEBA2B0DFEA700DF7659 /* Preview Content */,
 				26857DB22B15E31D0085439B /* URLEncodedFormEncoder.swift */,
 				26E9B8842B19653300FC8B3A /* CredentialManager.swift */,
+				2647B64B2B1AA23D000E0A75 /* BankAPIManager.swift */,
+				2647B64D2B1AA5F8000E0A75 /* Constants.swift */,
 			);
 			path = PKBank;
 			sourceTree = "<group>";
@@ -155,8 +163,10 @@
 			files = (
 				26E9B8852B19653300FC8B3A /* CredentialManager.swift in Sources */,
 				2684DEB72B0DFEA700DF7659 /* ContentView.swift in Sources */,
+				2647B64C2B1AA23D000E0A75 /* BankAPIManager.swift in Sources */,
 				26857DB32B15E31D0085439B /* URLEncodedFormEncoder.swift in Sources */,
 				2684DEB52B0DFEA700DF7659 /* iosApp.swift in Sources */,
+				2647B64E2B1AA5F8000E0A75 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

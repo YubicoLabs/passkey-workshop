@@ -1,0 +1,10 @@
+//
+//  Constants.xcconfig
+//  PKBank
+//
+//  Created by Dennis Hills on 12/1/23.
+//
+
+// Bank API Endpoint URI
+BANK_API_BASE_URI = replace-with-your-bank-api-hostname/v1
+

@@ -4,7 +4,7 @@
 //
 //  Created by Dennis Hills on 11/22/23.
 //
-//  Make sure that Keycloak has a Valid redirect URI as: pkbank://*
+//  Make sure that Keycloak has a valid redirect URI as: pkbank://*
 //
 
 import SwiftUI
@@ -36,11 +36,9 @@ struct ContentView: View {
     }
     
     func authenticate() {
-        guard let authCodeURL = URL(string: "https://wc9g4jh8-8081.usw2.devtunnels.ms/realms/BankApp/protocol/openid-connect/auth?client_id=BankAppMobile&response_type=code") else {
-            return
-        }
         
-        let authenticationSession = ASWebAuthenticationSession(url: authCodeURL, callbackURLScheme: "pkbank") { callbackURL, error in
+        // Either specify URLScheme in the Info.plist or here. nil is setting the URLScheme from plist
+        let authenticationSession = ASWebAuthenticationSession(url: getAuthURL(), callbackURLScheme: nil) { callbackURL, error in
             
             // Handle the authentication callback
             guard error == nil, let callbackURL = callbackURL else {
@@ -48,22 +46,33 @@ struct ContentView: View {
                 return
             }
             
-            // Extract authorization "code" from the callback URL
+            // Extract auth "code" from the OpenID callback URL
             if let components = URLComponents(url: callbackURL, resolvingAgainstBaseURL: true),
                let queryItems = components.queryItems {
                 for queryItem in queryItems {
                     if queryItem.name == "code" {
-                        // Extract and handle the code as needed
-                        print("Authentication successful. Code: \(queryItem.value ?? "")")
+                        // Extract code from redirect
+                        print("Authentication successful.\nAuth Code: \(queryItem.value ?? "")")
+                        let authCode = queryItem.value
                         
+                        // Requesting access token from Keycloak in exchange for code
                         Task {
                             do {
-                                let tokenData = try await exchangeAuthorizationCodeForAccessToken(queryItem.value)
+                                if (try await CredentialManager(creds: nil).exchangeAuthorizationCodeForAccessToken(authCode)) {
+                                    isAuthenticated = true
+                                    
+                                    let username = try await CredentialManager(creds: nil).getUserInfo()
+                                    print("Welcome,\(username!)")
+                                } else {
+                                    print("Failed to exchange code for access token")
+                                    isAuthenticated = false
+                                }
                             } catch {
                                 print("Unexpected error retrieving access token: \(error.localizedDescription)")
                             }
-                            isAuthenticated = true
                         }
+                    } else {
+                        print("No auth code found in callback from OpenID provider")
                     }
                 }
             }
@@ -72,89 +81,29 @@ struct ContentView: View {
             
         // Start the authentication session
         authenticationSession.start()
-        
-        }
-        
-        func exchangeAuthorizationCodeForAccessToken(_ authorizationCode: String?) async -> Bool {
-//            var components = URLComponents()
-//            components.scheme = "https"
-//            components.host = "wc9g4jh8-8081.usw2.devtunnels.ms"
-//            components.path = "/realms/BankApp/protocol/openid-connect/token"
-            
-            guard let authTokenURL = URL(string: "https://wc9g4jh8-8081.usw2.devtunnels.ms/realms/BankApp/protocol/openid-connect/token") else {
-                return false
-            }
-            
-            let requestModel = OpenIDTokenRequest(
-                grant_type: "authorization_code",
-                client_id: "BankAppMobile",
-                code: authorizationCode!,
-                redirect_uri: "pkbank://"
-            )
-            guard let requestData: Data = try? URLEncodedFormEncoder().encode(requestModel) else {
-                return false
-            }
-
-            var request = URLRequest(url: authTokenURL)
-            request.httpBody = requestData
-            request.httpMethod = "POST"
-            request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-    
-            do {
-                let (data, _) = try await URLSession.shared.data(for: request)
-                
-                data.printPrettyJSON("Token response")
-                
-                do {
-                    let tokenResponse = try JSONDecoder().decode(CredentialManager.Credential.self, from: data)
-                    let credMgr = CredentialManager(creds: tokenResponse)
-                    if(credMgr.saveCreds()){
-                        let token = credMgr.getAccessToken()
-                        print("Token stored in keychain: \(token)")
-                    }
-                }
-                catch { 
-                    print(error)
-                }
-                
-                return true
-            } catch _ as NSError {
-                return false
-            }
-        }
+    }
     
     func getStoredAccessToken() -> String? {
         let creds = CredentialManager(creds: nil)
         return creds.getAccessToken()
     }
     
-    struct AuthToken : Decodable {
-        let refresh_expires_in: Int
-        let token_type: String
-        let refresh_token: String
-        let not_before_policy: Int
-        let session_state: String
-        let scope: String
-        let access_token: String
-        let expires_in: Int
-    }
-    
-//    enum CodingKeys: String, CodingKey {
-//        case not_before_policy = "not-before-policy"
-//        case refresh_expires_in
-//        case token_type
-//        case refresh_token
-//        case session_state
-//        case scope
-//        case access_token
-//        case expires_in
-//    }
-    
-    struct OpenIDTokenRequest: Encodable {
-        let grant_type: String
-        let client_id: String
-        let code: String
-        let redirect_uri: String
+    // WORKING for openid on mobile
+    func getAuthURL() -> URL {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "wc9g4jh8-8081.usw2.devtunnels.ms"
+        components.path = "/realms/BankApp/protocol/openid-connect/auth"
+        
+        components.queryItems =
+            [
+                URLQueryItem(name: "client_id", value: "BankAppMobile"),
+                URLQueryItem(name: "redirect_uri", value: "pkbank://callback"),
+                URLQueryItem(name: "scope", value: "openid"),
+                URLQueryItem(name: "response_type", value: "code"),
+                URLQueryItem(name: "state", value: "standard")
+            ]
+        return components.url!
     }
 }
 

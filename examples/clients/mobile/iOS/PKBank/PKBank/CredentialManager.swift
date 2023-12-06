@@ -6,8 +6,8 @@
 //
 //  Using SimpleKeychain tool from Auth0 here: https://github.com/auth0/SimpleKeychain
 //
-
 import Foundation
+import AuthenticationServices
 import SimpleKeychain
 
 public class CredentialManager {
@@ -30,6 +30,20 @@ public class CredentialManager {
             return true
         } catch {
             print("Error saving tokens to iOS Keychain: \(error)")
+            return false
+        }
+    }
+    
+    func saveUsername(_ userName: String) -> Bool {
+        
+        let keychain = SimpleKeychain(service: "PKBank")
+        
+        // Store the preferred_username
+        do {
+            try keychain.set(userName, forKey: "preferred_username")
+            return true
+        } catch {
+            print("Error saving username to iOS Keychain: \(error)")
             return false
         }
     }
@@ -58,8 +72,101 @@ public class CredentialManager {
         }
     }
     
-    func getNewAccessTokenWithRefreshToken() {
+    func getUserInfo() async -> String? {
+        print("Getting user info")
+        var request = URLRequest(url: getUserInfoURL())
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue( "Bearer \(getAccessToken()!)", forHTTPHeaderField: "Authorization")
+        print("bearer token =\(getAccessToken()!)")
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            
+            data.printPrettyJSON("User info:")
+            
+            do {
+                let userInfoResponse = try JSONDecoder().decode(CredentialManager.UserInfo.self, from: data)
+                if(saveUsername(userInfoResponse.preferred_username)) {
+                    return userInfoResponse.preferred_username
+                }
+            }
+            catch {
+                print(error)
+            }
+        } catch _ as NSError {
+            return "error"
+        }
+        return nil
+    }
+    
+    func exchangeAuthorizationCodeForAccessToken(_ authorizationCode: String?) async -> Bool {
         
+        let requestModel = OpenIDTokenRequest(
+            grant_type: "authorization_code",
+            client_id: "BankAppMobile",
+            code: authorizationCode!,
+            redirect_uri: "pkbank://callback"
+        )
+        
+        guard let requestData: Data = try? URLEncodedFormEncoder().encode(requestModel) else {
+            return false
+        }
+
+        var request = URLRequest(url: getTokenURL())
+        request.httpBody = requestData
+        request.httpMethod = "POST"
+        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            
+            data.printPrettyJSON("Token response")
+            
+            do {
+                let tokenResponse = try JSONDecoder().decode(CredentialManager.Credential.self, from: data)
+                let credMgr = CredentialManager(creds: tokenResponse)
+                if(credMgr.saveCreds()){
+                    let token = credMgr.getAccessToken()
+                    print("Token stored in keychain: \(String(describing: token))")
+                }
+            }
+            catch {
+                print(error)
+            }
+            return true
+        } catch _ as NSError {
+            return false
+        }
+    }
+    
+    func renewAccessTokenWithRefreshToken() {
+        
+    }
+    
+    func getTokenURL() -> URL {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "wc9g4jh8-8081.usw2.devtunnels.ms"
+        components.path = "/realms/BankApp/protocol/openid-connect/token"
+ 
+        return components.url!
+    }
+    
+    func getUserInfoURL() -> URL {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "wc9g4jh8-8081.usw2.devtunnels.ms"
+        components.path = "/realms/BankApp/protocol/openid-connect/userinfo"
+ 
+        return components.url!
+    }
+    
+    struct OpenIDTokenRequest: Encodable {
+        let grant_type: String
+        let client_id: String
+        let code: String
+        let redirect_uri: String
     }
     
     struct Credential : Decodable {
@@ -70,6 +177,7 @@ public class CredentialManager {
         let session_state: String
         let scope: String
         let access_token: String
+        let id_token: String
         let expires_in: Int
         
         enum CodingKeys: String, CodingKey {
@@ -80,7 +188,15 @@ public class CredentialManager {
             case session_state
             case scope
             case access_token
+            case id_token
             case expires_in
         }
+    }
+    
+    struct UserInfo: Decodable {
+        //{"sub":"V8SWwaME5FHxItfQb-EmqA","email_verified":false,"preferred_username":"dennis"}
+        let sub : String
+        let email_verified: Bool
+        let preferred_username: String
     }
 }
