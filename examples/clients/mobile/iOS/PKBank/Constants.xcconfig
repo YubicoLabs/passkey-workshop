@@ -5,6 +5,6 @@
 //  Created by Dennis Hills on 12/1/23.
 //
 
-// Bank API Endpoint URI
-BANK_API_BASE_URI = replace-with-your-bank-api-hostname/v1
+BANK_AUTH_DOMAIN = replace-with-your-keycloak-hostname
+BANK_API_DOMAIN = replace-with-your-bank-api-hostname
 

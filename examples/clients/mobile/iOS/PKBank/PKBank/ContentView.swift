@@ -62,7 +62,10 @@ struct ContentView: View {
                                     isAuthenticated = true
                                     
                                     let username = try await CredentialManager(creds: nil).getUserInfo()
-                                    print("Welcome,\(username!)")
+                                    let bankAPI = BankAPIManager()
+                                    let accountDetails = try await bankAPI.fetchAccountsDetails()
+                                    print("Welcome,\(username!). Your account balance is: \(accountDetails?.accounts[0].balance)")
+                                    
                                 } else {
                                     print("Failed to exchange code for access token")
                                     isAuthenticated = false
@@ -85,14 +88,14 @@ struct ContentView: View {
     
     func getStoredAccessToken() -> String? {
         let creds = CredentialManager(creds: nil)
-        return creds.getAccessToken()
+        return creds.getAccessTokenLocal()
     }
     
     // WORKING for openid on mobile
     func getAuthURL() -> URL {
         var components = URLComponents()
         components.scheme = "https"
-        components.host = "wc9g4jh8-8081.usw2.devtunnels.ms"
+        components.host = BANKAUTH.domain
         components.path = "/realms/BankApp/protocol/openid-connect/auth"
         
         components.queryItems =

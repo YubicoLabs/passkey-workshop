@@ -5,7 +5,7 @@
 //  Created by Dennis Hills on 11/30/23.
 //
 //  Using SimpleKeychain tool from Auth0 here: https://github.com/auth0/SimpleKeychain
-//
+//  SimpleKeychain is being used to quickly/safely save and retrieve user tokens from the keychain
 import Foundation
 import AuthenticationServices
 import SimpleKeychain
@@ -18,7 +18,8 @@ public class CredentialManager {
         self.credentials = creds
     }
     
-    func saveCreds() -> Bool {
+    // Store the access and refresh tokens in the keychain
+    func saveCredsLocal() -> Bool {
         
         let keychain = SimpleKeychain(service: "PKBank")
         guard let credentials else { return false }
@@ -34,11 +35,11 @@ public class CredentialManager {
         }
     }
     
-    func saveUsername(_ userName: String) -> Bool {
+    // Store the preferred_username in the keychain
+    func saveUsernameLocal(_ userName: String) -> Bool {
         
         let keychain = SimpleKeychain(service: "PKBank")
         
-        // Store the preferred_username
         do {
             try keychain.set(userName, forKey: "preferred_username")
             return true
@@ -48,7 +49,8 @@ public class CredentialManager {
         }
     }
     
-    func getAccessToken() -> String? {
+    // Retrieve the access token from keychain
+    func getAccessTokenLocal() -> String? {
         let keychain = SimpleKeychain(service: "PKBank")
         
         do {
@@ -60,7 +62,8 @@ public class CredentialManager {
         }
     }
     
-    func getRefreshToken() -> String? {
+    // Retrieve the refresh token from keychain
+    func getRefreshTokenLocal() -> String? {
         let keychain = SimpleKeychain(service: "PKBank")
         
         do {
@@ -72,14 +75,14 @@ public class CredentialManager {
         }
     }
     
+    // Get user info from authorization server
     func getUserInfo() async -> String? {
-        print("Getting user info")
-        var request = URLRequest(url: getUserInfoURL())
+        print("Getting user info from auth server...")
+        var request = URLRequest(url: getURLEndpoint(endpoint: .userinfo)!)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue( "Bearer \(getAccessToken()!)", forHTTPHeaderField: "Authorization")
-        print("bearer token =\(getAccessToken()!)")
+        request.setValue( "Bearer \(getAccessTokenLocal()!)", forHTTPHeaderField: "Authorization")
         do {
             let (data, _) = try await URLSession.shared.data(for: request)
             
@@ -87,7 +90,7 @@ public class CredentialManager {
             
             do {
                 let userInfoResponse = try JSONDecoder().decode(CredentialManager.UserInfo.self, from: data)
-                if(saveUsername(userInfoResponse.preferred_username)) {
+                if(saveUsernameLocal(userInfoResponse.preferred_username)) {
                     return userInfoResponse.preferred_username
                 }
             }
@@ -100,6 +103,7 @@ public class CredentialManager {
         return nil
     }
     
+    // Exchange authorization code for access token
     func exchangeAuthorizationCodeForAccessToken(_ authorizationCode: String?) async -> Bool {
         
         let requestModel = OpenIDTokenRequest(
@@ -113,7 +117,7 @@ public class CredentialManager {
             return false
         }
 
-        var request = URLRequest(url: getTokenURL())
+        var request = URLRequest(url: getURLEndpoint(endpoint: .token)!)
         request.httpBody = requestData
         request.httpMethod = "POST"
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -126,8 +130,8 @@ public class CredentialManager {
             do {
                 let tokenResponse = try JSONDecoder().decode(CredentialManager.Credential.self, from: data)
                 let credMgr = CredentialManager(creds: tokenResponse)
-                if(credMgr.saveCreds()){
-                    let token = credMgr.getAccessToken()
+                if(credMgr.saveCredsLocal()){
+                    let token = credMgr.getAccessTokenLocal()
                     print("Token stored in keychain: \(String(describing: token))")
                 }
             }
@@ -141,13 +145,34 @@ public class CredentialManager {
     }
     
     func renewAccessTokenWithRefreshToken() {
-        
+        // not implemented
+    }
+    
+    func getURLEndpoint(endpoint: Endpoint) -> URL? {
+        switch endpoint {
+            case .auth :
+                return getAuthURL()
+            case .token:
+                return getTokenURL()
+            case .userinfo:
+                return getUserInfoURL()
+        }
+    }
+    
+    // Not really being used as we are using the preferred AWSWebAuthenticationSession
+    func getAuthURL() -> URL {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = BANKAUTH.domain
+        components.path = "/realms/BankApp/protocol/openid-connect/auth"
+ 
+        return components.url!
     }
     
     func getTokenURL() -> URL {
         var components = URLComponents()
         components.scheme = "https"
-        components.host = "wc9g4jh8-8081.usw2.devtunnels.ms"
+        components.host = BANKAUTH.domain
         components.path = "/realms/BankApp/protocol/openid-connect/token"
  
         return components.url!
@@ -156,7 +181,7 @@ public class CredentialManager {
     func getUserInfoURL() -> URL {
         var components = URLComponents()
         components.scheme = "https"
-        components.host = "wc9g4jh8-8081.usw2.devtunnels.ms"
+        components.host = BANKAUTH.domain
         components.path = "/realms/BankApp/protocol/openid-connect/userinfo"
  
         return components.url!
@@ -193,8 +218,13 @@ public class CredentialManager {
         }
     }
     
+    enum Endpoint {
+        case auth
+        case token
+        case userinfo
+    }
+    
     struct UserInfo: Decodable {
-        //{"sub":"V8SWwaME5FHxItfQb-EmqA","email_verified":false,"preferred_username":"dennis"}
         let sub : String
         let email_verified: Bool
         let preferred_username: String

@@ -12,9 +12,9 @@ class BankAPIManager {
     func fetchAccountDetails(accountId: Int) async throws -> AccountDetailsResponse? {
         var accountDetailsResponse: AccountDetailsResponse? = nil
         let session = URLSession.shared
-        var request = URLRequest(url: getURLEndpoint(endpoint: Endpoint.accountDetails, param: accountId)!)
+        var request = URLRequest(url: getURLEndpoint(endpoint: Endpoint.accountDetails, accountId)!)
         
-        let accessToken = CredentialManager(creds: nil).getAccessToken()
+        let accessToken = CredentialManager(creds: nil).getAccessTokenLocal()
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("Bearer \(String(describing: accessToken))", forHTTPHeaderField: "Authorization")
 
@@ -23,36 +23,65 @@ class BankAPIManager {
             
             guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
                 data.printPrettyJSON("fetchAccountDetails invalidResponse")
-                throw APIError.invalidResponse
+                throw BankAPIError.invalidResponse
             }
             do {
                 data.printPrettyJSON("Received AccountDetails from Bank API")
                 accountDetailsResponse = try JSONDecoder().decode(AccountDetailsResponse.self, from: data)
             } catch {
-                throw APIError.parsingFailed
+                throw BankAPIError.parsingFailed
             }
-
         } catch {
-            throw APIError.requestFailed
+            throw BankAPIError.requestFailed
         }
         return accountDetailsResponse
     }
     
-    func getURLEndpoint(endpoint: Endpoint, param: Int?) -> URL? {
+    // Get Account Details for Bank User - /v1/accounts/ (GET)
+    // Param: Bearer access token
+    func fetchAccountsDetails() async throws -> AccountsDetailsResponse? {
+        var accountsDetailsResponse: AccountsDetailsResponse? = nil
+        let session = URLSession.shared
+        var request = URLRequest(url: getURLEndpoint(endpoint: Endpoint.accounts, nil)!)
+        
+        let accessToken = CredentialManager(creds: nil).getAccessTokenLocal()
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("Bearer \(String(describing: accessToken!))", forHTTPHeaderField: "Authorization")
+        
+        do {
+            let (data, response) = try await session.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
+                data.printPrettyJSON("fetchAccountsDetails invalidResponse")
+                throw BankAPIError.invalidResponse
+            }
+            do {
+                data.printPrettyJSON("Received AccountDetails from Bank API")
+                accountsDetailsResponse = try JSONDecoder().decode(AccountsDetailsResponse.self, from: data)
+            } catch {
+                throw BankAPIError.parsingFailed
+            }
+        } catch {
+            throw BankAPIError.requestFailed
+        }
+        return accountsDetailsResponse
+    }
+    
+    func getURLEndpoint(endpoint: Endpoint, _ accountId: Int?) -> URL? {
         switch endpoint {
             case .status :
-                return URL(string: BankAPI.baseURI + "/status")
+                return URL(string: BANKAPI.domain + "/v1/status")
             case .accounts :
-                return URL(string: BankAPI.baseURI + "/accounts")
+                return URL(string: BANKAPI.domain + "/v1/accounts")
             case .transactions:
-                return URL(string: BankAPI.baseURI + "/account/{accountId}/transactions")
+                return URL(string: BANKAPI.domain + "/v1/account/\(String(describing: accountId))/transactions")
             case .accountDetails:
-            return URL(string: BankAPI.baseURI + "/account/\(String(describing: param))")
+                return URL(string: BANKAPI.domain + "/v1/account/\(String(describing: accountId))")
         }
     }
 }
 
-enum APIError: Error {
+enum BankAPIError: Error {
     case invalidURL
     case requestFailed
     case invalidResponse
@@ -79,6 +108,10 @@ struct AccountDetailsRequest: Encodable {
 struct AccountDetailsResponse: Decodable {
     let accountId: String
     let balance: Double
+}
+
+struct AccountsDetailsResponse: Decodable {
+    let accounts: [AccountDetailsResponse]
 }
 
 struct BankAPIStatus: Decodable {

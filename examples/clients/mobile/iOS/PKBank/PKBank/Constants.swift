@@ -4,7 +4,7 @@
 //
 //  Created by Dennis Hills on 12/1/23.
 //
-//  See Constants.xcconfig for Bank API values
+//  See Constants.xcconfig for Bank Auth/API values
 
 import Foundation
 
@@ -30,8 +30,14 @@ enum Constants {
     }
 }
 
-enum BankAPI {
-    static var baseURI: String {
-        return try! Constants.value(for: "BANK_API_BASE_URI")
+enum BANKAUTH {
+    static var domain: String {
+        return try! Constants.value(for: "BANK_AUTH_DOMAIN")
+    }
+}
+
+enum BANKAPI {
+    static var domain: String {
+        return try! Constants.value(for: "BANK_API_DOMAIN")
     }
 }
