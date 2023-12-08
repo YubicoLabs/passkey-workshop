@@ -86,16 +86,15 @@ public class CredentialManager {
         do {
             let (data, _) = try await URLSession.shared.data(for: request)
             
-            data.printPrettyJSON("User info:")
+            data.printPrettyJSON("User info")
             
             do {
                 let userInfoResponse = try JSONDecoder().decode(CredentialManager.UserInfo.self, from: data)
                 if(saveUsernameLocal(userInfoResponse.preferred_username)) {
                     return userInfoResponse.preferred_username
                 }
-            }
-            catch {
-                print(error)
+            } catch {
+                print("decoding error:", error)
             }
         } catch _ as NSError {
             return "error"
@@ -130,13 +129,12 @@ public class CredentialManager {
             do {
                 let tokenResponse = try JSONDecoder().decode(CredentialManager.Credential.self, from: data)
                 let credMgr = CredentialManager(creds: tokenResponse)
-                if(credMgr.saveCredsLocal()){
+                if (credMgr.saveCredsLocal()){
                     let token = credMgr.getAccessTokenLocal()
                     print("Token stored in keychain: \(String(describing: token))")
                 }
-            }
-            catch {
-                print(error)
+            } catch {
+                print("decoding error:", error)
             }
             return true
         } catch _ as NSError {

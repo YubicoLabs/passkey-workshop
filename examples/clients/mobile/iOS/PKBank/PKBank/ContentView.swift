@@ -6,7 +6,6 @@
 //
 //  Make sure that Keycloak has a valid redirect URI as: pkbank://*
 //
-
 import SwiftUI
 import AuthenticationServices
 
@@ -24,14 +23,10 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            if isAuthenticated {
-                Text("Authentication Successful!")
-            } else {
-                Button("Authenticate") {
-                    authenticate()
-                }
-                .padding()
+            Button("Authenticate") {
+                authenticate()
             }
+            .padding()
         }
     }
     
@@ -52,7 +47,7 @@ struct ContentView: View {
                 for queryItem in queryItems {
                     if queryItem.name == "code" {
                         // Extract code from redirect
-                        print("Authentication successful.\nAuth Code: \(queryItem.value ?? "")")
+                        print("Authentication successful.\nAuth Code -> \(queryItem.value ?? "")")
                         let authCode = queryItem.value
                         
                         // Requesting access token from Keycloak in exchange for code
@@ -61,21 +56,19 @@ struct ContentView: View {
                                 if (try await CredentialManager(creds: nil).exchangeAuthorizationCodeForAccessToken(authCode)) {
                                     isAuthenticated = true
                                     
-                                    let username = try await CredentialManager(creds: nil).getUserInfo()
-                                    let bankAPI = BankAPIManager()
-                                    let accountDetails = try await bankAPI.fetchAccountsDetails()
-                                    print("Welcome,\(username!). Your account balance is: \(accountDetails?.accounts[0].balance)")
+                                    //let username = try await CredentialManager(creds: nil).getUserInfo()
                                     
                                 } else {
                                     print("Failed to exchange code for access token")
                                     isAuthenticated = false
                                 }
+                                
+                                await accountDetails()
+                                
                             } catch {
                                 print("Unexpected error retrieving access token: \(error.localizedDescription)")
                             }
                         }
-                    } else {
-                        print("No auth code found in callback from OpenID provider")
                     }
                 }
             }
@@ -84,6 +77,18 @@ struct ContentView: View {
             
         // Start the authentication session
         authenticationSession.start()
+    }
+    
+    func accountDetails() async {
+        do {
+            let username = try await CredentialManager(creds: nil).getUserInfo()
+            
+            let bankAPI = BankAPIManager()
+            let accountDetails = try await bankAPI.fetchAccountsDetails()
+            print("Welcome, \(username!). Your account balance is: $\(accountDetails.accounts[0].balance!)")
+        } catch {
+            
+        }
     }
     
     func getStoredAccessToken() -> String? {
@@ -118,7 +123,7 @@ extension Data {
             let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
             printJSONData(str, jsonData)
         } catch {
-            print("Error printing pretty JSON:\(error.localizedDescription)")
+            print("Error printing pretty JSON:\(error)")
         }
     }
     
