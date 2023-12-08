@@ -7,7 +7,7 @@ services:
       - passkey-services
     image: passkey_client
     environment:
-      REACT_APP_API: "${REACT_APP_API}"
+      REACT_APP_RP_API: "${REACT_APP_RP_API}"
       REACT_APP_OIDC: "${REACT_APP_OIDC}"
       REACT_APP_REDIRECT_URI: "${REACT_APP_REDIRECT_URI}"
     ports:
@@ -20,7 +20,7 @@ services:
       - passkey-services
     image: bank_client
     environment:
-      REACT_APP_API: "${REACT_APP_API}"
+      REACT_APP_RP_API: "${REACT_APP_RP_API}"
       REACT_APP_BANK_API: "${REACT_APP_BANK_API}"
       REACT_APP_KEYCLOAK_URL: "${REACT_APP_KEYCLOAK_URL}"
       REACT_APP_CLIENT_ID: "${REACT_APP_CLIENT_ID}"
@@ -71,14 +71,14 @@ services:
     build: mysql
     image: passkey_storage
     environment:
-      MYSQL_ROOT_PASSWORD: "${MASTER_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DATABASE_PASSWORD}"
     healthcheck:
       test:
         [
           "CMD",
           "mysql",
           "-uroot",
-          "-p$MASTER_PASSWORD",
+          "-p$DATABASE_PASSWORD",
           "--protocol=TCP",
           "-hlocalhost",
           "-estatus",
@@ -97,7 +97,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      CLIENT_URL: "${CLIENT_URL}"
+      DEMO_CLIENT_URL: "${DEMO_CLIENT_URL}"
       BANK_CLIENT_URL: "${BANK_CLIENT_URL}"
       RP_API: "${RP_API}"
     ports:

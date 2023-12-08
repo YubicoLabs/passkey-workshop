@@ -143,7 +143,7 @@ RP_ALLOWED_CROSS_ORIGINS=your-tunnel-endpoint
 Also edit the URL for your RP backend API, your IdP, and your redirect URI so it includes your tunnel hostname:
 
 ```
-REACT_APP_API=https://your-tunnel-endpoint:8080/v1
+REACT_APP_RP_API=https://your-tunnel-endpoint:8080/v1
 REACT_APP_OIDC=https://your-tunnel-endpoint:8081/realms/passkeyDemo/protocol/openid-connect
 REACT_APP_REDIRECT_URI=https://your-tunnel-endpoint:3000/oidc/callback
 ```

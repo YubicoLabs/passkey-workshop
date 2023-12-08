@@ -4,19 +4,14 @@ if [ -e init.done ]; then
   exit
 fi
 
-KEYCLOAK_PATH="/opt/keycloak/bin/kcadm.sh"
-CONTAINER_NAME=affectionate_carver
-
 REALM_NAME=passkeyDemo
 AUTH_FLOW_NAME=passkeyAuthFlow
 REG_FLOW_NAME=passkeyRegFlow
 CLIENT_NAME=passkeyClient
-DOCKER_EXEC="docker exec -it $CONTAINER_NAME .$KEYCLOAK_PATH"
 
 # client URL default:
-CLIENT_URL=http://localhost:3000
-[[ -z "$1" ]] || CLIENT_URL=$1
-echo "Configuring keycloak client on $CLIENT_URL"
+[[ -z "$DEMO_CLIENT_URL" ]] && DEMO_CLIENT_URL=http://localhost:3000
+echo "Configuring keycloak client on $DEMO_CLIENT_URL"
 
 while ! /opt/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080 --realm master --user admin --password admin --client admin-cli &> /dev/null ; do
     echo 'Waiting for connection'
@@ -38,9 +33,9 @@ REG_OUTPUT=$(/opt/keycloak/bin/kcadm.sh create authentication/flows -s alias=$RE
 
 echo $AUTH_OUTPUT
 # Setting the browser flow isnt' working - look into this
-echo /opt/keycloak/bin/kcadm.sh create clients -r $REALM_NAME -s clientId=$CLIENT_NAME -s protocol=openid-connect -s enabled=true -s "redirectUris=[\"$CLIENT_URL/logout\", \"/*\", \"$CLIENT_URL/oidc/callback\"]" -s 'webOrigins=["*", "/*"]' -s 'authenticationFlowBindingOverrides={"browser": "'$AUTH_OUTPUT'", "direct_grant": ""}'
+echo /opt/keycloak/bin/kcadm.sh create clients -r $REALM_NAME -s clientId=$CLIENT_NAME -s protocol=openid-connect -s enabled=true -s "redirectUris=[\"$DEMO_CLIENT_URL/logout\", \"/*\", \"$DEMO_CLIENT_URL/oidc/callback\"]" -s 'webOrigins=["*", "/*"]' -s 'authenticationFlowBindingOverrides={"browser": "'$AUTH_OUTPUT'", "direct_grant": ""}'
 # TODO: configure callbacks
-/opt/keycloak/bin/kcadm.sh create clients -r $REALM_NAME -s clientId=$CLIENT_NAME -s protocol=openid-connect -s enabled=true -s "redirectUris=[\"$CLIENT_URL/logout\", \"/*\", \"$CLIENT_URL/oidc/callback\"]" -s 'webOrigins=["*", "/*"]' -s 'authenticationFlowBindingOverrides={"browser": "'$AUTH_OUTPUT'", "direct_grant": ""}'
+/opt/keycloak/bin/kcadm.sh create clients -r $REALM_NAME -s clientId=$CLIENT_NAME -s protocol=openid-connect -s enabled=true -s "redirectUris=[\"$DEMO_CLIENT_URL/logout\", \"/*\", \"$DEMO_CLIENT_URL/oidc/callback\"]" -s 'webOrigins=["*", "/*"]' -s 'authenticationFlowBindingOverrides={"browser": "'$AUTH_OUTPUT'", "direct_grant": ""}'
 
 ### High Assurance banking example
 
@@ -51,18 +46,15 @@ CLIENT_NAME=BankApp
 MOBILE_CLIENT_NAME=BankAppMobile
 
 # RP API URL default:
-RP_API=http://localhost:8080/v1
-[[ -z "$2" ]] || RP_API=$2
+[[ -z "$RP_API" ]] && RP_API=http://localhost:8080/v1
 echo "Configuring RP API backend URL on $RP_API"
 
 # Bank client URL default:
-BANK_CLIENT_URL=http://localhost:3002
-[[ -z "$3" ]] || BANK_CLIENT_URL=$3
+[[ -z "$BANK_CLIENT_URL" ]] && BANK_CLIENT_URL=http://localhost:3002
 echo "Configuring keycloak bank client on $BANK_CLIENT_URL"
 
 # Bank mobile client URI default:
 BANK_MOBILE_CLIENT_URI=pkbank://
-[[ -z "$3" ]] || BANK_CLIENT_URL=$3
 echo "Configuring keycloak bank mobile client on $BANK_MOBILE_CLIENT_URI"
 
 /opt/keycloak/bin/kcadm.sh create realms \
