@@ -1,7 +1,19 @@
 #! /usr/local/bin/pwsh
 
 # This script automates the deployment of all components
+# Note that although this script will also run on linux and macos, 
+#      it is intended to be run on windows. If not on Windows, use deploy.sh
+
+# As this script is unsigned, you may need to adjust your execution policy.
+# To check your current execution policy, use
+#     Get-ExecutionPolicy
+# To allow this script to run locally, use
+#    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# configuration used for this script:
 $CONFIG_FILE=".env"
+# set DEPLOYMENT_ENVIRONMENT to either devtunnel or localhost (default)
+if(!$DEPLOYMENT_ENVIRONMENT) {$DEPLOYMENT_ENVIRONMENT="localhost"}
 
 # make sure we have docker compose v2
 Write-Host "### checking docker compose version"
@@ -27,9 +39,6 @@ Foreach ($i in $(Get-Content $CONFIG_FILE)){
   if( $VALUE ) { Set-Variable -Name $NAME -Value $VALUE }
 }
 
-#if(!$RP_ID) {$RP_ID="localhost"}
-#if(!$DEPLOYMENT_ENVIRONMENT) {$DEPLOYMENT_ENVIRONMENT="local"}
-
 
 if ($DEPLOYMENT_ENVIRONMENT -eq "devtunnel") {
     Write-Host "### checking for devtunnel"
@@ -43,8 +52,6 @@ if ($DEPLOYMENT_ENVIRONMENT -eq "devtunnel") {
         exit
     }
 }
-
-# TODO if running macOS, use bash script
 
 # stop and remove any running containers as they may need to be restarted
 Write-Host "### removing any running containers"
@@ -130,6 +137,7 @@ if ($DEPLOYMENT_ENVIRONMENT -eq "devtunnel") {
 }
 
 # default is deploy on localhost
+if(!$RP_ID) {$RP_ID="localhost"}
 
 if ($DEPLOYMENT_CLIENTS -split ',' -contains "demo") {
     Write-Host "your demo application will be deployed here:"
