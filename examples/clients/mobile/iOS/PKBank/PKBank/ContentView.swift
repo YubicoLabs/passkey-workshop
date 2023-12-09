@@ -27,6 +27,20 @@ struct ContentView: View {
                 authenticate()
             }
             .padding()
+            Button("Make Transaction") {
+                Task {
+                    let bankAPI = BankAPIManager()
+                    try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.deposit, amount: 1001.00, desc: "iron")
+                }
+            }
+            .padding()
+            Button("Get Transactions") {
+                Task {
+                    let bankAPI = BankAPIManager()
+                    try await bankAPI.getBankTransactions()
+                }
+            }
+            .padding()
         }
     }
     
