@@ -142,8 +142,43 @@ public class CredentialManager {
         }
     }
     
-    func renewAccessTokenWithRefreshToken() {
-        // not implemented
+    func renewAccessTokenWithRefreshToken() async -> Bool {
+        let requestModel = OpenIDRefreshTokenRequest(
+            grant_type: "refresh_token",
+            client_id: "BankAppMobile",
+            refresh_token: getRefreshTokenLocal(),
+            redirect_uri: "pkbank://callback"
+        )
+        
+        guard let requestData: Data = try? URLEncodedFormEncoder().encode(requestModel) else {
+            return false
+        }
+
+        var request = URLRequest(url: getURLEndpoint(endpoint: .token)!)
+        request.httpBody = requestData
+        request.httpMethod = "POST"
+        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            
+            data.printPrettyJSON("Token response")
+            
+            do {
+                let tokenResponse = try JSONDecoder().decode(CredentialManager.Credential.self, from: data)
+                let credMgr = CredentialManager(creds: tokenResponse)
+                if (credMgr.saveCredsLocal()){
+                    let token = credMgr.getAccessTokenLocal()
+                    print("Newly refreshed Token stored in keychain: \(String(describing: token!))")
+                    return true
+                }
+            } catch {
+                print("decoding error:", error)
+            }
+        } catch _ as NSError {
+            return false
+        }
+        return false
     }
     
     func getURLEndpoint(endpoint: Endpoint) -> URL? {
@@ -188,8 +223,15 @@ public class CredentialManager {
     struct OpenIDTokenRequest: Encodable {
         let grant_type: String
         let client_id: String
-        let code: String
+        let code: String?
         let redirect_uri: String
+    }
+    
+    struct OpenIDRefreshTokenRequest: Encodable {
+        let grant_type: String
+        let client_id: String
+        let refresh_token: String?
+        let redirect_uri: String?
     }
     
     struct Credential : Decodable {
