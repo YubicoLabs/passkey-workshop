@@ -60,7 +60,7 @@ That’s it for setting up Associated Domains for your app.
 
 ## Backend Tunneling (Optional - During Development)
 
-Following the getting started guide above, you should have a local deployment of the passkey workshop relying party server running on your machine and accessible through `http://localhost:3000`. To make this backend endpoint reachable from the Pawskey iOS app running on an iPhone, you can either set the local IP address of your Mac workstation in the app OR you can install and deploy a tunnel service like NGROK or Cloudflared to expose your local environment to be reachable dynamic DNS endpoint. You would then put that endpoint URL into the Pawskey app.
+Following the getting started guide above, you should have a local deployment of the passkey workshop relying party server running on your machine and accessible through `http://localhost:3000`. To make this backend endpoint reachable from the Pawskey iOS app running on an iPhone, you can either set the local IP address of your Mac workstation in the app OR you can install and deploy a tunnel service like Ngrok, devtunnel, or Cloudflared to expose your local environment to a reachable dynamic DNS endpoint. You would then put that endpoint URL into the Pawskey app.
 
 Here's an example for setting up `Cloudflared` service to expose your relying party localhost environment:
 

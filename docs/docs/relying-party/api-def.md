@@ -24,7 +24,7 @@ The section below will outline the responsibilities of the different API methods
 
 ### API status
 
-The `/status` method can be used to check the availability of your application (if the service is running). This is not essential to passkey applications, but overall a best practice
+The `/status` method can be used to check the availability of your application (if the service is running). This is not essential to passkey applications, but overall a best practice.
 
 ### Registration
 
