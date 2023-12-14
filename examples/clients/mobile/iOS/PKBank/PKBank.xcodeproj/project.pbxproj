@@ -16,6 +16,8 @@
 		26857DB32B15E31D0085439B /* URLEncodedFormEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26857DB22B15E31D0085439B /* URLEncodedFormEncoder.swift */; };
 		26E9B8832B19650600FC8B3A /* SimpleKeychain in Frameworks */ = {isa = PBXBuildFile; productRef = 26E9B8822B19650600FC8B3A /* SimpleKeychain */; };
 		26E9B8852B19653300FC8B3A /* CredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9B8842B19653300FC8B3A /* CredentialManager.swift */; };
+		26EFC84D2B2A77EC00E79B52 /* PKBankAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EFC84C2B2A77EC00E79B52 /* PKBankAccountView.swift */; };
+		26EFC84F2B2A8C4800E79B52 /* PKBankLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EFC84E2B2A8C4800E79B52 /* PKBankLoginView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		2684DEC22B0DFEBD00DF7659 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		26857DB22B15E31D0085439B /* URLEncodedFormEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLEncodedFormEncoder.swift; sourceTree = "<group>"; };
 		26E9B8842B19653300FC8B3A /* CredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialManager.swift; sourceTree = "<group>"; };
+		26EFC84C2B2A77EC00E79B52 /* PKBankAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKBankAccountView.swift; sourceTree = "<group>"; };
+		26EFC84E2B2A8C4800E79B52 /* PKBankLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKBankLoginView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +77,8 @@
 				26E9B8842B19653300FC8B3A /* CredentialManager.swift */,
 				2647B64B2B1AA23D000E0A75 /* BankAPIManager.swift */,
 				2647B64D2B1AA5F8000E0A75 /* Constants.swift */,
+				26EFC84C2B2A77EC00E79B52 /* PKBankAccountView.swift */,
+				26EFC84E2B2A8C4800E79B52 /* PKBankLoginView.swift */,
 			);
 			path = PKBank;
 			sourceTree = "<group>";
@@ -161,8 +167,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26EFC84D2B2A77EC00E79B52 /* PKBankAccountView.swift in Sources */,
 				26E9B8852B19653300FC8B3A /* CredentialManager.swift in Sources */,
 				2684DEB72B0DFEA700DF7659 /* ContentView.swift in Sources */,
+				26EFC84F2B2A8C4800E79B52 /* PKBankLoginView.swift in Sources */,
 				2647B64C2B1AA23D000E0A75 /* BankAPIManager.swift in Sources */,
 				26857DB32B15E31D0085439B /* URLEncodedFormEncoder.swift in Sources */,
 				2684DEB52B0DFEA700DF7659 /* iosApp.swift in Sources */,
