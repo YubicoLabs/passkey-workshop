@@ -1,7 +1,0 @@
-services:
-  passkey-services:
-    container_name: passkey-client
-    build: .
-    image: passkey_client
-    ports:
-      - 3000:3000

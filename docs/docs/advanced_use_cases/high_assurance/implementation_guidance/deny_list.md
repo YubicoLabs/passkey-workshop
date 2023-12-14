@@ -50,7 +50,7 @@ To achieve this using the java-webauthn-server, ensure that you set `allowUntrus
 
 This configuration can be set in our sample application by performing the steps below:
 
-1. In the [configuration file](https://github.com/YubicoLabs/passkey-workshop/blob/main/scripts/DeployProject.conf), change `RP_ALLOW_UNTRUSTED_ATTESTATION` to `false`
+1. In the `.env` configuration file, change `RP_ALLOW_UNTRUSTED_ATTESTATION` to `false`
 2. Run the [deploy command](/docs/deploy#deploying-the-project)
 
 The code sample below demonstrates the sample code used to enable this behavior in our sample application.
@@ -87,7 +87,7 @@ This configuration can be set in our sample application by performing the steps 
 
 @TODO - Alter the steps below, we need a specific field for declaring AAGUIDs
 
-1. In the [configuration file](https://github.com/YubicoLabs/passkey-workshop/blob/main/scripts/DeployProject.conf), change `RP_ALLOW_UNTRUSTED_ATTESTATION` to `false`
+1. In the `.env` configuration file, change `RP_ALLOW_UNTRUSTED_ATTESTATION` to `false`
 2. Run the [deploy command](/docs/deploy#deploying-the-project)
 
 The remaining content below will demonstrate how this deny list is implemented in our sample application.

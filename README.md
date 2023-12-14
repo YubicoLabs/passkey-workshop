@@ -115,7 +115,7 @@ Follow the steps below for a quick deployment.
 git clone https://github.com/YubicoLabs/passkey-workshop.git
 ```
 
-2. Navigate to the scripts folder
+2. Navigate to the deploy folder
 
 ```bash
 cd passkey-workshop/deploy
