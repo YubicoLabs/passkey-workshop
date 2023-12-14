@@ -61,7 +61,11 @@ class BankAPIManager {
                 data.printPrettyJSON("Received AccountDetails from Bank API")
                 accountsDetailsResponse = try JSONDecoder().decode(AccountsDetailsResponse.self, from: data)
                 
-                saveAccountDetailsLocal(accountsDetailsResponse?.accounts[0])
+                if(accountsDetailsResponse?.accounts != nil) {
+                    saveAccountDetailsLocal(accountsDetailsResponse?.accounts[0])
+                } else {
+                    print("No bank accounts found")
+                }
                 
                 return accountsDetailsResponse!
             } catch {
@@ -90,8 +94,8 @@ class BankAPIManager {
     
     func getAccountDetailsLocal() -> AccountDetailsResponse {
         var accountDetails: AccountDetailsResponse? = AccountDetailsResponse(accountId: 0, balance: 0.00)
-        var accountId: Int
-        var balance: Double
+        //var accountId: Int
+        //var balance: Double
         
         let keychain = SimpleKeychain(service: "PKBank")
         

@@ -181,6 +181,18 @@ public class CredentialManager {
         return false
     }
     
+    func clearAllCredentials() {
+        let keychain = SimpleKeychain(service: "PKBank")
+        
+        do {
+            try keychain.deleteAll()
+           
+            print("after delete keychain, access token is: \( getAccessTokenLocal())")
+        } catch {
+            print("Error deleting from Keychain: \(error)")
+        }
+    }
+    
     func getURLEndpoint(endpoint: Endpoint) -> URL? {
         switch endpoint {
             case .auth :
