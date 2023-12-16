@@ -125,6 +125,13 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 		-e "s#^RP_ID[= ].*#RP_ID = $hostname#" \
 		../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
 
+	echo "### editing iOS BankApp sources"
+	sed -i '' \
+		-e "s#^BANK_AUTH_DOMAIN[= ].*#BANK_AUTH_DOMAIN = $hostname:8081#" \
+		-e "s#^BANK_API_DOMAIN[= ].*#BANK_API_DOMAIN = $hostname:8082#" \
+		../examples/clients/mobile/iOS/PKBank/Constants.xcconfig
+
+
 	# TODO: instead of editing source files, make endpoints configurable
 	sed -i '' "s#http://host.docker.internal#https://$hostname#;s#http://localhost#https://$hostname#" keycloak/source/src/main/java/com/yubicolabs/PasskeyAuthenticator/PasskeyAuthenticator.java
 	sed -i '' "s#http://host.docker.internal#https://$hostname#;s#http://localhost#https://$hostname#" keycloak/source/src/main/java/com/yubicolabs/PasskeyAuthenticator/PasskeyRegistrationAuthenticator.java
