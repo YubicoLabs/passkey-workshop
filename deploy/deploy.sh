@@ -18,6 +18,8 @@ source ".env"
 if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then 
   echo "### checking for devtunnel"
   command -v devtunnel || { echo please install devtunnel first; exit; }
+  VERSION="$(devtunnel --version | grep '^Tunnel CLI version' | cut -d: -f2 | cut -d+ -f1)"
+  printf '%s\n' "1.0.1042" $VERSION | sort -C -V || { echo devtunnel version not supported - please upgrade first; exit; }
   devtunnel user show | grep '^Not logged in' && { echo "logon to devtunnel first ('devtunnel user login')"; exit; }
 fi
 
@@ -86,12 +88,12 @@ fi
 if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then 
 	echo "### bringing up the tunnel"
 
-	TUNNELID=$(devtunnel list --tags passkey-workshop --limit 1 | grep passkey-workshop | awk '{ print $1; }')
+	TUNNELID=$(devtunnel list --labels passkey-workshop --limit 1 | grep passkey-workshop | awk '{ print $1; }')
 	if [[ -z "$TUNNELID" ]] ; then
 		echo "### create tunnel"
-		devtunnel create --allow-anonymous --tags passkey-workshop --host-header unchanged --origin-header unchanged
+		devtunnel create --allow-anonymous --labels passkey-workshop --host-header unchanged --origin-header unchanged
 	fi
-	TUNNELID=$(devtunnel list --tags passkey-workshop --limit 1 | grep passkey-workshop | awk '{ print $1; }')
+	TUNNELID=$(devtunnel list --labels passkey-workshop --limit 1 | grep passkey-workshop | awk '{ print $1; }')
 
 	echo "### setting up ports"
 	devtunnel port list $TUNNELID | grep '^3000\b' || devtunnel port create $TUNNELID  -p 3000 --description 'app'
