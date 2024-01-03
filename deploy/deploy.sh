@@ -123,14 +123,14 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 	echo "### editing Pawskey sources"
 	sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/"	../examples/clients/mobile/iOS/PawsKey/PawsKey.xcodeproj/project.pbxproj
 	sed -i '' \
-		-e "s#^API_BASE_URI[= ].*#API_BASE_URI = $hostname:8080/v1#" \
+		-e "s#^API_BASE_URI[= ].*#API_BASE_URI = $HOST-8080.$REGION/v1#" \
 		-e "s#^RP_ID[= ].*#RP_ID = $hostname#" \
 		../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
 
 	echo "### editing iOS BankApp sources"
 	sed -i '' \
-		-e "s#^BANK_AUTH_DOMAIN[= ].*#BANK_AUTH_DOMAIN = $hostname:8081#" \
-		-e "s#^BANK_API_DOMAIN[= ].*#BANK_API_DOMAIN = $hostname:8082#" \
+		-e "s#^BANK_AUTH_DOMAIN[= ].*#BANK_AUTH_DOMAIN = $HOST-8081.$REGION#" \
+		-e "s#^BANK_API_DOMAIN[= ].*#BANK_API_DOMAIN = $HOST-8082.$REGION#" \
 		../examples/clients/mobile/iOS/PKBank/Constants.xcconfig
 
 
