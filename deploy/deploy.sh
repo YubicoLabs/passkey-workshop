@@ -81,7 +81,7 @@ rebuild=$(grep A6586UA84V react-app/source/public/.well-known/apple-app-site-ass
 if [[ ! -z "$rebuild" ]] ; then
   echo "### rebuilding passkey-client image"
   sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/g" react-app/source/public/.well-known/apple-app-site-association
-  docker compose build passkey-client
+  docker compose build -q passkey-client
 fi
 
 # deploy using a devtunnel
@@ -134,8 +134,22 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 	echo "### launching containers (this may take a minute)"
 	docker compose up -d
 
+	if (echo $DEPLOYMENT_CLIENTS | tr ',' '\n' | grep -Fqx demo); then
+		echo your demo application will be deployed here:
+		echo
+		echo "$(tput bold) https://$HOST-3000.$REGION/test_panel $(tput sgr0)"
+		echo
+	fi
+
+	if (echo $DEPLOYMENT_CLIENTS | tr ',' '\n' | grep -Fqx bank); then
+		echo your bank application will be deployed here:
+		echo
+		echo "$(tput bold) https://$HOST-3002.$REGION/ $(tput sgr0)"
+		echo
+	fi
+
 	echo "### starting devtunnel. Type ^C to stop the tunnel and take down all containers"
-	devtunnel host $TUNNELID
+	devtunnel host $TUNNELID > /dev/null
 
 	docker compose down
 	exit
