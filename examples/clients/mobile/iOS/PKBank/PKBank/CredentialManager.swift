@@ -26,6 +26,7 @@ public class CredentialManager {
         
         // Store the new tokens
         do {
+            try keychain.set(credentials.id_token, forKey: "id_token")
             try keychain.set(credentials.access_token, forKey: "access_token")
             try keychain.set(credentials.refresh_token, forKey: "refresh_token")
             return true
@@ -49,6 +50,19 @@ public class CredentialManager {
         }
     }
     
+    // Retrieve the id token from keychain
+    func getIdTokenLocal() -> String? {
+        let keychain = SimpleKeychain(service: "PKBank")
+        
+        do {
+            let idToken = try keychain.string(forKey: "id_token")
+            return idToken
+        } catch {
+            print("getIdTokenLocal(): Error retrieving Id token from iOS Keychain: \(error)")
+            return ""
+        }
+    }
+    
     // Retrieve the access token from keychain
     func getAccessTokenLocal() -> String? {
         let keychain = SimpleKeychain(service: "PKBank")
@@ -57,7 +71,7 @@ public class CredentialManager {
             let accessToken = try keychain.string(forKey: "access_token")
             return accessToken
         } catch {
-            print("Error retrieving access token from iOS Keychain: \(error)")
+            print("getAccessTokenLocal(): Error retrieving access token from iOS Keychain: \(error)")
             return ""
         }
     }
@@ -186,11 +200,24 @@ public class CredentialManager {
         
         do {
             try keychain.deleteAll()
-           
-            print("after delete keychain, access token is: \( getAccessTokenLocal())")
         } catch {
             print("Error deleting from Keychain: \(error)")
         }
+    }
+    
+    func logOut() async -> Bool {
+
+        var request = URLRequest(url: getURLEndpoint(endpoint: .logout)!)
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            clearAllCredentials()
+            
+        } catch _ as NSError {
+            return false
+        }
+        return false
     }
     
     func getURLEndpoint(endpoint: Endpoint) -> URL? {
@@ -201,6 +228,8 @@ public class CredentialManager {
                 return getTokenURL()
             case .userinfo:
                 return getUserInfoURL()
+            case .logout:
+                return getLogOutURL()
         }
     }
     
@@ -229,6 +258,15 @@ public class CredentialManager {
         components.host = BANKAUTH.domain
         components.path = "/realms/BankApp/protocol/openid-connect/userinfo"
  
+        return components.url!
+    }
+    
+    func getLogOutURL() -> URL {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = BANKAUTH.domain
+        components.path = "/realms/BankApp/protocol/openid-connect/logout"
+        components.queryItems = [ URLQueryItem(name: "id_token_hint", value: getIdTokenLocal())]
         return components.url!
     }
     
@@ -270,10 +308,17 @@ public class CredentialManager {
         }
     }
     
+    struct LogOutRequest: Encodable {
+        let client_id: String
+        let id_token_hint: String
+        let redirect_uri: String
+    }
+    
     enum Endpoint {
         case auth
         case token
         case userinfo
+        case logout
     }
     
     struct UserInfo: Decodable {

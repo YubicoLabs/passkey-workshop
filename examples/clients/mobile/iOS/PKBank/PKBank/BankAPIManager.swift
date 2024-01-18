@@ -61,7 +61,7 @@ class BankAPIManager {
                 data.printPrettyJSON("Received AccountDetails from Bank API")
                 accountsDetailsResponse = try JSONDecoder().decode(AccountsDetailsResponse.self, from: data)
                 
-                if(accountsDetailsResponse?.accounts != nil) {
+                if(!(accountsDetailsResponse?.accounts.isEmpty)!) {
                     saveAccountDetailsLocal(accountsDetailsResponse?.accounts[0])
                 } else {
                     print("No bank accounts found")
@@ -107,7 +107,7 @@ class BankAPIManager {
     
             return accountDetails!
         } catch {
-            print("Error retrieving access token from iOS Keychain: \(error)")
+            print("getAccountDetailsLocal(): Error retrieving access token from iOS Keychain: \(error)")
         }
         return accountDetails!
     }

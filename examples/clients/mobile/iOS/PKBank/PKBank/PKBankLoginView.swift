@@ -51,6 +51,17 @@ struct PKBankLoginView: View {
                             .background(Color(red: 0.07, green: 0.27, blue: 1))
                             .cornerRadius(10)
                     }
+                    Button(action: {
+                        authenticate()
+                    }) {
+                        Text("Create Account")
+                            .font(Font.custom("Helvetica Neue", size: 25))
+                            .foregroundColor(Color(red: 0.95, green: 0.94, blue: 1))
+                            .padding(10)
+                            .frame(maxWidth: .infinity)
+                            .background(Color(red: 0.07, green: 0.27, blue: 1))
+                            .cornerRadius(10)
+                    }
                 }
             }
             .padding(30)
@@ -109,6 +120,10 @@ struct PKBankLoginView: View {
         authenticationSession.start()
     }
     
+    func createAccount() {
+        
+    }
+    
     // WORKING for openid on mobile
     func getAuthURL() -> URL {
         var components = URLComponents()
@@ -122,6 +137,39 @@ struct PKBankLoginView: View {
                 URLQueryItem(name: "redirect_uri", value: "pkbank://callback"),
                 URLQueryItem(name: "scope", value: "openid"),
                 URLQueryItem(name: "response_type", value: "code"),
+                URLQueryItem(name: "state", value: "standard")
+            ]
+        return components.url!
+    }
+    
+    func getRegistrationURL() -> URL {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = BANKAUTH.domain
+        components.path = "/realms/BankApp/protocol/openid-connect/registration"
+        
+        components.queryItems =
+            [
+                URLQueryItem(name: "client_id", value: "BankAppMobile"),
+                URLQueryItem(name: "redirect_uri", value: "pkbank://callback"),
+                URLQueryItem(name: "scope", value: "openid"),
+                URLQueryItem(name: "response_type", value: "code"),
+                URLQueryItem(name: "state", value: "standard")
+            ]
+        return components.url!
+    }
+    
+    func getLogOutURL() -> URL {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = BANKAUTH.domain
+        components.path = "/realms/BankApp/protocol/openid-connect/logout"
+        
+        components.queryItems =
+            [
+                URLQueryItem(name: "client_id", value: "BankAppMobile"),
+                URLQueryItem(name: "redirect_uri", value: "pkbank://callback"),
+                URLQueryItem(name: "scope", value: "openid"),
                 URLQueryItem(name: "state", value: "standard")
             ]
         return components.url!

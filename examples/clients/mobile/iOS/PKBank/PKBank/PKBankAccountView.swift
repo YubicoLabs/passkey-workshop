@@ -18,7 +18,7 @@ struct PKBankAccountView: View {
         Text("PK Bank Account")
             .onAppear(perform: {
                 Task {
-                    try await getBankAccountDetails()
+                    await getBankAccountDetails()
                 }
             })
             .font(Font.custom("Helvetica Neue", size: 40))
@@ -30,11 +30,11 @@ struct PKBankAccountView: View {
             .font(Font.custom("Helvetica Neue", size: 25))
             .padding(5)
         VStack {
-            Button("Withdraw $50.00") {
+            Button("Deposit $100") {
                 Task {
                     let bankAPI = BankAPIManager()
-                    try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.withdraw, amount: 50.00, desc: "autodraft $50.00")
-                    try await getBankAccountDetails()
+                    try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.deposit, amount: 100.00, desc: "deposit $100.00")
+                    await getBankAccountDetails()
                 }
             }
             .font(Font.custom("Helvetica Neue", size: 15))
@@ -45,11 +45,26 @@ struct PKBankAccountView: View {
             .cornerRadius(10)
             .padding()
             
-            Button("Withdraw $1,000.00") {
+            Button("Withdraw $50") {
                 Task {
                     let bankAPI = BankAPIManager()
-                    try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.withdraw, amount: 1000.00, desc: "autodraft $1000.00")
-                    try await getBankAccountDetails()
+                    try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.withdraw, amount: 50.00, desc: "autodraft $50.00")
+                    await getBankAccountDetails()
+                }
+            }
+            .font(Font.custom("Helvetica Neue", size: 15))
+            .foregroundColor(Color(red: 0.95, green: 0.94, blue: 1))
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color(red: 0.07, green: 0.27, blue: 1))
+            .cornerRadius(10)
+            .padding()
+            
+            Button("Withdraw $1,200") {
+                Task {
+                    let bankAPI = BankAPIManager()
+                    try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.withdraw, amount: 1200.00, desc: "autodraft $1200.00")
+                    await getBankAccountDetails()
                 }
             }
             .font(Font.custom("Helvetica Neue", size: 15))
@@ -61,7 +76,9 @@ struct PKBankAccountView: View {
             .padding()
                        
             Button("Sign Out") {
-                signOut()
+                Task {
+                    await signOut()
+                }
             }
             .font(Font.custom("Helvetica Neue", size: 25))
             .foregroundColor(Color(red: 0.95, green: 0.94, blue: 1))
@@ -74,15 +91,17 @@ struct PKBankAccountView: View {
     }
     
     func getBankAccountDetails() async {
+        
+        let username = await CredentialManager(creds: nil).getUserInfo()
+        
         do {
-            let username = try await CredentialManager(creds: nil).getUserInfo()
-            
             let bankAPI = BankAPIManager()
             let accountDetails = try await bankAPI.fetchAccountsDetails()
             
             self.username = username!
-            self.balance = accountDetails.accounts[0].balance!
-            
+            if(!accountDetails.accounts.isEmpty) {
+                self.balance = accountDetails.accounts[0].balance!
+            }
         } catch {
             
         }
@@ -96,8 +115,8 @@ struct PKBankAccountView: View {
         return formattedNumber ?? ""
     }
     
-    func signOut() {
-        CredentialManager(creds: nil).clearAllCredentials()
+    func signOut() async {
+        await CredentialManager(creds: nil).logOut()
         isAuthenticated = false
     }
 }
