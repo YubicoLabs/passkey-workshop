@@ -8,17 +8,28 @@ import SwiftUI
 
 struct PKBankAccountView: View {
     @Binding var isAuthenticated: Bool
+    @State private var shouldPresentStepUp = false
     @State private var username: String = ""
     @State private var balance: Double = 0.00
    
     var body: some View {
+        Button(""){
+            
+        }
+        .confirmationDialog("STEP UP REQUIRED", isPresented: $shouldPresentStepUp) {
+            Button("UNLOCK WITH SECURITY KEY") {
+                PKBankLoginView(isAuthenticated: $isAuthenticated).authenticate()
+            }
+        }
         if !isAuthenticated {
             PKBankLoginView(isAuthenticated: $isAuthenticated)
         }
         Text("PK Bank Account")
             .onAppear(perform: {
                 Task {
-                    await getBankAccountDetails()
+                    if isAuthenticated {
+                        await getBankAccountDetails()
+                    }
                 }
             })
             .font(Font.custom("Helvetica Neue", size: 40))
@@ -30,10 +41,11 @@ struct PKBankAccountView: View {
             .font(Font.custom("Helvetica Neue", size: 25))
             .padding(5)
         VStack {
-            Button("Deposit $100") {
+           Button("Deposit $100") {
                 Task {
                     let bankAPI = BankAPIManager()
-                    try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.deposit, amount: 100.00, desc: "deposit $100.00")
+                    let bankResp = try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.deposit, amount: 100.00, desc: "deposit $100.00")
+                    print("Bank transaction response: \(bankResp)")
                     await getBankAccountDetails()
                 }
             }
@@ -48,7 +60,8 @@ struct PKBankAccountView: View {
             Button("Withdraw $50") {
                 Task {
                     let bankAPI = BankAPIManager()
-                    try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.withdraw, amount: 50.00, desc: "autodraft $50.00")
+                    let bankResp = try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.withdraw, amount: 50.00, desc: "autodraft $50.00")
+                    print("Bank transaction response: \(bankResp)")
                     await getBankAccountDetails()
                 }
             }
@@ -63,7 +76,14 @@ struct PKBankAccountView: View {
             Button("Withdraw $1,200") {
                 Task {
                     let bankAPI = BankAPIManager()
-                    try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.withdraw, amount: 1200.00, desc: "autodraft $1200.00")
+                    do {
+                        let bankResp = try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.withdraw, amount: 1200.00, desc: "autodraft $1200.00")
+                    } catch  {
+                        if(error as! BankAPIError == BankAPIError.requestFailed) {
+                            shouldPresentStepUp.toggle()
+                        }
+                    }
+                    
                     await getBankAccountDetails()
                 }
             }
@@ -87,6 +107,14 @@ struct PKBankAccountView: View {
             .background(Color.red)
             .cornerRadius(10)
             .padding()
+        }
+    }
+    
+    var stepUpView: some View {
+        VStack (alignment: .leading){
+            Text("Here is a list of new features:")
+            Text("Hello World")
+            Image(systemName: "plus")
         }
     }
     
