@@ -41,7 +41,7 @@ struct PKBankLoginView: View {
                         .foregroundColor(.white)
                         .padding()
                     Button(action: {
-                        authenticate()
+                        authenticate(action_type: ActionType.STANDARD, "")
                     }) {
                         Text("Authenticate")
                             .font(Font.custom("Helvetica Neue", size: 25))
@@ -52,7 +52,7 @@ struct PKBankLoginView: View {
                             .cornerRadius(10)
                     }
                     Button(action: {
-                        authenticate()
+                        authenticate(action_type: ActionType.STANDARD, "")
                     }) {
                         Text("Create Account")
                             .font(Font.custom("Helvetica Neue", size: 25))
@@ -71,10 +71,10 @@ struct PKBankLoginView: View {
             .shadow(color: .black.opacity(0.48), radius: 6, x: 2, y: 4)
     }
     
-    func authenticate() {
+    func authenticate(action_type: ActionType, _ username: String) {
         
         // Either specify URLScheme in the Info.plist or here. nil is setting the URLScheme from plist
-        let authenticationSession = ASWebAuthenticationSession(url: getAuthURL(), callbackURLScheme: nil) { callbackURL, error in
+        let authenticationSession = ASWebAuthenticationSession(url: getAuthURL(action_type: ActionType.STANDARD, username), callbackURLScheme: nil) { callbackURL, error in
             
             // Handle the authentication callback
             guard error == nil, let callbackURL = callbackURL else {
@@ -124,21 +124,40 @@ struct PKBankLoginView: View {
         
     }
     
+    enum ActionType: String {
+        case STANDARD = "STANDARD"
+        case STEPUP =  "STEPUP"
+    }
+    
     // WORKING for openid on mobile
-    func getAuthURL() -> URL {
+    func getAuthURL(action_type: ActionType, _ username: String) -> URL {
         var components = URLComponents()
         components.scheme = "https"
         components.host = BANKAUTH.domain
         components.path = "/realms/BankApp/protocol/openid-connect/auth"
         
-        components.queryItems =
-            [
-                URLQueryItem(name: "client_id", value: "BankAppMobile"),
-                URLQueryItem(name: "redirect_uri", value: "pkbank://callback"),
-                URLQueryItem(name: "scope", value: "openid"),
-                URLQueryItem(name: "response_type", value: "code"),
-                URLQueryItem(name: "state", value: "standard")
-            ]
+        if username.isEmpty == false {
+            // not nil and not empty so this is a step up authentication
+            components.queryItems =
+                [
+                    URLQueryItem(name: "client_id", value: "BankAppMobile"),
+                    URLQueryItem(name: "redirect_uri", value: "pkbank://callback/stepup"),
+                    URLQueryItem(name: "scope", value: "openid"),
+                    URLQueryItem(name: "response_type", value: "code"),
+                    URLQueryItem(name: "action_type", value: action_type.rawValue),
+                    URLQueryItem(name: "username", value: username)
+                ]
+        } else {
+            // no user_name
+            components.queryItems =
+                [
+                    URLQueryItem(name: "client_id", value: "BankAppMobile"),
+                    URLQueryItem(name: "redirect_uri", value: "pkbank://callback"),
+                    URLQueryItem(name: "scope", value: "openid"),
+                    URLQueryItem(name: "response_type", value: "code"),
+                    URLQueryItem(name: "action_type", value: action_type.rawValue)
+                ]
+        }
         return components.url!
     }
     

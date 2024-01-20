@@ -18,7 +18,8 @@ struct PKBankAccountView: View {
         }
         .confirmationDialog("STEP UP REQUIRED", isPresented: $shouldPresentStepUp) {
             Button("UNLOCK WITH SECURITY KEY") {
-                PKBankLoginView(isAuthenticated: $isAuthenticated).authenticate()
+                // Call the step-up authentication
+                PKBankLoginView(isAuthenticated: $isAuthenticated).authenticate(action_type: PKBankLoginView.ActionType.STEPUP, username)
             }
         }
         if !isAuthenticated {
