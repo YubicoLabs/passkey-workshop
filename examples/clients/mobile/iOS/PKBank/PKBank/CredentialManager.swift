@@ -36,13 +36,13 @@ public class CredentialManager {
         }
     }
     
-    // Store the preferred_username in the keychain
-    func saveUsernameLocal(_ userName: String) -> Bool {
-        
+    // Store the preferred_username and userHandle in the keychain
+    func saveUserInfoLocal(_ userInfo: UserInfo) -> Bool {
         let keychain = SimpleKeychain(service: "PKBank")
         
         do {
-            try keychain.set(userName, forKey: "preferred_username")
+            try keychain.set(userInfo.preferred_username, forKey: "preferred_username")
+            try keychain.set(userInfo.sub, forKey: "userHandle")
             return true
         } catch {
             print("Error saving username to iOS Keychain: \(error)")
@@ -89,6 +89,20 @@ public class CredentialManager {
         }
     }
     
+    // Retrieve userHandl from keychain
+    func getUserHandleLocal() -> String? {
+        let keychain = SimpleKeychain(service: "PKBank")
+        
+        do {
+            let userHandle = try keychain.string(forKey: "userHandle")
+            print("Returning userHandle: \(userHandle)")
+            return userHandle
+        } catch {
+            print("getUserHandleLocal(): Error retrieving userHandle from iOS Keychain: \(error)")
+            return ""
+        }
+    }
+    
     // Get user info from authorization server
     func getUserInfo() async -> String? {
         print("Getting user info from auth server...")
@@ -104,7 +118,7 @@ public class CredentialManager {
             
             do {
                 let userInfoResponse = try JSONDecoder().decode(CredentialManager.UserInfo.self, from: data)
-                if(saveUsernameLocal(userInfoResponse.preferred_username)) {
+                if(saveUserInfoLocal(userInfoResponse)){
                     return userInfoResponse.preferred_username
                 }
             } catch {
@@ -206,7 +220,6 @@ public class CredentialManager {
     }
     
     func logOut() async -> Bool {
-
         var request = URLRequest(url: getURLEndpoint(endpoint: .logout)!)
         request.addValue("application/json", forHTTPHeaderField: "Accept")
 

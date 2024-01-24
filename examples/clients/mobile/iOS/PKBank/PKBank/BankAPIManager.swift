@@ -10,34 +10,34 @@ import SimpleKeychain
 class BankAPIManager {
     
     // Get Account Details for Bank User - /v1/account/{accountId} (GET)
-    func fetchAccountDetails(accountId: Int) async throws -> AccountDetailsResponse? {
-        var accountDetailsResponse: AccountDetailsResponse? = nil
-        let session = URLSession.shared
-        var request = URLRequest(url: getURLEndpoint(endpoint: Endpoint.accountDetails, accountId)!)
-        
-        let accessToken = CredentialManager(creds: nil).getAccessTokenLocal()
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue("Bearer \(String(describing: accessToken))", forHTTPHeaderField: "Authorization")
-
-        do {
-            let (data, response) = try await session.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
-                data.printPrettyJSON("fetchAccountDetails invalidResponse")
-                throw BankAPIError.invalidResponse
-            }
-            do {
-                data.printPrettyJSON("Received AccountDetails from Bank API")
-                accountDetailsResponse = try JSONDecoder().decode(AccountDetailsResponse.self, from: data)
-            } catch {
-                print("AccountDetailsResponse decoding error:", error)
-                throw BankAPIError.parsingFailed
-            }
-        } catch {
-            throw BankAPIError.requestFailed
-        }
-        return accountDetailsResponse
-    }
+//    func fetchAccountDetails(accountId: Int) async throws -> AccountDetailsResponse? {
+//        var accountDetailsResponse: AccountDetailsResponse? = nil
+//        let session = URLSession.shared
+//        var request = URLRequest(url: getURLEndpoint(endpoint: Endpoint.accountDetails, accountId)!)
+//        
+//        let accessToken = CredentialManager(creds: nil).getAccessTokenLocal()
+//        request.setValue("application/json", forHTTPHeaderField: "Accept")
+//        request.setValue("Bearer \(String(describing: accessToken))", forHTTPHeaderField: "Authorization")
+//
+//        do {
+//            let (data, response) = try await session.data(for: request)
+//            
+//            guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
+//                data.printPrettyJSON("fetchAccountDetails(accountId): invalidResponse")
+//                throw BankAPIError.invalidResponse
+//            }
+//            do {
+//                data.printPrettyJSON("fetchAccountDetails(accountId): Received AccountDetails from Bank API for accountId [\(accountId)]")
+//                accountDetailsResponse = try JSONDecoder().decode(AccountDetailsResponse.self, from: data)
+//            } catch {
+//                print("AccountDetailsResponse decoding error:", error)
+//                throw BankAPIError.parsingFailed
+//            }
+//        } catch {
+//            throw BankAPIError.requestFailed
+//        }
+//        return accountDetailsResponse
+//    }
     
     // Get Account Details for Bank User - /v1/accounts/ (GET)
     // Param: Bearer access token
@@ -54,19 +54,20 @@ class BankAPIManager {
             let (data, response) = try await session.data(for: request)
             
             guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
-                data.printPrettyJSON("fetchAccountsDetails invalidResponse")
+                data.printPrettyJSON("fetchAccountsDetails() invalidResponse")
                 throw BankAPIError.invalidResponse
             }
             do {
-                data.printPrettyJSON("Received AccountDetails from Bank API")
+                data.printPrettyJSON("fetchAccountsDetails(): Received AccountDetails from Bank API")
                 accountsDetailsResponse = try JSONDecoder().decode(AccountsDetailsResponse.self, from: data)
                 
                 if(!(accountsDetailsResponse?.accounts.isEmpty)!) {
                     saveAccountDetailsLocal(accountsDetailsResponse?.accounts[0])
                 } else {
-                    print("No bank accounts found")
+                    // Create a new Bank User Account using the API
+                    print("No bank account found in PKBank database. Create a new one.")
+                    await createBankAccount()
                 }
-                
                 return accountsDetailsResponse!
             } catch {
                 print("AccountsDetailsResponse decoding error:", error)
@@ -75,7 +76,48 @@ class BankAPIManager {
         } catch {
             throw BankAPIError.requestFailed
         }
-        //return accountsDetailsResponse!
+        return accountsDetailsResponse!
+    }
+    
+    func createBankAccount() async -> Bool {
+        print("createBankAccount: Creating new user in PKBank")
+        var accountCreateResponse: AccountCreateResponse? = nil
+        var request = URLRequest(url: getURLEndpoint(endpoint: .accounts, -1)!)
+        let accessToken = CredentialManager(creds: nil).getAccessTokenLocal()
+        guard let userHandle = CredentialManager(creds: nil).getUserHandleLocal() else { return false }
+        
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("Bearer \(String(describing: accessToken!))", forHTTPHeaderField: "Authorization")
+        
+        // Setup JSON Body request
+        let requestModel = AccountCreateRequest( userHandle: userHandle )
+        guard let jsonBodyData = try? JSONEncoder().encode(requestModel) else { return false}
+        jsonBodyData.printPrettyJSON("Sending Create User Account to Bank API")
+        
+        request.httpBody = jsonBodyData
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            data.printPrettyJSON("Create bank user account")
+            guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
+                data.printPrettyJSON("createBankAccount invalidResponse")
+                throw BankAPIError.invalidResponse
+            }
+            do {
+                accountCreateResponse = try JSONDecoder().decode(AccountCreateResponse.self, from: data)
+                if(accountCreateResponse?.status == "created"){
+                    try await fetchAccountsDetails()
+                }
+            } catch {
+                print("createBankAccount: decoding error:", error)
+                return false
+            }
+        } catch let error as NSError  {
+            print(error)
+        }
+        return true
     }
     
     func saveAccountDetailsLocal(_ accountDetails: AccountDetailsResponse?) -> Bool {
@@ -85,17 +127,16 @@ class BankAPIManager {
         do {
             try keychain.set(String(accountDetails.accountId), forKey: "accountId")
             try keychain.set(String(accountDetails.balance!), forKey: "balance")
-            return true
+            
         } catch {
             print("Error saving account details to iOS Keychain: \(error)")
             return false
         }
+        return true
     }
     
     func getAccountDetailsLocal() -> AccountDetailsResponse {
         var accountDetails: AccountDetailsResponse? = AccountDetailsResponse(accountId: 0, balance: 0.00)
-        //var accountId: Int
-        //var balance: Double
         
         let keychain = SimpleKeychain(service: "PKBank")
         
@@ -239,6 +280,16 @@ struct AccountDetailsRequest: Encodable {
     }
 }
 
+// Account create request /v1/accounts
+struct AccountCreateRequest: Encodable {
+    let userHandle: String
+}
+
+// Account create response /v1/accounts
+struct AccountCreateResponse: Decodable {
+    let status: String
+}
+
 // Account Details server response from /v1/account/{accountId}
 struct AccountDetailsResponse: Decodable {
     var accountId: Int
@@ -247,6 +298,10 @@ struct AccountDetailsResponse: Decodable {
 
 struct AccountsDetailsResponse: Decodable {
     let accounts: [AccountDetailsResponse]
+    
+//    private enum CodingKeys: String, CodingKey {
+//        case accounts
+//    }
 }
 
 struct BankAPIStatus: Decodable {

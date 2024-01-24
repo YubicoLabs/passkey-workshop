@@ -23,12 +23,7 @@ struct PKBankLoginView: View {
     var body: some View {
         if isAuthenticated {
             PKBankAccountView(isAuthenticated: $isAuthenticated)
-        } else {
-//            Text("PK Bank Login")
-//                .onAppear(perform: {
-//                    authenticate()
-//                })
-        }
+        } else {}
         VStack (alignment: .center, spacing: 30) {
                 Text("Welcome to PKBS")
                     .font(Font.custom("Helvetica Neue", size: 30))
@@ -73,6 +68,17 @@ struct PKBankLoginView: View {
     
     func authenticate(action_type: ActionType, _ username: String) {
         
+        // Logout from Keycloak if a current user exists and this is a fresh authentication
+//        if(action_type == ActionType.STANDARD) {
+//            Task {
+//                do {
+//                    await CredentialManager(creds: nil).logOut()
+//                } catch {
+//                    print(error)
+//                }
+//            }
+//        }
+        
         // Either specify URLScheme in the Info.plist or here. nil is setting the URLScheme from plist
         let authenticationSession = ASWebAuthenticationSession(url: getAuthURL(action_type: ActionType.STANDARD, username), callbackURLScheme: nil) { callbackURL, error in
             
@@ -97,14 +103,10 @@ struct PKBankLoginView: View {
                                 if (try await CredentialManager(creds: nil).exchangeAuthorizationCodeForAccessToken(authCode)) {
                                     isAuthenticated = true
                                     
-                                    //let username = try await CredentialManager(creds: nil).getUserInfo()
-                                    
                                 } else {
                                     print("Failed to exchange code for access token")
                                     isAuthenticated = false
                                 }
-                                
-                                //await accountDetails()
                                 
                             } catch {
                                 print("Unexpected error retrieving access token: \(error.localizedDescription)")
@@ -118,10 +120,6 @@ struct PKBankLoginView: View {
             
         // Start the authentication session
         authenticationSession.start()
-    }
-    
-    func createAccount() {
-        
     }
     
     enum ActionType: String {

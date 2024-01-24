@@ -14,11 +14,10 @@ struct PKBankAccountView: View {
    
     var body: some View {
         Button(""){
-            
         }
         .confirmationDialog("STEP UP REQUIRED", isPresented: $shouldPresentStepUp) {
             Button("UNLOCK WITH SECURITY KEY") {
-                // Call the step-up authentication
+                // Call step-up authentication
                 PKBankLoginView(isAuthenticated: $isAuthenticated).authenticate(action_type: PKBankLoginView.ActionType.STEPUP, username)
             }
         }
@@ -29,7 +28,10 @@ struct PKBankAccountView: View {
             .onAppear(perform: {
                 Task {
                     if isAuthenticated {
-                        await getBankAccountDetails()
+                       let accountDetails = await getBankAccountDetails()
+                        if(accountDetails.accounts.isEmpty){
+                            await getBankAccountDetails()
+                        }
                     }
                 }
             })
@@ -84,7 +86,6 @@ struct PKBankAccountView: View {
                             shouldPresentStepUp.toggle()
                         }
                     }
-                    
                     await getBankAccountDetails()
                 }
             }
@@ -111,29 +112,25 @@ struct PKBankAccountView: View {
         }
     }
     
-    var stepUpView: some View {
-        VStack (alignment: .leading){
-            Text("Here is a list of new features:")
-            Text("Hello World")
-            Image(systemName: "plus")
-        }
-    }
-    
-    func getBankAccountDetails() async {
-        
+    func getBankAccountDetails() async -> AccountsDetailsResponse {
+        var accountDetails: AccountsDetailsResponse? = nil
         let username = await CredentialManager(creds: nil).getUserInfo()
         
         do {
             let bankAPI = BankAPIManager()
-            let accountDetails = try await bankAPI.fetchAccountsDetails()
+            accountDetails = try await bankAPI.fetchAccountsDetails()
             
             self.username = username!
-            if(!accountDetails.accounts.isEmpty) {
-                self.balance = accountDetails.accounts[0].balance!
+            if(!(accountDetails?.accounts.isEmpty)!) {
+                self.balance = accountDetails!.accounts[0].balance!
+                print("Account balance is: \(self.balance)")
+            } else {
+                print("getBankAccountDetails(): accountDetails.accounts is empty")
             }
         } catch {
             
         }
+        return accountDetails!
     }
     
     private func formatBalanceToCurrency(amount: Double) -> String {
