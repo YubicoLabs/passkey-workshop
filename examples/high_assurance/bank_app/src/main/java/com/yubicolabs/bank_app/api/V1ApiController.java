@@ -5,6 +5,8 @@ import com.yubicolabs.bank_app.models.api.Error;
 import com.yubicolabs.bank_app.models.api.TransactionCreateRequest;
 import com.yubicolabs.bank_app.services.bank.BankOperations;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import javax.security.sasl.AuthenticationException;
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-06-30T13:35:17.173429-05:00[America/Chicago]")
 @Controller
 @RequestMapping("${openapi.passkeyWebAuthnHighAssuranceAPIByYubico.base-path:}")
+@SecurityRequirement(name = "bearerAuth")
 public class V1ApiController implements V1Api {
 
     private final NativeWebRequest request;

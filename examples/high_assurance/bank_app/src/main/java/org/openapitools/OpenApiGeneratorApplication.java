@@ -2,6 +2,10 @@ package org.openapitools;
 
 import com.fasterxml.jackson.databind.Module;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Properties;
@@ -25,6 +29,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 @EnableJpaRepositories(basePackages = "com.yubicolabs.bank_app")
 @EntityScan(basePackages = "com.yubicolabs.bank_app")
 @EnableAutoConfiguration
+@SecurityScheme(name = "bearerAuth", scheme = "bearer", bearerFormat = "JWT", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 public class OpenApiGeneratorApplication {
 
   public static void main(String[] args) {
