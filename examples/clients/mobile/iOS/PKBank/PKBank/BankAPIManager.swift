@@ -9,36 +9,6 @@ import SimpleKeychain
 
 class BankAPIManager {
     
-    // Get Account Details for Bank User - /v1/account/{accountId} (GET)
-//    func fetchAccountDetails(accountId: Int) async throws -> AccountDetailsResponse? {
-//        var accountDetailsResponse: AccountDetailsResponse? = nil
-//        let session = URLSession.shared
-//        var request = URLRequest(url: getURLEndpoint(endpoint: Endpoint.accountDetails, accountId)!)
-//        
-//        let accessToken = CredentialManager(creds: nil).getAccessTokenLocal()
-//        request.setValue("application/json", forHTTPHeaderField: "Accept")
-//        request.setValue("Bearer \(String(describing: accessToken))", forHTTPHeaderField: "Authorization")
-//
-//        do {
-//            let (data, response) = try await session.data(for: request)
-//            
-//            guard let httpResponse = response as? HTTPURLResponse, (200 ..< 299) ~= httpResponse.statusCode else {
-//                data.printPrettyJSON("fetchAccountDetails(accountId): invalidResponse")
-//                throw BankAPIError.invalidResponse
-//            }
-//            do {
-//                data.printPrettyJSON("fetchAccountDetails(accountId): Received AccountDetails from Bank API for accountId [\(accountId)]")
-//                accountDetailsResponse = try JSONDecoder().decode(AccountDetailsResponse.self, from: data)
-//            } catch {
-//                print("AccountDetailsResponse decoding error:", error)
-//                throw BankAPIError.parsingFailed
-//            }
-//        } catch {
-//            throw BankAPIError.requestFailed
-//        }
-//        return accountDetailsResponse
-//    }
-    
     // Get Account Details for Bank User - /v1/accounts/ (GET)
     // Param: Bearer access token
     func fetchAccountsDetails() async throws -> AccountsDetailsResponse {
@@ -165,7 +135,7 @@ class BankAPIManager {
         request.setValue("Bearer \(String(describing: accessToken!))", forHTTPHeaderField: "Authorization")
         
         let transactionRequest = BankTransactionRequest(type: transactionType.rawValue, amount: amount, description: desc)
-        // Convert model to JSON to send as body
+        
         guard let jsonBodyData = try? JSONEncoder().encode(transactionRequest) else { return transactionResponse! }
         jsonBodyData.printPrettyJSON("Sending Bank Transaction request to Bank API")
         request.httpBody = jsonBodyData
@@ -247,7 +217,7 @@ enum Endpoint {
     case transactions
 }
 
-enum BankTransactionType : String {
+enum BankTransactionType : String, Codable {
     case deposit
     case withdraw
     case transfer

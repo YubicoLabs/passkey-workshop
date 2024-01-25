@@ -16,6 +16,7 @@ class AuthenticationCoordinator: NSObject, ASWebAuthenticationPresentationContex
 
 private let coordinator = AuthenticationCoordinator()
 
+@available(iOS 17.0, *)
 struct PKBankLoginView: View {
     @Binding var isAuthenticated: Bool
     @State private var username: String = ""
@@ -139,7 +140,7 @@ struct PKBankLoginView: View {
             components.queryItems =
                 [
                     URLQueryItem(name: "client_id", value: "BankAppMobile"),
-                    URLQueryItem(name: "redirect_uri", value: "pkbank://callback/stepup"),
+                    URLQueryItem(name: "redirect_uri", value: "pkbank://callback"),
                     URLQueryItem(name: "scope", value: "openid"),
                     URLQueryItem(name: "response_type", value: "code"),
                     URLQueryItem(name: "action_type", value: action_type.rawValue),

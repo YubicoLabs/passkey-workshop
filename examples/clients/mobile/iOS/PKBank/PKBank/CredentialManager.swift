@@ -110,7 +110,7 @@ public class CredentialManager {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue( "Bearer \(getAccessTokenLocal()!)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(getAccessTokenLocal()!)", forHTTPHeaderField: "Authorization")
         do {
             let (data, _) = try await URLSession.shared.data(for: request)
             
@@ -160,6 +160,20 @@ public class CredentialManager {
                 if (credMgr.saveCredsLocal()){
                     let token = credMgr.getAccessTokenLocal()
                     print("Token stored in keychain: \(String(describing: token))")
+                    
+                    // Check for any pending transactions
+                    let queuedTransactions = TransactionQueueManager.shared.retrieveTransactions()
+                    if(!queuedTransactions.isEmpty){
+                        let trans = queuedTransactions[0]
+                        Task {
+                            let bankAPI = BankAPIManager()
+                            do {
+                                let bankResp = try await bankAPI.makeBankTransaction(transactionType: trans.transactionType, amount: trans.amount, desc: trans.desc)
+                            } catch  {
+                                
+                            }
+                        }
+                    }
                 }
             } catch {
                 print("decoding error:", error)

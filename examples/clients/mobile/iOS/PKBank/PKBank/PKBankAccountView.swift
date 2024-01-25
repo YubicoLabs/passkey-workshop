@@ -6,11 +6,13 @@
 //
 import SwiftUI
 
+@available(iOS 17.0, *)
 struct PKBankAccountView: View {
     @Binding var isAuthenticated: Bool
     @State private var shouldPresentStepUp = false
     @State private var username: String = ""
     @State private var balance: Double = 0.00
+    @State private var isTransactionPending = false
    
     var body: some View {
         Button(""){
@@ -23,7 +25,7 @@ struct PKBankAccountView: View {
         }
         if !isAuthenticated {
             PKBankLoginView(isAuthenticated: $isAuthenticated)
-        }
+        } 
         Text("PK Bank Account")
             .onAppear(perform: {
                 Task {
@@ -31,10 +33,21 @@ struct PKBankAccountView: View {
                        let accountDetails = await getBankAccountDetails()
                         if(accountDetails.accounts.isEmpty){
                             await getBankAccountDetails()
+                        } else {
+                            if(isTransactionPending){
+                                print("Transactions pending...retrying transactions from queue")
+                                let transQueue = TransactionQueueManager.shared.retrieveTransactions()
+                                await bankTransaction(transQueue[0])
+                            } else {
+                                print("No transactions pending...continue")
+                            }
                         }
                     }
                 }
             })
+            .onChange(of: isTransactionPending, initial: isTransactionPending){
+                print("isTransactionPending STATE changed")
+            }
             .font(Font.custom("Helvetica Neue", size: 40))
             .padding(10)
         Text("Welcome, \(username)")
@@ -45,12 +58,10 @@ struct PKBankAccountView: View {
             .padding(5)
         VStack {
            Button("Deposit $100") {
-                Task {
-                    let bankAPI = BankAPIManager()
-                    let bankResp = try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.deposit, amount: 100.00, desc: "deposit $100.00")
-                    print("Bank transaction response: \(bankResp)")
-                    await getBankAccountDetails()
-                }
+               Task {
+                   let trans = Transaction(transactionType: BankTransactionType.deposit, amount: 100.00, desc: "deposit of $100.00")
+                   await bankTransaction(trans)
+               }
             }
             .font(Font.custom("Helvetica Neue", size: 15))
             .foregroundColor(Color(red: 0.95, green: 0.94, blue: 1))
@@ -62,10 +73,8 @@ struct PKBankAccountView: View {
             
             Button("Withdraw $50") {
                 Task {
-                    let bankAPI = BankAPIManager()
-                    let bankResp = try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.withdraw, amount: 50.00, desc: "autodraft $50.00")
-                    print("Bank transaction response: \(bankResp)")
-                    await getBankAccountDetails()
+                    let trans = Transaction(transactionType: BankTransactionType.withdraw, amount: 50.00, desc: "autodraft $50.00")
+                    await bankTransaction(trans)
                 }
             }
             .font(Font.custom("Helvetica Neue", size: 15))
@@ -78,15 +87,8 @@ struct PKBankAccountView: View {
             
             Button("Withdraw $1,200") {
                 Task {
-                    let bankAPI = BankAPIManager()
-                    do {
-                        let bankResp = try await bankAPI.makeBankTransaction(transactionType: BankTransactionType.withdraw, amount: 1200.00, desc: "autodraft $1200.00")
-                    } catch  {
-                        if(error as! BankAPIError == BankAPIError.requestFailed) {
-                            shouldPresentStepUp.toggle()
-                        }
-                    }
-                    await getBankAccountDetails()
+                    let trans = Transaction(transactionType: BankTransactionType.withdraw, amount: 1200.00, desc: "autodraft $1200.00")
+                    await bankTransaction(trans)
                 }
             }
             .font(Font.custom("Helvetica Neue", size: 15))
@@ -109,6 +111,26 @@ struct PKBankAccountView: View {
             .background(Color.red)
             .cornerRadius(10)
             .padding()
+        }
+    }
+    
+    func bankTransaction(_ transaction: Transaction) async {
+        Task {
+            let bankAPI = BankAPIManager()
+            do {
+                let bankResp = try await bankAPI.makeBankTransaction(transactionType: transaction.transactionType, amount: transaction.amount, desc: transaction.desc)
+                // Clear all transactions
+                TransactionQueueManager.shared.clearTransactions()
+                isTransactionPending = false
+            } catch  {
+                if(error as! BankAPIError == BankAPIError.requestFailed) {
+                    let trans = Transaction(transactionType: transaction.transactionType, amount: transaction.amount, desc: transaction.desc)
+                    TransactionQueueManager.shared.addTransaction(trans)
+                    isTransactionPending = true
+                    shouldPresentStepUp.toggle()
+                }
+            }
+            await getBankAccountDetails()
         }
     }
     
