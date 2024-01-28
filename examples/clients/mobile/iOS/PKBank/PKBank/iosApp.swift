@@ -11,11 +11,7 @@ import SwiftUI
 struct iosApp: App {
     var body: some Scene {
         WindowGroup {
-            if #available(iOS 17.0, *) {
-                ContentView()
-            } else {
-                // Fallback on earlier versions
-            }
+            ContentView()
         }
     }
 }

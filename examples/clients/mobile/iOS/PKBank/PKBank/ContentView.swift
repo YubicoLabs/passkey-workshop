@@ -8,7 +8,6 @@
 //
 import SwiftUI
 
-@available(iOS 17.0, *)
 struct ContentView: View {
     @State private var isAuthenticated = false
     @State private var username: String = ""

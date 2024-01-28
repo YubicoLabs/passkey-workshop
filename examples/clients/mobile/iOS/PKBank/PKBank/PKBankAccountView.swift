@@ -127,7 +127,11 @@ struct PKBankAccountView: View {
                     let trans = Transaction(transactionType: transaction.transactionType, amount: transaction.amount, desc: transaction.desc)
                     TransactionQueueManager.shared.addTransaction(trans)
                     isTransactionPending = true
-                    shouldPresentStepUp.toggle()
+                    if(transaction.amount >= 1000.00){
+                        shouldPresentStepUp.toggle()
+                    } else {
+                        // Refresh access token
+                    }
                 }
             }
             await getBankAccountDetails()

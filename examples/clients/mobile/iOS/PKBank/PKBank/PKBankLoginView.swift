@@ -16,7 +16,6 @@ class AuthenticationCoordinator: NSObject, ASWebAuthenticationPresentationContex
 
 private let coordinator = AuthenticationCoordinator()
 
-@available(iOS 17.0, *)
 struct PKBankLoginView: View {
     @Binding var isAuthenticated: Bool
     @State private var username: String = ""
