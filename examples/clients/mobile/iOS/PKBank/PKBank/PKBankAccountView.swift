@@ -6,48 +6,76 @@
 //
 import SwiftUI
 
-@available(iOS 17.0, *)
 struct PKBankAccountView: View {
     @Binding var isAuthenticated: Bool
+    @Binding var isSteppingUp: Bool
     @State private var shouldPresentStepUp = false
     @State private var username: String = ""
     @State private var balance: Double = 0.00
-    @State private var isTransactionPending = false
-   
+    
     var body: some View {
         Button(""){
+        }
+        .onChange(of: isSteppingUp) { newValue in
+            print("isSteppingUp changed to \(isSteppingUp)")
+            if isAuthenticated {
+                Task {
+                    let accountDetails = await getBankAccountDetails()
+                    if(accountDetails.accounts.isEmpty){
+                        await getBankAccountDetails()
+                    } else {
+                        // Check for any pending transactions
+                        print("BankAccountView: onAppear - checking for pending transactions")
+                        let queuedTransactions = TransactionQueueManager.shared.retrieveTransactions()
+                        if(!queuedTransactions.isEmpty){
+                            print("BankAccountView: onAppear - Found 1 pending transactions")
+                            let pendingTransaction = queuedTransactions[0]
+                            Task {
+                                let currentTransaction = Transaction(transactionType: pendingTransaction.transactionType, amount: pendingTransaction.amount, desc: pendingTransaction.desc)
+                                await bankTransaction(currentTransaction)
+                            }
+                        } else {
+                            print("BankAccountView: onAppear - No pending transactions")
+                        }
+                    }
+                }
+            }
         }
         .confirmationDialog("STEP UP REQUIRED", isPresented: $shouldPresentStepUp) {
             Button("UNLOCK WITH SECURITY KEY") {
                 // Call step-up authentication
-                PKBankLoginView(isAuthenticated: $isAuthenticated).authenticate(action_type: PKBankLoginView.ActionType.STEPUP, username)
+                PKBankLoginView(isAuthenticated: $isAuthenticated, isSteppingUp: $isSteppingUp).authenticate(action_type: PKBankLoginView.ActionType.STEPUP, username)
             }
         }
         if !isAuthenticated {
-            PKBankLoginView(isAuthenticated: $isAuthenticated)
-        } 
+            PKBankLoginView(isAuthenticated: $isAuthenticated, isSteppingUp: $isSteppingUp)
+        }
         Text("PK Bank Account")
             .onAppear(perform: {
                 Task {
+                    print("BankAccountView: entered onAppear")
                     if isAuthenticated {
-                       let accountDetails = await getBankAccountDetails()
+                        let accountDetails = await getBankAccountDetails()
                         if(accountDetails.accounts.isEmpty){
                             await getBankAccountDetails()
                         } else {
-                            if(isTransactionPending){
-                                print("Transactions pending...retrying transactions from queue")
-                                let transQueue = TransactionQueueManager.shared.retrieveTransactions()
-                                await bankTransaction(transQueue[0])
+                            // Check for any pending transactions
+                            print("BankAccountView: onAppear - checking for pending transactions")
+                            let queuedTransactions = TransactionQueueManager.shared.retrieveTransactions()
+                            if(!queuedTransactions.isEmpty){
+                                print("BankAccountView: onAppear - Found 1 pending transactions")
+                                let pendingTransaction = queuedTransactions[0]
+                                Task {
+                                    let currentTransaction = Transaction(transactionType: pendingTransaction.transactionType, amount: pendingTransaction.amount, desc: pendingTransaction.desc)
+                                    await bankTransaction(currentTransaction)
+                                }
                             } else {
-                                print("No transactions pending...continue")
+                                print("BankAccountView: onAppear - No pending transactions")
                             }
                         }
                     }
                 }
             })
-            .onChange(of: isTransactionPending, initial: isTransactionPending){
-                print("isTransactionPending STATE changed")
-            }
             .font(Font.custom("Helvetica Neue", size: 40))
             .padding(10)
         Text("Welcome, \(username)")
@@ -119,21 +147,22 @@ struct PKBankAccountView: View {
             let bankAPI = BankAPIManager()
             do {
                 let bankResp = try await bankAPI.makeBankTransaction(transactionType: transaction.transactionType, amount: transaction.amount, desc: transaction.desc)
-                // Clear all transactions
-                TransactionQueueManager.shared.clearTransactions()
-                isTransactionPending = false
             } catch  {
                 if(error as! BankAPIError == BankAPIError.requestFailed) {
                     let trans = Transaction(transactionType: transaction.transactionType, amount: transaction.amount, desc: transaction.desc)
                     TransactionQueueManager.shared.addTransaction(trans)
-                    isTransactionPending = true
                     if(transaction.amount >= 1000.00){
                         shouldPresentStepUp.toggle()
                     } else {
                         // Refresh access token
-                    }
-                }
-            }
+                        let refreshed = await CredentialManager(creds: nil).renewAccessTokenWithRefreshToken()
+                        // If refreshed token successful, retry pending transaction
+                        if(refreshed){
+                            await bankTransaction(trans)
+                        }
+                    } //end else
+                } // end if error
+            } // end catch #1
             await getBankAccountDetails()
         }
     }

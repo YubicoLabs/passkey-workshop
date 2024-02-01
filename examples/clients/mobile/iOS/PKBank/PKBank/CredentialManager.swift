@@ -162,18 +162,16 @@ public class CredentialManager {
                     print("Token stored in keychain: \(String(describing: token))")
                     
                     // Check for any pending transactions
-                    let queuedTransactions = TransactionQueueManager.shared.retrieveTransactions()
-                    if(!queuedTransactions.isEmpty){
-                        let trans = queuedTransactions[0]
-                        Task {
-                            let bankAPI = BankAPIManager()
-                            do {
-                                let bankResp = try await bankAPI.makeBankTransaction(transactionType: trans.transactionType, amount: trans.amount, desc: trans.desc)
-                            } catch  {
-                                
-                            }
-                        }
-                    }
+//                    let queuedTransactions = TransactionQueueManager.shared.retrieveTransactions()
+//                    if(!queuedTransactions.isEmpty){
+//                        let trans = queuedTransactions[0]
+//                        Task {
+//                            let bankAPI = BankAPIManager()
+//                            do {
+//                                let bankResp = try await bankAPI.makeBankTransaction(transactionType: trans.transactionType, amount: trans.amount, desc: trans.desc)
+//                            } catch  { }
+//                        }
+//                    }
                 }
             } catch {
                 print("decoding error:", error)
@@ -185,6 +183,7 @@ public class CredentialManager {
     }
     
     func renewAccessTokenWithRefreshToken() async -> Bool {
+        print("renewAccessTokenWithRefreshToken(): AccessToken expired. Renewing token with refresh token...")
         let requestModel = OpenIDRefreshTokenRequest(
             grant_type: "refresh_token",
             client_id: "BankAppMobile",
@@ -211,16 +210,27 @@ public class CredentialManager {
                 let credMgr = CredentialManager(creds: tokenResponse)
                 if (credMgr.saveCredsLocal()){
                     let token = credMgr.getAccessTokenLocal()
-                    print("Newly refreshed Token stored in keychain: \(String(describing: token!))")
-                    return true
+                    print("Newly refreshed Access Token stored in keychain: \(String(describing: token!))")
+                    
+                    // Check for any pending transactions
+//                    let queuedTransactions = TransactionQueueManager.shared.retrieveTransactions()
+//                    if(!queuedTransactions.isEmpty){
+//                        let trans = queuedTransactions[0]
+//                        Task {
+//                            let bankAPI = BankAPIManager()
+//                            do {
+//                                let bankResp = try await bankAPI.makeBankTransaction(transactionType: trans.transactionType, amount: trans.amount, desc: trans.desc)
+//                            } catch  { }
+//                        }
+//                    }
                 }
             } catch {
                 print("decoding error:", error)
             }
+            return true
         } catch _ as NSError {
             return false
         }
-        return false
     }
     
     func clearAllCredentials() {

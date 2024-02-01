@@ -150,6 +150,8 @@ class BankAPIManager {
             do {
                 data.printPrettyJSON("Received BankTransactionResponse from Bank API")
                 transactionResponse = try JSONDecoder().decode(BankTransactionResponse.self, from: data)
+                // Clear any pending transactions
+                TransactionQueueManager.shared.clearTransactions()
                 return transactionResponse!
             } catch {
                 print("BankTransactionResponse decoding error:", error)

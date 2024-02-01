@@ -18,14 +18,22 @@ private let coordinator = AuthenticationCoordinator()
 
 struct PKBankLoginView: View {
     @Binding var isAuthenticated: Bool
+    @Binding var isSteppingUp: Bool
     @State private var username: String = ""
     
     var body: some View {
         if isAuthenticated {
-            PKBankAccountView(isAuthenticated: $isAuthenticated)
+            PKBankAccountView(isAuthenticated: $isAuthenticated, isSteppingUp: $isSteppingUp)
         } else {}
         VStack (alignment: .center, spacing: 30) {
                 Text("Welcome to PKBS")
+                    .onAppear(perform: {
+                        Task {
+                            TransactionQueueManager.shared.clearTransactions()
+                            await CredentialManager(creds: nil).logOut()
+                            await CredentialManager(creds: nil).clearAllCredentials()
+                        }
+                    })
                     .font(Font.custom("Helvetica Neue", size: 30))
                     .foregroundColor(Color(red: 0.95, green: 0.94, blue: 1))
                 VStack() {
@@ -67,20 +75,8 @@ struct PKBankLoginView: View {
     }
     
     func authenticate(action_type: ActionType, _ username: String) {
-        
-        // Logout from Keycloak if a current user exists and this is a fresh authentication
-//        if(action_type == ActionType.STANDARD) {
-//            Task {
-//                do {
-//                    await CredentialManager(creds: nil).logOut()
-//                } catch {
-//                    print(error)
-//                }
-//            }
-//        }
-        
         // Either specify URLScheme in the Info.plist or here. nil is setting the URLScheme from plist
-        let authenticationSession = ASWebAuthenticationSession(url: getAuthURL(action_type: ActionType.STANDARD, username), callbackURLScheme: nil) { callbackURL, error in
+        let authenticationSession = ASWebAuthenticationSession(url: getAuthURL(action_type: action_type, username), callbackURLScheme: nil) { callbackURL, error in
             
             // Handle the authentication callback
             guard error == nil, let callbackURL = callbackURL else {
@@ -101,13 +97,16 @@ struct PKBankLoginView: View {
                         Task {
                             do {
                                 if (try await CredentialManager(creds: nil).exchangeAuthorizationCodeForAccessToken(authCode)) {
+                                    if(action_type.rawValue == "STEPUP"){
+                                        isSteppingUp = true
+                                    } else {
+                                        isSteppingUp = false
+                                    }
                                     isAuthenticated = true
-                                    
                                 } else {
                                     print("Failed to exchange code for access token")
                                     isAuthenticated = false
                                 }
-                                
                             } catch {
                                 print("Unexpected error retrieving access token: \(error.localizedDescription)")
                             }

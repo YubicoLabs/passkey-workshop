@@ -10,15 +10,16 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var isAuthenticated = false
+    @State private var isSteppingUp = false
     @State private var username: String = ""
     @State private var balance: String = ""
     
     var body: some View {
 
         if !isAuthenticated {
-            PKBankLoginView(isAuthenticated: $isAuthenticated)
+            PKBankLoginView(isAuthenticated: $isAuthenticated, isSteppingUp: $isSteppingUp)
         } else {
-            PKBankAccountView(isAuthenticated: $isAuthenticated)
+            PKBankAccountView(isAuthenticated: $isAuthenticated, isSteppingUp: $isSteppingUp)
         }
     }
 }
