@@ -25,7 +25,7 @@ For the rest of this article, we are going to explore different use cases to hel
 
 Figure 1 provides an informational graphic that highlights the concepts that will be covered in the rest of this article.
 
-![Architecture](/img/passkey_choose.jpg)
+![Architecture](/img/passkey_choose.png)
 
 ## Use Cases
 
@@ -45,6 +45,6 @@ These are use cases that can be found in non-consumer applications. This could b
 
 In these scenarios it's recommended to leverage SDCs. This would reduce the ability for a credential to be utilized outside of the device that it was originally created on.
 
-You may want to consider leveraging [attestation](https://developers.yubico.com/Passkeys/Passkey_relying_party_implementation_guidance/Attestation) and an [authenticator management strategy](https://developers.yubico.com/WebAuthn/Concepts/Authenticator_Management/) in order to tighten controls on the devices allowed to register in your application.
+You may want to consider leveraging [attestation](../category/attestation) and an [authenticator management strategy](.././advanced_use_cases/high_assurance/auth_management_mech) in order to tighten controls on the devices allowed to register in your application.
 
 There may be some enterprise use cases that don't require high assurance devices. To validate this claim, let's evaluate a few enterprise use cases to better understand how to determine assurance levels.
