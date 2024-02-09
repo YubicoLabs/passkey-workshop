@@ -30,7 +30,7 @@ public class PasskeyRegister implements Authenticator {
 
   ObjectMapper mapper = new ObjectMapper();
 
-  public static final String DEFAULT_WEBAUTHN_API_URL = "http://host.docker.internal:8080/v1";
+  public static final String DEFAULT_WEBAUTHN_API_URL = "http://172.17.0.1:8080/v1";
 
   private static final Logger logger = Logger.getLogger(PasskeyRegister.class);
 

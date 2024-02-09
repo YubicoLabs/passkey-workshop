@@ -57,7 +57,7 @@ public class OpenApiGeneratorApplication implements CommandLineRunner {
             System.setProperty("datasource.type", "mysql");
             System.setProperty("spring.jpa.hibernate.ddl-auto", "update");
             // @TODO - Consider making this an env variable
-            System.setProperty("spring.datasource.url", "jdbc:mysql://host.docker.internal:3306/passkeyStorage");
+            System.setProperty("spring.datasource.url", "jdbc:mysql://172.17.0.1:3306/passkeyStorage");
             System.setProperty("spring.datasource.username", "root");
 
             /*

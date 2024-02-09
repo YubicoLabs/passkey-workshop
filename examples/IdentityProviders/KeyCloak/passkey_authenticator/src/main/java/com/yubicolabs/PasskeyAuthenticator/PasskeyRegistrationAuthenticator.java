@@ -69,7 +69,7 @@ public class PasskeyRegistrationAuthenticator implements Authenticator {
        * Send the post request, and read the result
        */
       HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create("http://host.docker.internal:8080/v1/attestation/result"))
+          .uri(URI.create("http://172.17.0.1:8080/v1/attestation/result"))
           .header("Content-Type", "application/json")
           .header("Accept", "application/json")
           .POST(BodyPublishers.ofString(attestationResult))

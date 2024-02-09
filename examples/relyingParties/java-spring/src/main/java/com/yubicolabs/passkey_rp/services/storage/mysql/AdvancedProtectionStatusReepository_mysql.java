@@ -13,7 +13,7 @@ import com.yubicolabs.passkey_rp.models.dbo.mysql.AdvancedProtectionStatusDBO;
 @Component
 public class AdvancedProtectionStatusReepository_mysql implements AdvancedProtectionStatusStorage {
 
-  @Autowired
+  @Autowired(required = false)
   private AdvancedProtectionStatusRepositoryMysql advancedProtectionStatusRepositoryMysql;
 
   @Override

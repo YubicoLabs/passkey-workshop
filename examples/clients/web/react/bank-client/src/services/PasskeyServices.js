@@ -8,7 +8,7 @@ const PasskeyServices = {
   setAdvancedProtectionStatus
 }
 
-const baseURL = process.env.REACT_APP_RP_API || "http://localhost:8080/v1";
+const baseURL = "https://api.passkey-workshop.com/v1";
 
 async function getAttestationOptions(username, residentKeyReq, authAttachment, uvReq, attestation) {
   try {

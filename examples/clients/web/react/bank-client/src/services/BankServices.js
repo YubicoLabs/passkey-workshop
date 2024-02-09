@@ -7,7 +7,7 @@ const BankServices = {
   getAccount
 };
 
-const baseURL = process.env.REACT_APP_BANK_API || "http://localhost:8082/v1";
+const baseURL = "https://api-bank.passkey-workshop.com/v1";
 
 async function getAccounts() {
   try {
