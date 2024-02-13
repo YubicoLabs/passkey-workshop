@@ -1,8 +1,0 @@
-{
-  "label": "High assurance use cases",
-  "position": 2,
-  "link": {
-    "type": "generated-index",
-    "description": "Learn how to correctly adopt and implement passkeys for use from an application that requires high assurance for authentication. This is ideal for enterprise and high risk scenarios where you need to enforce strict rules around authentication methods"
-  }
-}
