@@ -9,64 +9,93 @@ This section will cover the topic of advanced protection.
 Advanced protection allows a user to declare that they want their account to be secured by the highest degree of assurance regardless of other convenience mechanisms.
 In this section we will outline how this is enabled from our Relying Party application.
 
-## API definition
+# Overview
 
-see `../../api/Yubico-OpenAPI3-WebAuthn-Schema-v1.yaml`
+Advanced protection is implemented as a user setting that can be enabled. 
+When enabled, any passkey used to authenticate to the banking application must be stored on a security key.
+We need several changes to our banking application to support advanced protection, which are described below.
 
-A new API method is added to retrieve (GET) or set (PUT) the advanced protection status of a user.
+# API definition
 
-    /v1/user/advanced-protection/{userHandle}
+A new API method `user/advanced-protection/{userHandle}` is added to retrieve (GET) or set (PUT) the advanced protection status of a user.
+The user's `userHandle` is supplied as a path parameter.
 
-GET | PUT
+If you deployed the banking application on `localhost`, you can find its OpenAPI definition [here](http://localhost:8080/).
 
-The user handle is supplied as a path parameter.
+# Data sources
 
-EXAMPLE
+The `passkeyStorage` database needs to store the advanced protection status for every account.
 
+This calls for a new attribute in the `account` table:
 
-deploy/db.sql
-
-
-database
-
-CREATE DATABASE passkeyStorage;
+```sql
 CREATE TABLE
     account (
+        ...
         advanced_protection BOOL DEFAULT FALSE,
+    )
+```
+as well as a separate `advanced_protection_status` table:
 
+```sql
 CREATE TABLE
     advanced_protection_status (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        user_handle NVARCHAR(256) NOT NULL,
         is_advanced_protection BOOL DEFAULT FALSE,
+        PRIMARY KEY (id)
+    );
+```
+
+# Registration
+
+During registration, we need to check whether advanced protection is enabled so we can decide if a credential (i.e. a passkey) can be added.
 
 ```java
   public AttestationResultResponse attestationResult(AttestationResultRequest response) throws Exception {
-... }
+
+  ... 
 
 
       if (!maybeUserInAdvancedProtection.isPresent()) {
-        relyingPartyInstance.getStorageInstance().getAdvancedProtectionStatusStorage().insert(
-            AdvancedProtectionStatus.builder()
+        relyingPartyInstance
+          .getStorageInstance()
+          .getAdvancedProtectionStatusStorage()
+          .insert(AdvancedProtectionStatus.builder()
                 .userHandle(options.getAttestationRequest().getUser().getId().getBase64Url())
-                .isAdvancedProtection(false).build());
+                .isAdvancedProtection(false)
+                .build());
       } else {
-        if (relyingPartyInstance.getStorageInstance().getAdvancedProtectionStatusStorage()
-            .getIfPresent(options.getAttestationRequest().getUser().getId().getBase64Url()).get()
+        if (relyingPartyInstance
+            .getStorageInstance()
+            .getAdvancedProtectionStatusStorage()
+            .getIfPresent(options.getAttestationRequest().getUser().getId().getBase64Url())
+            .get()
             .isAdvancedProtection() && !newCred.isAttestationTrusted()) {
           throw new Exception(
               "This credential cannot be registered as you are enrolled in advanced protection. All new registrations should be made using a security key");
         }
       }
+}
+```
+Next, we need to introduce methods to retrieve the advanced protection status of a specific user (identified by its `userHandle`):
 
-
+```java
 
   public AdvancedProtection getAdvancedProtectionStatus(String userHandle) throws Exception {
     try {      
-      Optional<AdvancedProtectionStatus> maybeStatus = relyingPartyInstance.getStorageInstance()
-          .getAdvancedProtectionStatusStorage().getIfPresent(userHandle);
+      Optional<AdvancedProtectionStatus> maybeStatus = 
+        relyingPartyInstance
+          .getStorageInstance()
+          .getAdvancedProtectionStatusStorage()
+          .getIfPresent(userHandle);
       
       if (maybeStatus.isPresent()) {
-        return AdvancedProtection.builder().userHandle(maybeStatus.get().getUserHandle())
-            .enabled(maybeStatus.get().isAdvancedProtection()).build();
+        return AdvancedProtection
+                .builder()
+                .userHandle(maybeStatus.get().getUserHandle())
+                .enabled(maybeStatus.get().isAdvancedProtection())
+                .build();
       } else {
         throw new Exception("This resource does not exist");
       }   
@@ -75,10 +104,11 @@ CREATE TABLE
       throw new Exception("There was an issue getting the advanced protection status for the user");
     }   
   }    
+```
+ 
+To update a user's advanced protection status, we first need to check wether the user is eligible for advanced protection:
 
-
-
-
+```java
   public AdvancedProtection updateAdvancedProtectionStatus(String userHandle,
       UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) throws Exception {
     try { 
@@ -122,7 +152,15 @@ CREATE TABLE
       throw new Exception("There was an issue updating the advanced protection status for the user: " + e.getMessage());
     }
   }
+```
 
+For any credential already registered, we need to check wether the credential is considered high assurance (i.e. stored on a security key).
+If not, we need to disable the credential. Note that we do not delete the credential, as the credential can still be used when advanced protection is disabled again.
+
+This handled by a new method `updateCredentialsForAdvancedProtection`, with a boolean parameter indicating if we advanced protection is enabled (switched on)
+or disabled (switched off).
+
+```java
 
   private void updateCredentialsForAdvancedProtection(String userHandle, Boolean isAdvancedProtection)
       throws Exception {
@@ -148,27 +186,15 @@ CREATE TABLE
   }
 ```
 
+The disabling of credentials itself is implemented with a separate method `updateCredentialStatus`.
 
-# disabling passkeys
+A credential can have three status'
+
+- `ENABLED` - The credential is registered and can be used for authentication
+- `DISABLED` - The credential was deactivated when the user enrolled in advanced protection. The credential can be re-enabled, but for now can't be used for authentication
+- `DELETED` - The user deleted the credential and SHOULD NOT be re-enabled
 
 ```java
-  /**
-   * Method that replaces removeRegisterion
-   * 
-   * The registration no longer needs to be deleted by the database, and instead
-   * requires that the status changes
-   * A credential can have three status'
-   * 
-   * ENABLED - The credential is registered and can be used for authentication
-   * DISABLED - The credential was deactivated when the user enrolled in advanced
-   * protection. The credential can be re enabled, but for now can't be used for
-   * authentication
-   * DELETED - The user deleted the credential and SHOULD NOT be re-enabled
-   * 
-   * @param credentialId
-   * @param userHandle
-   * @return
-   */   
   @Override 
   public Boolean updateCredentialStatus(ByteArray credentialId, ByteArray userHandle, StateEnum newState) {
     try {
