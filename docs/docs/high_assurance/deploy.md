@@ -85,4 +85,22 @@ docker compose start
 docker compose down
 ```
 
-TODO: deploy using the mobile client.
+## Running the mobile client
+
+The workshop repository also includes an iOS native app.
+Because this app is run on a separate device, you will need to deploy the server components using devtunnel in order for your iOS device to be able to communicate with those components.
+
+Deploying with devtunnel works the same as before. Edit your `.env` file and include the following variable:
+
+	DEPLOYMENT_ENVIRONMENT=devtunnel
+
+Then run the deploy scripts (`deploy.sh` or `deploy.ps1`) again.
+
+The deploy script will launch your devtunnel and edit the iOS sources to point to your tunneled endpoints.
+
+With that, you should be able to compile and run the mobile client as follows:
+
+1. Change directory to `examples/clients/mobile/iOS/PKBank`.
+2. Launch project `PKBank.xcodeproj` in Xcode.
+3. Build and Run the project on your iOS device.
+

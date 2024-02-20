@@ -6,8 +6,6 @@ sidebar_position: 3
 
 This section covers authentication for a high assurance scenario.
 
-TODO: why use a different property `loa` instead of `isHighAssurance`? Is that a Keycloak convention?
-
 When signing in with a passkey, we want to use this credential's `isHighAssurance` property to define a Level of Assurance (LoA) for the authentication event.
 This LoA is then returned to the banking application to enforce its policy for authorizing transactions.
 

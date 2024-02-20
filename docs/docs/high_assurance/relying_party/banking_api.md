@@ -26,8 +26,6 @@ spring:
           jwk-set-uri: http://localhost:8081/realms/BankApp/protocol/openid-connect/certs
 ```
 
-TODO: also set filters for audience etc.
-
 The access tokens issued by our OAuth2 Authorization Server are self-contained JWT tokens.
 The `jwk-set-uri` points to the keys required to verify these JWT tokens.
 
@@ -50,7 +48,7 @@ public class ResourceServerSecurityConfiguration {
                 http
                 .authorizeHttpRequests((authorize) -> authorize
                                 .antMatchers("/v1/status").permitAll()
-                                .antMatchers("/v1/**").authenticated() // TODO: filter on scopes if necessary
+                                .antMatchers("/v1/**").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
@@ -108,8 +106,6 @@ The check for the current assurance level is implemented in the `createTransacti
     ...
 }
 ```
-
-TODO:  generate an RFC-9470 compliant error response header including required loa
 
 The generated `AuthenticationException` will result in an HTTP response error with status 401 (`Unauthorized`),
 and the required level of assurance (`acr_values="2"`),
