@@ -7,7 +7,7 @@ import Spinner from "react-bootstrap/Spinner";
 import AuthServices from "../../services/AuthServices";
 
 export default function AuthCallback({ callbackInfo }) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, ] = useSearchParams();
   const code = searchParams.get("code");
   const state = searchParams.get("state");
 
