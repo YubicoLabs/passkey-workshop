@@ -61,7 +61,7 @@ Similarly, when retrieving credential data for a specific user using
 ## Data Sources
 
 We continue with data sources, based on what we described earlier in [Data sources and RP configurations](/docs/relying-party/config-and-data).
-We need to change our credential repository to store whether or not a passkey is stored on a high assurance authenticator. 
+We need to change our credential repository to store whether or not a passkey is stored on a high assurance authenticator.
 
 Let's revisit the `buildCredentialDBO` method used to package passkey information to store in our credential repository.
 Earlier, we added information like the name and the icon of the authenticator the passkey was stored on, when that authenticator was listed in MDS.
@@ -71,11 +71,11 @@ We will now simply add a boolean `isHighAssurance`. We assign the value `true` i
   private CredentialRegistration buildCredentialDBO(PublicKeyCredentialCreationOptions request,
       RegistrationResult result) {
     Optional<MetadataStatement> maybeMetadataEntry = resolveAttestation(result);
-              
+
     String credentialName;
     String iconURI;
     boolean isHighAssurance;
-              
+
     if (maybeMetadataEntry.isPresent()) {
       credentialName = maybeMetadataEntry.get().getDescription().isPresent()
           ? maybeMetadataEntry.get().getDescription().get()
@@ -89,7 +89,7 @@ We will now simply add a boolean `isHighAssurance`. We assign the value `true` i
       iconURI = null;
       isHighAssurance = false;
     }
-    
+
     return CredentialRegistration.builder()
         .userIdentity(request.getUser())
         .credentialNickname(Optional.of(credentialName))
@@ -139,8 +139,7 @@ public class CredentialRegistrationDBO {
 }
 ```
 
-We will need to persist this information in the database.
-We update the table schema that is utilized for our credential repository (see [our initial version](/docs/architecture/relying-party.md)) accordingly:
+We will need to persist this information in the database by updating the table schema that is utilized for our credential repository (see [our initial version](/docs/architecture/relying-party.md)) accordingly:
 
 ```sql
 CREATE TABLE credential_registrations (
@@ -152,17 +151,17 @@ CREATE TABLE credential_registrations (
 
 ## Registration Flow
 
-Note that for adding the new `isHighAssurance` property, we do not need to change our 
+Note that for adding the new `isHighAssurance` property, we do not need to change our
 [Attestation options method](/docs/relying-party/reg-flow#attestation-options-method).
 The only thing we need to change is the.
 [Attestation result method](/docs/relying-party/reg-flow#attestation-result-method)
 
-Similar to what was explained in [registration flow](/docs/relying-party/reg-flow.md), the implementation of the `attestation/result` method simply returns the credentials properties, now including its high availability status:
+Similar to what was explained in [registration flow](/docs/relying-party/reg-flow.md), the implementation of the `/attestation/result` method simply returns the credentials properties, now including its high assurance status:
 
 ```java
   public AttestationResultResponse attestationResult(AttestationResultRequest response) throws Exception {
 
-        ... 
+        ...
 
         return new AttestationResultResponse().status("created").credential(
             UserCredentialsResponseCredentialsInner.builder()
@@ -180,12 +179,12 @@ Similar to what was explained in [registration flow](/docs/relying-party/reg-flo
 
 ## Retrieving credentials
 
-The `user/credentials/{userName}` method is changed similarly:
+The `/user/credentials/{userName}` method is changed similarly:
 
 ```java
   public UserCredentialsResponse getUserCredentials(String userName) throws Exception {
 
-    ... 
+    ...
 
       List<UserCredentialsResponseCredentialsInner> credList = credentials.stream()
           .map(cred -> UserCredentialsResponseCredentialsInner.builder()

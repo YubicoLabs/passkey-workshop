@@ -11,13 +11,13 @@ In this section we will outline how this is enabled from our Relying Party appli
 
 # Overview
 
-Advanced protection is implemented as a user setting that can be enabled. 
+Advanced protection is implemented as a user setting that can be enabled.
 When enabled, any passkey used to authenticate to the banking application must be stored on a security key.
 We need several changes to our banking application to support advanced protection, which are described below.
 
 # API definition
 
-A new API method `user/advanced-protection/{userHandle}` is added to retrieve (GET) or set (PUT) the advanced protection status of a user.
+A new API method `/user/advanced-protection/{userHandle}` is added to retrieve (GET) or set (PUT) the advanced protection status of a user.
 The user's `userHandle` is supplied as a path parameter.
 
 If you deployed the banking application on `localhost`, you can find its OpenAPI definition [here](http://localhost:8080/).
@@ -35,6 +35,7 @@ CREATE TABLE
         advanced_protection BOOL DEFAULT FALSE,
     )
 ```
+
 as well as a separate `advanced_protection_status` table:
 
 ```sql
@@ -54,7 +55,7 @@ During registration, we need to check whether advanced protection is enabled so 
 ```java
   public AttestationResultResponse attestationResult(AttestationResultRequest response) throws Exception {
 
-  ... 
+  ...
 
 
       if (!maybeUserInAdvancedProtection.isPresent()) {
@@ -78,18 +79,19 @@ During registration, we need to check whether advanced protection is enabled so 
       }
 }
 ```
+
 Next, we need to introduce methods to retrieve the advanced protection status of a specific user (identified by its `userHandle`):
 
 ```java
 
   public AdvancedProtection getAdvancedProtectionStatus(String userHandle) throws Exception {
-    try {      
-      Optional<AdvancedProtectionStatus> maybeStatus = 
+    try {
+      Optional<AdvancedProtectionStatus> maybeStatus =
         relyingPartyInstance
           .getStorageInstance()
           .getAdvancedProtectionStatusStorage()
           .getIfPresent(userHandle);
-      
+
       if (maybeStatus.isPresent()) {
         return AdvancedProtection
                 .builder()
@@ -98,20 +100,20 @@ Next, we need to introduce methods to retrieve the advanced protection status of
                 .build();
       } else {
         throw new Exception("This resource does not exist");
-      }   
+      }
     } catch (Exception e) {
       e.printStackTrace();
       throw new Exception("There was an issue getting the advanced protection status for the user");
-    }   
-  }    
+    }
+  }
 ```
- 
+
 To update a user's advanced protection status, we first need to check wether the user is eligible for advanced protection:
 
 ```java
   public AdvancedProtection updateAdvancedProtectionStatus(String userHandle,
       UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) throws Exception {
-    try { 
+    try {
       /**
        * Check if the user is eligible for advanced protection
        */
@@ -119,15 +121,15 @@ To update a user's advanced protection status, we first need to check wether the
         int numberOfHighAssuranceCredentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
             .getRegistrationsByUserHandle(ByteArray.fromBase64Url(userHandle)).stream()
             .filter(credential -> credential.isHighAssurance()).collect(Collectors.toList()).size();
-    
+
         if (numberOfHighAssuranceCredentials < 2) {
           throw new Exception("The user does not qualify for advanced protection status");
         }
-      } 
-        
+      }
+
       boolean didUpdate = relyingPartyInstance.getStorageInstance().getAdvancedProtectionStatusStorage()
           .setAdvancedProtection(userHandle, updateAdvancedProtectionStatusRequest.getEnabled());
-            
+
       if (didUpdate) {
         // No need to check optional, we know the record exists
         AdvancedProtectionStatus updated = relyingPartyInstance.getStorageInstance()
@@ -135,7 +137,7 @@ To update a user's advanced protection status, we first need to check wether the
         /*
          * If true, go into credential registrations, and set all low assurance enabled
          * credentials as disabled
-         * 
+         *
          * If false, go into credential registrations, and set all the disabled
          * credentials as enabled
          */
@@ -157,7 +159,7 @@ To update a user's advanced protection status, we first need to check wether the
 For any credential already registered, we need to check wether the credential is considered high assurance (i.e. stored on a security key).
 If not, we need to disable the credential. Note that we do not delete the credential, as the credential can still be used when advanced protection is disabled again.
 
-This handled by a new method `updateCredentialsForAdvancedProtection`, with a boolean parameter indicating if we advanced protection is enabled (switched on)
+This handled by a new method `updateCredentialsForAdvancedProtection`, with a boolean parameter indicating if advanced protection is enabled (switched on)
 or disabled (switched off).
 
 ```java
@@ -195,7 +197,7 @@ A credential can have three status'
 - `DELETED` - The user deleted the credential and SHOULD NOT be re-enabled
 
 ```java
-  @Override 
+  @Override
   public Boolean updateCredentialStatus(ByteArray credentialId, ByteArray userHandle, StateEnum newState) {
     try {
       Collection<CredentialRegistration> credList = getRegistrationsByUserHandle(userHandle);
@@ -203,15 +205,15 @@ A credential can have three status'
       if (!credList.isEmpty()) {
         CredentialRegistrationDBO dboItem = credentialRegistrationRepositoryMySql
             .findByCredentialID(credentialId.getBase64Url()).get(0);
-  
+
         if (dboItem.getState().equals(StateEnum.DELETED.getValue())) {
           throw new Exception("Cannot change the state of a deleted credential");
         }
-    
+
         dboItem.setState(newState.getValue());
 
         CredentialRegistrationDBO newDbo = credentialRegistrationRepositoryMySql.save(dboItem);
-  
+
         if (newDbo.getState().equals(newState.getValue())) {
           return true;
         } else {

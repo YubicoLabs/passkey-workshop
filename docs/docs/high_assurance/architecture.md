@@ -13,7 +13,7 @@ We can distinguish the following six components:
 
 1. The Banking client. Strictly speaking, these are two components, as we will be using both a web client and a mobile client. The Web client is implemented using React. The mobile client is a native iOS app.
 2. The Banking API. This is a server component hosting a banking API, used by both clients to perform transactions such as money transfers between accounts.
-3. The Identity Provider. The is a separate server component that is used in conjunction with the API server. It is used to host user identities and issue tokens to secure the banking API.
+3. The Identity Provider. This is a separate server component that is used in conjunction with both API servers. It is used to host user identities and issue tokens to secure the banking API.
 4. The WebAuthn server. This is the same component as used before in the demo application, but configured slightly differently in order to support the use of attestation and multiple assurance levels.
 5. The Database server, used as before by the WebAuthn server to store passkey registration and authentication data, as well as used by the banking API server to store bank account information.
 6. Lastly, the FIDO Metadata service is used by the WebAuthn server for obtaining attestation data to assess the assurance level of different authenticators. Note that this is a cloud service so we do not need to deploy this service locally.
@@ -21,8 +21,6 @@ We can distinguish the following six components:
 These components and their interconnections are illustrated in the following diagram:
 
 ![Components](/img/architecture-components.png)
-
-@TODO: redraw image so that KeyCloak also has access to both the database and the webauthn server
 
 In this section we will focus on the first three components as they interact in a specific way to implement our high assurance use case using step-up authentication.
 
@@ -86,7 +84,7 @@ Now let's have a look at what happens when a user has authenticated with a copya
 but tries to make an API call that requires a high assurance level.
 
 When calling the API, sending along the obtained access token, the API server will validate the access token before performing the API call.
-let's assume the access token hasn't expired.
+Let's assume the access token hasn't expired.
 But because the API call requires high assurance, the API server will inspect some data associated with the access token.
 This data is called the _authentication context class reference_, or ACR, and its value is set by the entity that authenticated the user,
 indicating how authentication was performed. In our case, it indicates the assurance level of the associated passkey.

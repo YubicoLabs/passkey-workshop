@@ -11,7 +11,7 @@ This section covers an example of a protected API for a high assurance scenario.
 As explained in the [Architecture section](/docs/high_assurance/architecture), the banking API (or the OAuth2 Resource Server as it is also called)
 can use the ACR value to determine the Level of Assurance associated with the authentication ceremony in order to implement a policy for authorizing bank transactions.
 
-Just like our Webauthn Relying Party application, the banking API is implemented using [Spring Boot](https://spring.io/projects/spring-boot).
+Just like our WebAuthn Relying Party application, the banking API is implemented using [Spring Boot](https://spring.io/projects/spring-boot).
 This means we do not need to implement any OAuth2 flows, as they are available as a module in [Spring Security](https://spring.io/projects/spring-security).
 Best of all, an OAuth2 Resource Server can be implemented very easily with [minimal configuration](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html#oauth2resourceserver-jwt-minimalconfiguration).
 
@@ -72,7 +72,7 @@ If you deployed the banking application on `localhost`, you can find its OpenAPI
 
 All API methods require an OAuth2 access token for authorization.
 Some API calls require an access token with an `acr` claim indicating that authentication was performed with a passkey on a high assurance level.
-Most is the case with the `account/{accountId}/transations` method, where transactions involving a transfer of low amounts of money can be performed
+Most is the case with the `/account/{accountId}/transactions` method, where transactions involving a transfer of low amounts of money can be performed
 with any LoA, but transactions involving more that $1000 must be authorized with a high LoA.
 
 The ACR value is extracted from the JWT token with the `getAcr()` method defined in the API controller:
@@ -80,7 +80,7 @@ The ACR value is extracted from the JWT token with the `getAcr()` method defined
 ```java
     private int getAcr() {
         JwtAuthenticationToken token = (JwtAuthenticationToken) SecurityContextHolder.getContext()
-                .getAuthentication(); 
+                .getAuthentication();
         Jwt jwt = (Jwt) token.getCredentials();
         return Integer.parseInt((String) jwt.getClaims().get("acr"));
     }
@@ -96,7 +96,7 @@ The check for the current assurance level is implemented in the `createTransacti
 ```java
   public TransactionCreateResponse createTransaction(
     int acr, String type, double amount, String description, String userhandle) throws Exception {
-        
+
     ...
 
     if (amount >= 1000 && acr < 2) {
