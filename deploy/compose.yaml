@@ -72,6 +72,7 @@ services:
     image: passkey_storage
     environment:
       MYSQL_ROOT_PASSWORD: "${DATABASE_PASSWORD}"
+    command: --log_error_verbosity=2   # errors and warnings
     healthcheck:
       test:
         [
