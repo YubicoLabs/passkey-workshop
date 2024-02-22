@@ -12,12 +12,12 @@ This LoA is then returned to the banking application to enforce its policy for a
 In our architecture, authentication is performed by the OpenID Connect Provider, a role performed by Keycloak.
 As explained in the [Architecture section](/docs/high_assurance/architecture), Keycloak supports ACR claims to convey information
 about the strength of the mechanism used for authenticating the user.
-We will use the  `isHighAssurance` property of credentials stored during registration to return this LoA during authentication.
+We will use the `isHighAssurance` property of credentials stored during registration to return this LoA during authentication.
 This of course requires another couple of changes to our Relying Party implementation, as well as to passkey authentication module used by KeyCloak.
 
 ## API
 
-Let's first look at the definition of our passkey API, in particular the `assertion/result` method.
+Let's first look at the definition of our passkey API, in particular the `/assertion/result` method.
 
 Before, this method's [response](/docs/relying-party/auth-flow#response-1) simply returned a `status` to denote the result of the authentication ceremony.
 Now, we need to extend this response to also include the LoA we assigned to this authentication ceremony, determined by the properties of the credential used during authentication.
@@ -80,7 +80,7 @@ Fortunately, the changes are trivial: we just need to retrieve the `isHighAssura
 ```java
 public AssertionResultResponse assertionResponse(AssertionResultRequest response) throws Exception {
 
-    ... 
+    ...
 
         CredentialRegistration usedCredentialRegistration = relyingPartyInstance.getStorageInstance()
             .getCredentialStorage().getByCredentialId(result.getCredential().getCredentialId()).stream().findFirst()
@@ -92,7 +92,7 @@ public AssertionResultResponse assertionResponse(AssertionResultRequest response
 }
 ```
 
-Keycloak will use the `loa` value returned by the `assertion/result` method in its authentication module to create the `acr` value.
+Keycloak will use the `loa` value returned by the `/assertion/result` method in its authentication module to create the `acr` value.
 This is rather specific to Keycloak, but for completeness, this is implemented using Keycloak's `AuthenticationFlowContext` and `AcrStore` classes:
 
 ```java
