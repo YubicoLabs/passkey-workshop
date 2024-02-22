@@ -16,15 +16,13 @@ fi
 source ".env"
 
 if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then 
-  echo "### checking for devtunnel"
-  command -v devtunnel || { echo please install devtunnel first; exit; }
-  VERSION="$(devtunnel --version | grep '^Tunnel CLI version' | cut -d: -f2 | cut -d+ -f1)"
-  printf '%s\n' "1.0.1042" $VERSION | sort -C -V || { echo devtunnel version not supported - please upgrade first; exit; }
-  devtunnel user show | grep '^Not logged in' && { echo "logon to devtunnel first ('devtunnel user login')"; exit; }
-fi
-
-# a DEVELOPMENT_TEAM is required to build iOS apps (only makes sense for MacOS)
-if [ "$(uname)" == "Darwin" ]; then
+    echo "### checking for devtunnel"
+    command -v devtunnel || { echo please install devtunnel first; exit; }
+    VERSION="$(devtunnel --version | grep '^Tunnel CLI version' | cut -d: -f2 | cut -d+ -f1)"
+    printf '%s\n' "1.0.1042" $VERSION | sort -C -V || { echo devtunnel version not supported - please upgrade first; exit; }
+    devtunnel user show | grep '^Not logged in' && { echo "logon to devtunnel first ('devtunnel user login')"; exit; }
+    # a DEVELOPMENT_TEAM is required to build iOS apps (only makes sense for MacOS)
+    if [ "$(uname)" == "Darwin" ]; then
 	echo "### checking Apple Developer Team ID"
 	# Apple dev team needs to be changed, retrieve from .env file or from keychain...
 	if [[ -z "$DEVELOPMENT_TEAM" ]] ; then
@@ -46,6 +44,7 @@ if [ "$(uname)" == "Darwin" ]; then
 	fi
 	# use the team ID found
 	echo DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM
+    fi
 fi
 
 # stop and remove any running containers as they may need to be restarted
