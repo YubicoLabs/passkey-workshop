@@ -7,6 +7,9 @@ on:
     # Review gh actions docs if you want to further define triggers, paths, etc
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     name: Deploy to GitHub Pages
@@ -25,7 +28,7 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
-        
+
       - name: Listing files
         run: ls
 
