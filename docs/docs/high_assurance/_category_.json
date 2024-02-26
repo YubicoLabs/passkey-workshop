@@ -1,0 +1,8 @@
+{
+  "label": "High assurance concepts",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "Collection of concepts to help you understand how to utilize passkeys for high assurance scenarios, such as: enterprise, regulatory, or high risk applications"
+  }
+}

@@ -20,7 +20,6 @@ public class AssertionRequestStorage_mysql implements AssertionRequestStorage {
   @Override
   public Boolean insert(AssertionRequest request, String requestId) {
     try {
-      System.out.println(assertionRequestRepositoryMysql.getClass());
       AssertionOptionsDBO newItem = AssertionOptionsDBO.builder().assertionRequest(request.toJson())
           .requestId(requestId).isActive(true).build();
       assertionRequestRepositoryMysql.save(newItem);

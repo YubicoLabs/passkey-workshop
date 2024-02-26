@@ -41,6 +41,7 @@ import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria.AuthenticatorSelectionCriteriaBuilder;
 import com.yubicolabs.passkey_rp.helpers.AssertionOptionsResponseConverter;
 import com.yubicolabs.passkey_rp.helpers.AttestationOptionsResponseConverter;
+import com.yubicolabs.passkey_rp.models.api.AdvancedProtection;
 import com.yubicolabs.passkey_rp.models.api.AssertionOptionsRequest;
 import com.yubicolabs.passkey_rp.models.api.AssertionOptionsResponse;
 import com.yubicolabs.passkey_rp.models.api.AssertionResultRequest;
@@ -52,16 +53,19 @@ import com.yubicolabs.passkey_rp.models.api.AttestationOptionsResponse;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultRequest;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultRequestMakeCredentialResult;
 import com.yubicolabs.passkey_rp.models.api.AttestationResultResponse;
+import com.yubicolabs.passkey_rp.models.api.UpdateAdvancedProtectionStatusRequest;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDelete;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialDeleteResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdate;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialUpdateResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponse;
 import com.yubicolabs.passkey_rp.models.api.UserCredentialsResponseCredentialsInner;
-import com.yubicolabs.passkey_rp.models.api.UserDeleteResponse;
+import com.yubicolabs.passkey_rp.models.api.AssertionResultResponse.loaEnum;
+import com.yubicolabs.passkey_rp.models.common.AdvancedProtectionStatus;
 import com.yubicolabs.passkey_rp.models.common.AssertionOptions;
 import com.yubicolabs.passkey_rp.models.common.AttestationOptions;
 import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;
+import com.yubicolabs.passkey_rp.models.common.CredentialRegistration.StateEnum;
 
 @Service
 @Scope("singleton")
@@ -164,8 +168,36 @@ public class PasskeyOperations {
 
       CredentialRegistration toStore = buildCredentialDBO(options.getAttestationRequest(), newCred);
 
+      Optional<AdvancedProtectionStatus> maybeUserInAdvancedProtection = relyingPartyInstance.getStorageInstance()
+          .getAdvancedProtectionStatusStorage()
+          .getIfPresent(options.getAttestationRequest().getUser().getId().getBase64Url());
+
+      if (!maybeUserInAdvancedProtection.isPresent()) {
+        relyingPartyInstance.getStorageInstance().getAdvancedProtectionStatusStorage().insert(
+            AdvancedProtectionStatus.builder()
+                .userHandle(options.getAttestationRequest().getUser().getId().getBase64Url())
+                .isAdvancedProtection(false).build());
+      } else {
+        if (relyingPartyInstance.getStorageInstance().getAdvancedProtectionStatusStorage()
+            .getIfPresent(options.getAttestationRequest().getUser().getId().getBase64Url()).get()
+            .isAdvancedProtection() && !newCred.isAttestationTrusted()) {
+          throw new Exception(
+              "This credential cannot be registered as you are enrolled in advanced protection. All new registrations should be made using a security key");
+        }
+      }
+
       if (relyingPartyInstance.getStorageInstance().getCredentialStorage().addRegistration(toStore)) {
-        return new AttestationResultResponse().status("created");
+        return new AttestationResultResponse().status("created").credential(
+            UserCredentialsResponseCredentialsInner.builder()
+                .id(toStore.getCredential().getCredentialId().getBase64Url())
+                .type("public-key")
+                .nickName(toStore.getCredentialNickname().get())
+                .registrationTime(toStore.getRegistrationTime().atOffset(ZoneOffset.UTC))
+                .lastUsedTime(toStore.getLastUsedTime().atOffset(ZoneOffset.UTC))
+                .iconURI((toStore.getIconURI().isPresent() ? toStore.getIconURI().get() : null))
+                .isHighAssurance(toStore.isHighAssurance())
+                .state(toStore.getState().getValue())
+                .build());
       } else {
         throw new Exception("There was an unknown issue creating your credential");
       }
@@ -188,11 +220,12 @@ public class PasskeyOperations {
       optionsBuilder.userVerification(UserVerificationRequirement.PREFERRED).timeout(180000);
 
       /*
-       * Check if the user has a credential stored in the DB
+       * Check if the user has an active credential stored in the DB
        */
 
       Collection<CredentialRegistration> credentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
-          .getRegistrationsByUsername(request.getUserName());
+          .getRegistrationsByUsername(request.getUserName()).stream()
+          .filter(reg -> reg.getState().equals(StateEnum.ENABLED.getValue())).collect(Collectors.toList());
 
       if (credentials.size() != 0 || request.getUserName() != "") {
         /*
@@ -268,7 +301,20 @@ public class PasskeyOperations {
          * @TODO - Do we want to include the step where the signature count is updated?
          */
 
-        return AssertionResultResponse.builder().status("ok").build();
+        /**
+         * Set loa based on credential used in result
+         * 
+         * Right now this is assuming all trusted attestation in loa high
+         * We can refine this feature later
+         */
+
+        CredentialRegistration usedCredentialRegistration = relyingPartyInstance.getStorageInstance()
+            .getCredentialStorage().getByCredentialId(result.getCredential().getCredentialId()).stream().findFirst()
+            .get();
+
+        loaEnum resultLoa = usedCredentialRegistration.isHighAssurance() ? loaEnum.HIGH : loaEnum.LOW;
+
+        return AssertionResultResponse.builder().status("ok").loa(resultLoa).build();
       } else {
         throw new Exception("Your assertion failed for an unknown reason");
       }
@@ -285,7 +331,8 @@ public class PasskeyOperations {
       // @TODO - remember to add a mechanism to verify the user making the request is
       // the same whose creds are being queried
       Collection<CredentialRegistration> credentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
-          .getRegistrationsByUsername(userName);
+          .getRegistrationsByUsername(userName).stream()
+          .filter(reg -> reg.getState().getValue().equals(StateEnum.ENABLED.getValue())).collect(Collectors.toList());
 
       List<UserCredentialsResponseCredentialsInner> credList = credentials.stream()
           .map(cred -> UserCredentialsResponseCredentialsInner.builder()
@@ -295,6 +342,8 @@ public class PasskeyOperations {
               .registrationTime(cred.getRegistrationTime().atOffset(ZoneOffset.UTC))
               .lastUsedTime(cred.getLastUsedTime().atOffset(ZoneOffset.UTC))
               .iconURI((cred.getIconURI().isPresent() ? cred.getIconURI().get() : null))
+              .isHighAssurance(cred.isHighAssurance())
+              .state(cred.getState().getValue())
               .build())
           .collect(Collectors.toList());
 
@@ -391,6 +440,7 @@ public class PasskeyOperations {
 
     String credentialName;
     String iconURI;
+    boolean isHighAssurance;
 
     if (maybeMetadataEntry.isPresent()) {
       credentialName = maybeMetadataEntry.get().getDescription().isPresent()
@@ -399,9 +449,11 @@ public class PasskeyOperations {
       iconURI = maybeMetadataEntry.get().getIcon().isPresent()
           ? maybeMetadataEntry.get().getIcon().get()
           : null;
+      isHighAssurance = true;
     } else {
       credentialName = "My new passkey";
       iconURI = null;
+      isHighAssurance = false;
     }
 
     return CredentialRegistration.builder()
@@ -417,6 +469,8 @@ public class PasskeyOperations {
             .signatureCount(result.getSignatureCount())
             .build())
         .iconURI(Optional.ofNullable(iconURI))
+        .isHighAssurance(isHighAssurance)
+        .state(StateEnum.ENABLED)
         .build();
   }
 
@@ -445,9 +499,6 @@ public class PasskeyOperations {
 
   public UserCredentialDeleteResponse deleteCredential(UserCredentialDelete credential) throws Exception {
     try {
-      // @TODO - remember to add a mechanism to verify the user making the request is
-      // the same whose creds are being queried
-
       Collection<CredentialRegistration> credentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
           .getByCredentialId(ByteArray.fromBase64Url(credential.getId()));
 
@@ -496,6 +547,95 @@ public class PasskeyOperations {
     } catch (Exception e) {
       e.printStackTrace();
       throw new Exception("There was an issue updating your credentials nickname: " + e.getMessage());
+    }
+  }
+
+  public AdvancedProtection getAdvancedProtectionStatus(String userHandle) throws Exception {
+    try {
+      /**
+       * Check if the user exists
+       * If not, throw error
+       */
+
+      Optional<AdvancedProtectionStatus> maybeStatus = relyingPartyInstance.getStorageInstance()
+          .getAdvancedProtectionStatusStorage().getIfPresent(userHandle);
+
+      if (maybeStatus.isPresent()) {
+        return AdvancedProtection.builder().userHandle(maybeStatus.get().getUserHandle())
+            .enabled(maybeStatus.get().isAdvancedProtection()).build();
+      } else {
+        throw new Exception("This resource does not exist");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new Exception("There was an issue getting the advanced protection status for the user");
+    }
+  }
+
+  public AdvancedProtection updateAdvancedProtectionStatus(String userHandle,
+      UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) throws Exception {
+    try {
+      /**
+       * Check if the user is eligible for advanced protection
+       */
+      if (updateAdvancedProtectionStatusRequest.getEnabled()) {
+        int numberOfHighAssuranceCredentials = relyingPartyInstance.getStorageInstance().getCredentialStorage()
+            .getRegistrationsByUserHandle(ByteArray.fromBase64Url(userHandle)).stream()
+            .filter(credential -> credential.isHighAssurance()).collect(Collectors.toList()).size();
+
+        if (numberOfHighAssuranceCredentials < 2) {
+          throw new Exception("The user does not qualify for advanced protection status");
+        }
+      }
+
+      boolean didUpdate = relyingPartyInstance.getStorageInstance().getAdvancedProtectionStatusStorage()
+          .setAdvancedProtection(userHandle, updateAdvancedProtectionStatusRequest.getEnabled());
+
+      if (didUpdate) {
+        // No need to check optional, we know the record exists
+        AdvancedProtectionStatus updated = relyingPartyInstance.getStorageInstance()
+            .getAdvancedProtectionStatusStorage().getIfPresent(userHandle).get();
+        /*
+         * If true, go into credential registrations, and set all low assurance enabled
+         * credentials as disabled
+         * 
+         * If false, go into credential registrations, and set all the disabled
+         * credentials as enabled
+         */
+
+        updateCredentialsForAdvancedProtection(updated.getUserHandle(), updated.isAdvancedProtection());
+
+        return AdvancedProtection.builder().userHandle(updated.getUserHandle())
+            .enabled(updated.isAdvancedProtection()).build();
+      } else {
+        throw new Exception("The items did not update correctly");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new Exception("There was an issue updating the advanced protection status for the user: " + e.getMessage());
+    }
+  }
+
+  private void updateCredentialsForAdvancedProtection(String userHandle, Boolean isAdvancedProtection)
+      throws Exception {
+    Collection<CredentialRegistration> credList = relyingPartyInstance.getStorageInstance().getCredentialStorage()
+        .getRegistrationsByUserHandle(ByteArray.fromBase64Url(userHandle));
+    if (!credList.isEmpty()) {
+      credList.forEach(credential -> {
+        try {
+          if (!credential.isHighAssurance() && !credential.getState().stateEqual(StateEnum.DELETED)) {
+            relyingPartyInstance.getStorageInstance().getCredentialStorage()
+                .updateCredentialStatus(credential.getCredential().getCredentialId(),
+                    ByteArray.fromBase64Url(userHandle),
+                    isAdvancedProtection ? StateEnum.DISABLED : StateEnum.ENABLED);
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+
+      });
+    } else {
+      throw new Exception("This user has no credentials");
     }
   }
 

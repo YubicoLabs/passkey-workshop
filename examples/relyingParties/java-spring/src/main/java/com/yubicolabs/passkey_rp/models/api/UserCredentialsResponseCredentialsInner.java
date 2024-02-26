@@ -45,6 +45,12 @@ public class UserCredentialsResponseCredentialsInner {
   @JsonProperty("iconURI")
   private String iconURI;
 
+  @JsonProperty("isHighAssurance")
+  private boolean isHighAssurance;
+
+  @JsonProperty("state")
+  private String state;
+
   /**
    * Get id
    * 
@@ -155,6 +161,36 @@ public class UserCredentialsResponseCredentialsInner {
     this.iconURI = iconURI;
   }
 
+  /**
+   * Get isHighAssurance
+   * 
+   * @return isHighAssurance
+   */
+
+  @Schema(name = "isHighAssurance", example = "false", required = false)
+  public boolean getIsHighAssurance() {
+    return isHighAssurance;
+  }
+
+  public void setIsHighAssurance(boolean isHighAssurance) {
+    this.isHighAssurance = isHighAssurance;
+  }
+
+  /**
+   * Get state
+   * 
+   * @return state
+   */
+
+  @Schema(name = "state", example = "ENABLED", required = false)
+  public String getState() {
+    return state;
+  }
+
+  public void setState(String state) {
+    this.state = state;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -168,7 +204,10 @@ public class UserCredentialsResponseCredentialsInner {
         Objects.equals(this.type, userCredentialsResponseCredentialsInner.type) &&
         Objects.equals(this.nickName, userCredentialsResponseCredentialsInner.nickName) &&
         Objects.equals(this.registrationTime, userCredentialsResponseCredentialsInner.registrationTime) &&
-        Objects.equals(this.lastUsedTime, userCredentialsResponseCredentialsInner.lastUsedTime);
+        Objects.equals(this.lastUsedTime, userCredentialsResponseCredentialsInner.lastUsedTime) &&
+        Objects.equals(this.iconURI, userCredentialsResponseCredentialsInner.iconURI) &&
+        Objects.equals(this.isHighAssurance, userCredentialsResponseCredentialsInner.isHighAssurance) &&
+        Objects.equals(this.state, userCredentialsResponseCredentialsInner.state);
   }
 
   @Override
@@ -186,6 +225,8 @@ public class UserCredentialsResponseCredentialsInner {
     sb.append("    registrationTime: ").append(toIndentedString(registrationTime)).append("\n");
     sb.append("    lastUsedTime: ").append(toIndentedString(lastUsedTime)).append("\n");
     sb.append("    iconURI: ").append(toIndentedString(iconURI)).append("\n");
+    sb.append("    isHighAssurance: ").append(toIndentedString(isHighAssurance)).append("\n");
+    sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("}");
     return sb.toString();
   }

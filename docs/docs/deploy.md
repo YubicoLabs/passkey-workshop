@@ -8,7 +8,7 @@ In this section we are going to deploy the project to your local environment. At
 
 ## Prerequisites
 
-The following prerequisites items are required in order to run, and test this application in your local environment.
+The following prerequisite items are required in order to run, and test this application in your local environment.
 
 - [Docker](https://www.docker.com/)
 - [Git](https://git-scm.com/)
@@ -28,131 +28,100 @@ With HTTPS
 git clone https://github.com/YubicoLabs/passkey-workshop.git
 ```
 
-Once the repository is cloned, navigate into the scripts folder.
+Once the repository is cloned, navigate into the `deploy` folder.
 
 ```bash
-cd passkey-workshop/scripts
+cd passkey-workshop/deploy
 ```
 
 ## Deployment configurations
 
-The file `DeployProject.conf` will allow you to set specific parameters for use in the application (if no values are provided, our deploy script will apply default values based on our best practices).
+The file `.env` will allow you to set specific parameters for use in the application.
+You will need to create that file first, but there is an example file `default.env` with defaults for a deployment to localhost.
 
 ::::danger Ensure you understand the configurations before changing them
 If this is your first time deploying this application, or you are unfamiliar with passkeys, then we recommend that you utilize the default settings.
 ::::
 
-Below is an overview of the configurations file, along with the acceptable parameters
+Below is an overview of the configurations file, along with the default parameters.
+The file `default.env` contains comments with alternative settings for some configuration parameters.
+
 
 ```bash
-# Denotes the valid domain that identifies the relying party
+DEPLOYMENT_ENVIRONMENT=localhost
+
+# Client applications to deploy
+DEPLOYMENT_CLIENTS=demo
+
+# Domain that identifies the relying party
 # Reference: https://www.w3.org/TR/webauthn-2/#relying-party-identifier
-# Note - If you do not have a dedicated custom domain, then it is best
-# to use the default localhost value.
-# Default: localhost
-# Options: free text
-RP_ID=
+RP_ID=localhost
 
 # Human readable name that relates to the name of the site listed from the RP_ID
-# Default: "My app"
-# Options: free text
-RP_NAME=
+RP_NAME=Workshop
 
-# Requirement from the java-webauthn-server library. Denotes the origins that can generate a credential that
-# will be accepted by the relying party.
-# This should closely correspond to the domain denoted in the RP_ID. Note that unlike the RP_ID, this
-# value will require the port number
-# DO NOT include the protocol header (http/https), the relying party automatically allows for both
-# Multiple domains can be listed through comma delimitation
-# Default: localhost:3000
-# Options: free text
-# Example (single domain): localhost:3000
-# Example (multiple domains): localhost:3000,localhost:3002,my.domain.com
-RP_ALLOWED_ORIGINS=
-
-# Requirement from the Spring-Boot framework, this denotes the allowed cross-origins domains that are allowed to
-# interact with the API.
-# For the most part, this field should correspond to what is listed in the RP_ALLOWED_ORIGINS property
-# Default: localhost:3000
-# Options: free text
-# Example (single domain): localhost:3000
-# Example (multiple domains): localhost:3000,localhost:3002,my.domain.com
-RP_ALLOWED_CROSS_ORIGINS=
-
-# Sets the webauthn applications attestation preference
+# Set the webauthn applications attestation preference
 # Reference: https://www.w3.org/TR/webauthn-2/#enumdef-attestationconveyancepreference
-# Default: DIRECT
-# Options: DIRECT, INDIRECT, ENTERPRISE, NONE
-RP_ATTESTATION_PREFERENCE=
+RP_ATTESTATION_PREFERENCE=DIRECT
 
-# Allows you to configure your application to reject registrations that don't include
-# some form of trusted attestation
-# Default: true
-# Options: true, false
-RP_ALLOW_UNTRUSTED_ATTESTATION=
+# Allow registrations that don't include some form of trusted attestation
+RP_ALLOW_UNTRUSTED_ATTESTATION=true
 
-# Will denote if your application will leverage attestation
-# Through the FIDO MDS
-# Default: mds
-# Options: mds, none
-RP_ATTESTATION_TRUST_STORE=
+# Leverage attestation through the FIDO Metadata Service (MDS)
+RP_ATTESTATION_TRUST_STORE=mds
 
-# Allows you to deploy the application to different environments
-# At this moment, the only option that is configured is for a local deployment, but this example will be
-# extended to allow new environments, such as cloud deployments
-# some form of trusted attestation
-# Default: local
-# Options: local
-DEPLOYMENT_ENVIRONMENT=
+# Allowed origins for java-app
+RP_ALLOWED_ORIGINS=localhost:8081,localhost:3000
 
-# Allows you to select the data source used by the application
-# The default option is to deploy a full MySQL server in Docker
-# local will not deploy a MySQL instance, and instead rely on in-memory storage in the Java application.
-# Note that the local option will not persist data if the Java container is stopped
-# Default: mysql
-# Options: mysql, local
-DATABASE_TYPE=
+# Spring-Boot framework config for allowed cross-origins domains (CORS)
+# shared between java-app and bank-app
+RP_ALLOWED_CROSS_ORIGINS=localhost:8081,localhost:3000
 
-# Allows you to set your desired password for the root account in the MySQL server.
-# In the case that this field is left empty, the deploy script will generate a random one for you
-# Default: randomly generated string
-# Options: free text
-DATABASE_ROOT_PASSWORD=
+# Allowed authenticators, referenced by AAGUID. Leave empty to allow any authenticator
+ALLOW_LIST_AAGUIDS=
 
-# Allows you to set the client application that you wish to deploy
-# At this moment, the only option that is configured is a react based deployment.
-# You may set this option as none, if you are only leveraging the relying party aspect of this example
-# Default: react
-# Options: react, none
-CLIENT_TYPE=
+# database shared with java-app and bank-api
+DATABASE_TYPE=mysql
+# root password when using mysql
+DATABASE_PASSWORD=somegobbledygookhere
 
-# Allows you to set the identity provider and authorization server for the application
-# At this moment, the only option that is configured is a keycloak based deployment.
-# You may set this option as none, if you are leveraging another identity provider
-# Default: keycloak
-# Options: keycloak, none
-IDP_TYPE=
+# Location of the demo client
+DEMO_CLIENT_URL=http://localhost:3000
+
+# Location of the the RP API keycloak can connect to for passkey registration/validation
+RP_API=http://host.docker.internal:8080/v1
+
+# react-app demo client configuration
+REACT_APP_RP_API=http://localhost:8080/v1
+REACT_APP_OIDC=http://localhost:8081/realms/passkeyDemo/protocol/openid-connect
+REACT_APP_REDIRECT_URI=http://localhost:3000/oidc/callback
 ```
 
 ## Deploying the project
+
+The default configuration will deploy the demo application on localhost. 
+This means the application can be accessed using a web browser running on the same system.
+Later, we will also look at a client running on your mobile device.
 
 To deploy the application, run the following command:
 
 **For Mac-Linux**
 
 ```bash
-./DeployProject.sh
+./deploy.sh
 ```
 
 **For Windows**
 
 ```powershell
-\DeployProject.ps1
+\deploy.ps1
 ```
 
-As noted in the previous section, all "arguments" come in the form of the configurations set in the `DeployProject_Settings.json` file.
+These scripts use docker compose to build all components and run them in containers. 
 
-Note: this script is used for both deploying a fresh version of the application, and for restarting the service if it has been stopped.
+As noted in the previous section, all "arguments" come in the form of the configurations set in the `.env` file.
+
+Note: these scripts are used for both deploying a fresh version of the application, and for restarting the service if it has been stopped.
 
 Once the application has been deployed, your resources will be available through the following URLs
 
@@ -167,7 +136,7 @@ Once the application has been deployed, your resources will be available through
   - You won't be able to directly navigate to this resource. Please use a MySQL client to connect to the database
   - The default credentials for the root account is:
     - Username: root
-    - Password: Randomly generated (unless specified), can be found in the `.env` file that is generated in the current directory's mysql folder
+    - Password: somegobbledygookhere (see the value of `DATABASE_PASSWORD` in the `.env` file)
 - React-app (web client) - [http://localhost:3000](http://localhost:3000)
   - Navigating to this resource will bring you to the web client application
 
@@ -179,38 +148,31 @@ Follow the specific instructions found in the [mobile-client: getting started](/
 
 To stop the application containers, run the following command:
 
-**For Mac-Linux**
+**For Mac-Linux** or **Windows**
 
 ```bash
-./StopProject.sh
-```
-
-**For Windows**
-
-```powershell
-\StopProject.ps1
+docker compose stop
 ```
 
 This will look for any instance of the containers set by our deploy script, and stop them from running.
 
-**If the application has been stopped, run the deployment script to restart your application.**
+To start all containers again, use:
+
+```bash
+docker compose start
+```
 
 ## Removing the project
 
 To remove the application containers, run the following command:
 
-**For Mac-Linux**
+**For Mac-Linux** or **Windows**
 
 ```bash
-./RemoveProject.sh
-```
-
-**For Windows**
-
-```powershell
-\RemoveProject.ps1
+docker compose down
 ```
 
 This will look for any instance of the containers and images set by our deploy script, and remove them from Docker instance.
 
-Once the application has been removed, you will need to run the deploy application script, where you will be given a fresh, "factory-default", version of the application. Any passkeys registered to the old deployment will be unusable.
+Once the application has been removed, you will need to run the deploy application script, where you will be given a fresh, "factory-default", version of the application. 
+Any passkeys registered to the old deployment will be unusable.

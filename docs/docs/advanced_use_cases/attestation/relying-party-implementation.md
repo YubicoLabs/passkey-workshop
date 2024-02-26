@@ -8,7 +8,7 @@ This section will cover how to add attestation support to your relying party. Be
 
 ## Prerequisites
 
-Ensure that you have deployed the sample found in this project. The project uses the FIDO MDS by default, and can be enabled/disabled by setting the following configuration in the `DeployProject.conf` file.
+Ensure that you have deployed the sample found in this project. The project uses the FIDO MDS by default, and can be enabled/disabled by setting the following configuration in the `.env` configuration file.
 
 ```bash
 # Will denote if your application will leverage attestation
@@ -81,7 +81,7 @@ We will extend this example to download, initialize, and globally use the FIDO M
  */
 private FidoMetadataService resolveAttestationTrustSource() {
   /**
-   * Using the env variable set by the DeployProject.conf file
+   * Using the env variable set by the .env file
    */
   String attestationTrustStoreType = System.getenv("RP_ATTESTATION_TRUST_STORE");
 

@@ -60,20 +60,20 @@ That’s it for setting up Associated Domains for your app.
 
 ## Backend Tunneling (Optional - During Development)
 
-Following the getting started guide above, you should have a local deployment of the passkey workshop relying party server running on your machine and accessible through `http://localhost:3000`. To make this backend endpoint reachable from the Pawskey iOS app running on an iPhone, you can either set the local IP address of your Mac workstation in the app OR you can install and deploy a tunnel service like NGROK or Cloudflared to expose your local environment to be reachable dynamic DNS endpoint. You would then put that endpoint URL into the Pawskey app.
+Following the getting started guide above, you should have a local deployment of the passkey workshop relying party server running on your machine and accessible through `http://localhost:3000`. To make this backend endpoint reachable from the Pawskey iOS app running on an iPhone, you can either set the local IP address of your Mac workstation in the app OR you can install and deploy a tunnel service like Ngrok, devtunnel, or Cloudflared to expose your local environment to a reachable dynamic DNS endpoint. You would then put that endpoint URL into the Pawskey app.
 
-Here's an example for setting up `Cloudflared` service to expose your relying party localhost environment:
+Here's an example for setting up `devtunnel` service to expose your relying party localhost environment:
 
-MacOS: Download and install cloudflared via Homebrew
+MacOS: Download and install devtunnel via Homebrew
 
 ```bash
-$ brew install cloudflared
+$ brew install devtunnel
 ```
 
 Start a tunnel using the following command
 
 ```bash
-$ cloudflared tunnel --url http://localhost:3000
+$ devtunnel host --port-numbers 3000
 ```
 
-Result: You should get a reachable DNS endpoint that looks something like: `https://<some-text-here>.trycloudflare.com` that redirects to the relying party running in your localhost environment. Take note of that endpoint as we’ll be using it in our Pawskey iOS app.
+Result: You should get a reachable DNS endpoint that looks something like: `https://<some-text-here>-3000.<region>.devtunnels.ms` that redirects to the relying party running in your localhost environment. Take note of that endpoint as we’ll be using it in our Pawskey iOS app.

@@ -1,7 +1,11 @@
 package com.yubicolabs.passkey_rp.models.api;
 
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -23,6 +27,49 @@ public class AssertionResultResponse {
   }
 
   /**
+   * loa = Level of Assurance
+   */
+  public enum loaEnum {
+    HIGH(2),
+    LOW(1);
+
+    private int value;
+
+    loaEnum(int value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public int getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static loaEnum fromValue(int value) {
+      for (loaEnum b : loaEnum.values()) {
+        if (b.value == value) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+
+  }
+
+  @JsonProperty("loa")
+  private loaEnum loa = loaEnum.LOW;
+
+  public AssertionResultResponse loa(loaEnum loa) {
+    this.loa = loa;
+    return this;
+  }
+
+  /**
    * Get status
    * 
    * @return status
@@ -37,6 +84,21 @@ public class AssertionResultResponse {
     this.status = status;
   }
 
+  /**
+   * Get loa
+   * 
+   * @return loa
+   */
+
+  @Schema(name = "loa", example = "1", required = false)
+  public loaEnum getloa() {
+    return loa;
+  }
+
+  public void setloa(loaEnum loa) {
+    this.loa = loa;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -46,7 +108,8 @@ public class AssertionResultResponse {
       return false;
     }
     AssertionResultResponse assertionResultResponse = (AssertionResultResponse) o;
-    return Objects.equals(this.status, assertionResultResponse.status);
+    return Objects.equals(this.status, assertionResultResponse.status)
+        && Objects.equals(this.loa, assertionResultResponse.loa);
   }
 
   @Override
@@ -59,6 +122,7 @@ public class AssertionResultResponse {
     StringBuilder sb = new StringBuilder();
     sb.append("class AssertionResultResponse {\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    loa: ").append(toIndentedString(toIndentedString(loa))).append("\n");
     sb.append("}");
     return sb.toString();
   }

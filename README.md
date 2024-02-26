@@ -115,20 +115,20 @@ Follow the steps below for a quick deployment.
 git clone https://github.com/YubicoLabs/passkey-workshop.git
 ```
 
-2. Navigate to the scripts folder
+2. Navigate to the deploy folder
 
 ```bash
-cd passkey-workshop/scripts
+cd passkey-workshop/deploy
 ```
 
 3. Run the deployment script
 
 ```bash
 # For Mac and Linux
-./DeployProject.sh
+./deploy.sh
 
 # For Windows (Powershell)
-\DeployProject.ps1
+\deploy.ps1
 ```
 
 4. Open the client app at [localhost:3000](http://localhost:3000)

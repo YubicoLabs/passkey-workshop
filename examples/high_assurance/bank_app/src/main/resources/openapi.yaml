@@ -1,0 +1,274 @@
+openapi: 3.0.0
+info:
+  description: |
+    This REST API allows a developer to interact with a ficticious bank application through any web, mobile, or commandline client
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Passkey WebAuthn High Assurance API by Yubico
+  version: 1.0.1
+servers:
+  - url: "https://{api_endpoint}"
+    variables:
+      api_endpoint:
+        default: api.pkbank.io
+paths:
+  /v1/status:
+    get:
+      operationId: APIStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIStatus"
+          description: API status response
+      summary: Get API status
+      x-accepts: application/json
+  /v1/accounts:
+    get:
+      operationId: GetAccountsRequest
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountDetailListResponse"
+          description: Successfully retrieved all user accounts
+      summary: API to list all accounts that belong to a user
+      x-accepts: application/json
+    post:
+      operationId: CreateAccountRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        description: Create a new account by specifying userHandle
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateAccountResponse"
+          description: Successful bank account creation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Failed request response
+      summary: Admin API to create a new bank account for user
+      x-content-type: application/json
+      x-accepts: application/json
+  /v1/account/{accountId}:
+    get:
+      operationId: AccountDetails
+      parameters:
+        - description: ID of bank account to return
+          explode: false
+          in: path
+          name: accountId
+          required: true
+          schema:
+            type: integer
+          style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountDetailsResponse"
+          description: Successful account details
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Failed request response
+      summary: Returns bank account details by acccountId
+      x-accepts: application/json
+  /v1/account/{accountId}/transactions:
+    get:
+      operationId: AccountTransactionList
+      parameters:
+        - description: ID of account to fetch transactions
+          explode: false
+          in: path
+          name: accountId
+          required: true
+          schema:
+            type: integer
+          style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountTransactionListResponse"
+          description:
+            "Successful array of transactions for a single account. Empty\
+            \ array [] if no transactions exist."
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Failed request response
+      summary: Returns transactions by account ID
+      x-accepts: application/json
+    post:
+      operationId: TransactionCreate
+      parameters:
+        - description: ID of bank account to return
+          explode: false
+          in: path
+          name: accountId
+          required: true
+          schema:
+            type: integer
+          style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionCreateRequest"
+        description: Create a transaction
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionCreateResponse"
+          description: Successful transaction created response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Failed request response
+      summary: Create a new transaction
+      x-content-type: application/json
+      x-accepts: application/json
+  components:
+  schemas:
+    APIStatus:
+      example:
+        status: ok
+      properties:
+        status:
+          example: ok
+          type: string
+      type: object
+    Account:
+      example:
+        accountId: 1234
+        balance: 0.8008281904610115
+      properties:
+        accountId:
+          example: 1234
+          type: integer
+        balance:
+          type: number
+      type: object
+    CreateAccountRequest:
+      properties:
+        userHandle:
+          example: _Z07XVOop2ZcmWB0lpH_FHochR0
+          type: string
+      type: object
+    CreateAccountResponse:
+      $ref: "#/components/schemas/Account"
+    AccountDetailsResponse:
+      $ref: "#/components/schemas/Account"
+    AccountDetailListResponse:
+      example:
+        accounts:
+          - accountId: 1234
+            balance: 0.8008281904610115
+          - accountId: 1234
+            balance: 0.8008281904610115
+      properties:
+        accounts:
+          items:
+            $ref: "#/components/schemas/Account"
+          type: array
+      type: object
+    AccountTransactionListResponse:
+      example:
+        transactions:
+          - amount: 0.8008281904610115
+            description: birthday gift
+            type: transfer
+            transactionDate: 06/19/2023 04:20pm
+            transactionId: 49583
+          - amount: 0.8008281904610115
+            description: birthday gift
+            type: transfer
+            transactionDate: 06/19/2023 04:20pm
+            transactionId: 49583
+      properties:
+        transactions:
+          items:
+            $ref: "#/components/schemas/AccountTransaction"
+          type: array
+      type: object
+    AccountTransaction:
+      example:
+        amount: 0.8008281904610115
+        description: birthday gift
+        type: transfer
+        transactionDate: 06/19/2023 04:20pm
+        transactionId: 49583
+      properties:
+        transactionId:
+          example: 49583
+          type: integer
+        type:
+          enum:
+            - deposit
+            - withdraw
+            - transfer
+          example: transfer
+          type: string
+        amount:
+          type: number
+        transactionDate:
+          example: 06/19/2023 04:20pm
+          type: string
+        description:
+          example: birthday gift
+          type: string
+      type: object
+    TransactionCreateRequest:
+      example:
+        amount: 0.8008281904610115
+        description: birthday gift
+        type: deposit
+      properties:
+        type:
+          enum:
+            - deposit
+            - withdraw
+            - transfer
+          example: deposit
+          type: string
+        amount:
+          type: number
+        description:
+          example: birthday gift
+          type: string
+      type: object
+    TransactionCreateResponse:
+      $ref: "#/components/schemas/AccountTransaction"
+    Error:
+      properties:
+        status:
+          example: error
+          type: string
+        errorMessage:
+          example: descriptive error message
+          type: string
+      type: object

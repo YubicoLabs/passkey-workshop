@@ -1,0 +1,8 @@
+{
+  "label": "Relying party",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "This section will cover the relying party component of a high assurance passkey application. We are going to cover what additional functionality is required to support high assurance scenarios, and how to develop an authenticator management strategy"
+  }
+}

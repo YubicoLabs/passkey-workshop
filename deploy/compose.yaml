@@ -1,6 +1,5 @@
 name: passkey-workshop
 services:
-
   passkey-client:
     container_name: passkey-client
     build: react-app
@@ -8,11 +7,25 @@ services:
       - passkey-services
     image: passkey_client
     environment:
-      REACT_APP_API: "${REACT_APP_API}"
+      REACT_APP_RP_API: "${REACT_APP_RP_API}"
       REACT_APP_OIDC: "${REACT_APP_OIDC}"
       REACT_APP_REDIRECT_URI: "${REACT_APP_REDIRECT_URI}"
     ports:
       - 3000:3000
+
+  bank-client:
+    container_name: bank-client
+    build: bank-react-app
+    depends_on:
+      - passkey-services
+    image: bank_client
+    environment:
+      REACT_APP_RP_API: "${REACT_APP_RP_API}"
+      REACT_APP_BANK_API: "${REACT_APP_BANK_API}"
+      REACT_APP_KEYCLOAK_URL: "${REACT_APP_KEYCLOAK_URL}"
+      REACT_APP_CLIENT_ID: "${REACT_APP_CLIENT_ID}"
+    ports:
+      - 3002:3002
 
   passkey-services:
     container_name: passkey-services
@@ -31,19 +44,46 @@ services:
       RP_ATTESTATION_TRUST_STORE: "${RP_ATTESTATION_TRUST_STORE}"
       DATABASE_TYPE: "${DATABASE_TYPE}"
       DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
+      ALLOW_LIST_AAGUIDS: "${ALLOW_LIST_AAGUIDS}"
     ports:
       - 8080:8080
     expose:
       - "8080"
+
+  bank-services:
+    container_name: bank-services
+    build: bank-java-app
+    depends_on:
+      db:
+        condition: service_healthy
+    image: bank_services
+    environment:
+      RP_ALLOWED_CROSS_ORIGINS: "${RP_ALLOWED_CROSS_ORIGINS}"
+      DATABASE_TYPE: "${DATABASE_TYPE}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
+    ports:
+      - 8082:8082
+    expose:
+      - "8082"
 
   db:
     container_name: passkey-mysql
     build: mysql
     image: passkey_storage
     environment:
-      MYSQL_ROOT_PASSWORD: "${MASTER_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DATABASE_PASSWORD}"
+    command: --log_error_verbosity=2   # errors and warnings
     healthcheck:
-      test: ["CMD", "mysql" ,"-uroot", "-p$MASTER_PASSWORD", "--protocol=TCP", "-hlocalhost", "-estatus"]
+      test:
+        [
+          "CMD",
+          "mysql",
+          "-uroot",
+          "-p$DATABASE_PASSWORD",
+          "--protocol=TCP",
+          "-hlocalhost",
+          "-estatus",
+        ]
       timeout: 20s
       retries: 10
     ports:
@@ -58,7 +98,9 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      CLIENT_URL: "${CLIENT_URL}"
+      DEMO_CLIENT_URL: "${DEMO_CLIENT_URL}"
+      BANK_CLIENT_URL: "${BANK_CLIENT_URL}"
+      RP_API: "${RP_API}"
     ports:
       - "8081:8080"
     expose:

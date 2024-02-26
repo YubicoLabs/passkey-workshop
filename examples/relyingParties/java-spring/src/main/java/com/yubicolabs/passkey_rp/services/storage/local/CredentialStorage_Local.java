@@ -11,6 +11,7 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import com.yubicolabs.passkey_rp.interfaces.CredentialStorage;
 import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;
+import com.yubicolabs.passkey_rp.models.common.CredentialRegistration.StateEnum;
 
 public class CredentialStorage_Local implements CredentialStorage {
 
@@ -20,6 +21,7 @@ public class CredentialStorage_Local implements CredentialStorage {
   public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(String username) {
     return getRegistrationsByUsername(username)
         .stream()
+        .filter(cred -> cred.getState().getValue().equals(StateEnum.ENABLED.getValue()))
         .map(reg -> PublicKeyCredentialDescriptor.builder()
             .id(reg.getCredential().getCredentialId())
             .build())
@@ -81,6 +83,7 @@ public class CredentialStorage_Local implements CredentialStorage {
   public Collection<CredentialRegistration> getByCredentialId(ByteArray credentialId) {
     return credentialRepository.stream()
         .filter(reg -> reg.getCredential().getCredentialId().equals(credentialId))
+        .filter(reg -> reg.getState().getValue().equals(StateEnum.ENABLED.getValue()))
         .collect(Collectors.toList());
   }
 
@@ -92,8 +95,29 @@ public class CredentialStorage_Local implements CredentialStorage {
   @Override
   public Boolean removeRegistration(ByteArray credentialId, ByteArray userHandle) {
 
-    return credentialRepository.removeIf(reg -> reg.getCredential().getCredentialId().equals(credentialId)
-        && reg.getUserIdentity().getId().equals(userHandle));
+    credentialRepository.stream()
+        .filter(reg -> reg.getCredential().getCredentialId().equals(credentialId)
+            && reg.getUserIdentity().getId().equals(userHandle))
+        .forEach(reg -> reg.setState(StateEnum.DELETED));
+
+    return getByCredentialId(credentialId).stream().findFirst().get().getState().getValue()
+        .equals(StateEnum.DELETED.getValue());
+  }
+
+  @Override
+  public Boolean updateCredentialStatus(ByteArray credentialId, ByteArray userHandle, StateEnum newState) {
+
+    credentialRepository.stream()
+        .filter(reg -> reg.getCredential().getCredentialId().equals(credentialId)
+            && reg.getUserIdentity().getId().equals(userHandle))
+        .forEach(reg -> {
+          if (!reg.getState().stateEqual(StateEnum.DELETED)) {
+            reg.setState(newState);
+          }
+        });
+
+    return getByCredentialId(credentialId).stream().findFirst().get().getState().getValue()
+        .equals(StateEnum.DELETED.getValue());
   }
 
   @Override

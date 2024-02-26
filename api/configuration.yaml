@@ -2,7 +2,7 @@
 # The primary goal of the items below is to place the automatically generated
 # classes and objects into a folder specific to the com.yubicolabs package
 
-artifactId: com.yubicolabs.passkey_rp
+artifactId: com.yubicolabs.bank_app
 groupId: com.yubicolabs
-modelPackage: com.yubicolabs.passkey_rp.models.api
-apiPackage: com.yubicolabs.passkey_rp.api
+modelPackage: com.yubicolabs.bank_app.models.api
+apiPackage: com.yubicolabs.bank_app.api

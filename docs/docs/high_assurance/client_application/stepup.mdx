@@ -1,0 +1,82 @@
+---
+sidebar_position: 4
+---
+
+import ReactPlayer from "react-player";
+
+# Step up authentication
+
+This section covers how to incorporate step up authentication from the client application. Step up authentication is used to promote the level of a user's access when trying to perform a sensitive, or high-risk action.
+
+## Step up authentication in context
+
+First, let's explore step up authentication in the context of our banking solution. Earlier in this guide you learned about the [different assurance levels](/docs/high_assurance/assurance) of passkeys. While all passkeys offer more protection than passwords or traditional 2FA, there is still a degree of difference in the level of protection offered between low assurance and high assurance passkeys.
+
+In something like a banking scenario, you want to ensure that your users are protected, but above all you want to ensure that a user can access their account funds with ease. Within the context of passkeys, this means that you can't always require a high assurance passkey for every user session or transaction; along the same lines, you also need to ensure that a high-risk action requires a high degree of assurance that the user making the request is the owner of the account.
+
+In our banking application, there are two different rules for making a transaction:
+
+- Any transaction under $1000 can be made, regardless of the passkey used to authenticate into the session
+- Any transaction of $1000 or more will require that a user's session had been established with a high assurance passkey (like a security key) during authentication
+
+The step up authentication flow is introduced when a user, who authenticated with a low assurance passkey, attempts to process a transaction of $1000 or more. The user will be presented with a pop up menu from the identity provider, asking them to reauthenticate with their security key. If successful, the transaction will be processed, otherwise it will be rejected until the user authenticates with a high assurance passkey. It's important that you do not sign out the user if step up authentication fails, they should be allowed to continue with their current session, only being allowed to process low risk transactions.
+
+## Demonstration
+
+The first video will show a standard, low risk transaction. A user will authenticate with their low assurance passkey, and successfully post a transaction under $1000. In this scenario, imagine that we are authenticating as an existing user who has registered both their device biometric, and security key.
+
+<ReactPlayer
+  controls
+  width="100%"
+  height="100%"
+  url="/passkey-workshop/videos/ha_stepup_low.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+The second video shows a user, using the same session from the first video, attempting to make a high risk transaction. The user will attempt to make a transaction of $1000 or more. Notice how the user is prompted by the identity provider to perform step up authentication. In this scenario, the user will cancel the step up authentication prompt. Note how the pop up will indicate that the transaction will not process due to step up authentication not being successful.
+
+<ReactPlayer
+  controls
+  width="100%"
+  height="100%"
+  url="/passkey-workshop/videos/ha_stepup_low_high.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+The third video follows a similar flow to the second. The user will be authenticated using a low assurance passkey, and will attempt to make a high risk transaction. In this case, the user will successfully perform step up authentication, and the transaction will successfully process.
+
+<ReactPlayer
+  controls
+  width="100%"
+  height="100%"
+  url="/passkey-workshop/videos/ha_stepup_low_up.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+The fourth video shows a user authenticating with their high assurance passkey, followed by them posting a high risk transaction. Notice how the user is met with no additional friction, and their transaction is automatically posted.
+
+<ReactPlayer
+  controls
+  width="100%"
+  height="100%"
+  url="/passkey-workshop/videos/ha_stepup_high.mp4"
+  style={{ marginBottom: "2em" }}
+/>
+
+## Implementation guidance
+
+This section will be broken up into different sections to describe all of the parts involved in making step up authentication possible. Note that the guidance below is meant to outline a general case for using passkeys in a step up authentication flow, and will differ based on your specific implementation.
+
+### Relying party mechanisms
+
+Before you proceed, please ensure that you have reviewed the [previous section](/docs/category/relying-party-1) on the different mechanisms that were introduced into the relying party (Attestation, FIDO MDS, Allow Lists, and credential assurance indicators).
+
+### OAuth2 and the Authentication Context Reference (ACR)
+
+Please refer to the [Architecture - Step up authentication](/docs/high_assurance/architecture#step-up-authentication) page found earlier in this guide for an explanation on how Authentication Context Reference (**ACR**) fits into an OAuth2 flow.
+
+### Sequence diagram
+
+The sequence diagram below represents the flow of data between the different components of the application to determine if a transaction should be processed, or if step up authentication is required.
+
+![Stepup authentication sequence](/img/stepup_flow.png)
