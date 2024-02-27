@@ -125,11 +125,11 @@ export default function Transactions() {
     setShowModal(true);
   };
 
-  const openStepUpWindow = () => {
+  const openStepUpWindow = async () => {
     setAuthInProgress(true);
+    const stepupUri = await AuthServices.getAuthUri('stepup');
     const authWindow = window.open(
-      AuthServices.STEPUP_AUTH_URL +
-        `&username=${AuthServices.getLocalUsername()}`,
+      `${stepupUri}&username=${AuthServices.getLocalUsername()}`,
       "targetWindow",
       `toolbar=no,
      location=no,

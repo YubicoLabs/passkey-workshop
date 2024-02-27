@@ -13,7 +13,7 @@ export const ProtectedRoutes = ({ children }) => {
       console.log("No auth");
       localStorage.removeItem("APP_ACCESS_TOKENS");
       localStorage.removeItem("USER_INFO");
-      window.location = AuthServices.AUTH_URL;
+      window.location = await AuthServices.getAuthUri();
     } else {
       setLoading(false);
     }
