@@ -119,6 +119,13 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 	sed -i '' 's#http://#https://#' .env
 	sed -i '' "/^RP_ID=/s/localhost/$RP_ID/" .env
 
+    echo "### editing Pawskey sources"
+	sed -i '' "s/A6586UA84V/$DEVELOPMENT_TEAM/"	../examples/clients/mobile/iOS/PawsKey/PawsKey.xcodeproj/project.pbxproj
+	sed -i '' \
+		-e "s#^API_BASE_URI[= ].*#API_BASE_URI = $HOST-8080.$REGION#" \
+		-e "s#^RP_ID[= ].*#RP_ID = $hostname#" \
+		../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
+
 	echo "### editing iOS BankApp sources"
 	sed -i '' \
 		-e "s#^BANK_AUTH_DOMAIN[= ].*#BANK_AUTH_DOMAIN = $HOST-8081.$REGION#" \
