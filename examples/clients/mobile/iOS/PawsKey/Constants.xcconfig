@@ -1,0 +1,10 @@
+//
+//  Constants.xcconfig
+//  PawsKey
+//
+//  Created by Yubico Developer Program on 5/17/24.
+//  Copyright © 2024 Yubico. All rights reserved.
+//
+
+API_BASE_URI = replace-with-your-api-hostname
+RP_ID = replace-with-your-RPID-domain

@@ -11,8 +11,6 @@ import Foundation
 
 class RelyingParty {
     
-    static let API_ENDPOINT = "https://replace-with-your-hostname.trycloudflare.com/v1"
-    
     // #ATTESTATION OPTIONS
     
     // Get Attestation Options for user - /v1/attestation/options (POST)
@@ -163,15 +161,16 @@ class RelyingParty {
     }
     
     func getURLEndpoint(endpoint: Endpoint) -> URL? {
+        
         switch endpoint {
             case .attestationOptions :
-                return URL(string: RelyingParty.API_ENDPOINT + "/attestation/options")
+                return URL(string: APIBASEURI.domain + "/v1/attestation/options")
             case .attestationResult:
-                return URL(string: RelyingParty.API_ENDPOINT + "/attestation/result")
+                return URL(string: APIBASEURI.domain + "/v1/attestation/result")
             case .assertionOptions:
-                return URL(string: RelyingParty.API_ENDPOINT + "/assertion/options")
+                return URL(string: APIBASEURI.domain + "/v1/assertion/options")
             case .assertionResult:
-                return URL(string: RelyingParty.API_ENDPOINT + "/assertion/result")
+                return URL(string: APIBASEURI.domain + "/v1/assertion/result")
         }
     }
 }

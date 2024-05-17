@@ -5,6 +5,6 @@
 //  Created by Dennis Hills on 12/1/23.
 //
 
-BANK_AUTH_DOMAIN = replace-with-your-keycloak-hostname
-BANK_API_DOMAIN = replace-with-your-bank-api-hostname
+BANK_AUTH_DOMAIN = fun-lake-gjm1dq4-8081.usw2.devtunnels.ms
+BANK_API_DOMAIN = fun-lake-gjm1dq4-8082.usw2.devtunnels.ms
 
