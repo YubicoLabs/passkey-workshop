@@ -176,3 +176,26 @@ This will look for any instance of the containers and images set by our deploy s
 
 Once the application has been removed, you will need to run the deploy application script, where you will be given a fresh, "factory-default", version of the application. 
 Any passkeys registered to the old deployment will be unusable.
+
+
+# Troubleshooting
+
+This section covers commmon issues while deploying.
+
+## Docker container disappearing
+
+In case some containers keep disappearing, or you see request timeouts connected to the JDBC, please ensure that you got enough memory allocated to your virtual machine running the docker containers.
+
+### Docker Desktop
+
+If you run docker desktop, please open the settings and change the memory limit.
+
+### Podman
+
+If you use `podman` with `qemu`, please use the following commands to increase the memory size:
+
+```bash
+podman machine stop
+podman machine set --memory 4096
+podman machine start
+```
