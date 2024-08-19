@@ -4,7 +4,7 @@
 
 # make sure we have docker compose v2
 echo "### checking docker compose version"
-docker compose version | grep v2 || { echo docker compose v2 is required; exit; }
+docker compose version | egrep 'version (v)?2' || { echo docker compose v2 is required; exit; }
 
 # use a default environment file unless already present
 if [[ ! -f ".env" ]] ; then
