@@ -1,0 +1,8 @@
+{
+  "label": "Banking App",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "A complex example on using passkeys on Android and WebAuthN for simulating a banking app."
+  }
+}
