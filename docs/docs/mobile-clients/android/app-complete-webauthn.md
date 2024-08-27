@@ -12,4 +12,4 @@ In the last section we build the foundation for letting our frontend Android App
 
 # Next Steps
 
-Now the Relying Party and our Android App are able to authenticate, we need some finishing steps to make our app production ready. Follow us [there in the next Section]().
+Now the Relying Party and our Android App are able to authenticate, we need some finishing steps to make our app production ready. Follow us [there in the next Section](app-polishing.md).

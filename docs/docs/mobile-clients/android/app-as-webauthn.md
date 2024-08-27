@@ -18,4 +18,4 @@ Our backend and frontend are talking to each other, but what are they saying? Le
 
 # Next Steps
 
-Now that our backend relying party and frontend Android App are exchanging the first part of WebAuthn, let us follow up in the [next section]() to complete the WebAuthN communication.
+Now that our backend relying party and frontend Android App are exchanging the first part of WebAuthn, let us follow up in the [next section](./app-complete-webauthn.md) to complete the WebAuthN communication.
