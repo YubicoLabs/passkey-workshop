@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Getting Started
+# First Android App
 
 This section will guide you through the setup process of [Android Studio](https://developer.android.com/studio) and defines everything you need to get started. If your system is already setup for Android programming, feel free to [skip](workshop-server.md) this section and dive down deeper.
 
