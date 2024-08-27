@@ -10,7 +10,7 @@ This section will guide you through the installing [Android Studio][1] and build
 
 Android Studio is the preferred development environment (sometimes referred to as an IDE, i.e. Integrated Development Environment) for developing Android apps. The most up-to-date information on how to install it can be found on the main developer page [of Android Studio][1], here you will find a snapshot for your convenience.
 
-### Downloading Android Studio
+## Downloading Android Studio
 
 At the time of writing, `Koala` is the newest version of Android Studio, so please follow this link 
 
@@ -42,6 +42,8 @@ For mac this is moving the symbol into the `Applications` folder as depicted abo
 
 Once Android Studio is installed, please start it to welcome the setup wizard.
 
+## Starting Android Studio for the First Time
+
 After again following the prompt from Android Studio, you need to restart Android Studio one more time.
 
 After the final restart, you are greeted with a new project wizard:
@@ -71,9 +73,11 @@ All those settings are applied already in the following screenshot.
     style={{ width: "50%" }}
 />
 
-And the final step for configuring your machine to build an Android app is to actually build an Android app.
+## Building the First App
 
-Please click on the little play icon in the top left corner of Android Studio, next to the `app` name of your Android app.
+The final step for configuring your machine to build an Android app is to actually build an Android app.
+
+Please click on the little play icon in the top left corner of Android Studio, next to the `app` name of your Android app. This tells Android Studio to actually build the app and run it in an emulator.
 
 <img
 src={require('/img/mobile/android/simple-project-first-run.png').default}
