@@ -2,9 +2,9 @@
 sidebar_position: 5
 ---
 
-# WebAuthN Implementation Continuation
+# WebAuthn Implementation Continuation
 
-In the last section we build the foundation for letting our frontend Android App talk WebAuthN to our Relying Party. Let us complete this section by completely implementing the WebAuthN API.
+In the last section we build the foundation for letting our frontend Android App talk WebAuthn to our Relying Party. Let us complete this section by completely implementing the WebAuthn API.
 
 ## 👉 ADD DETAILED CODE STEPS 👈
 

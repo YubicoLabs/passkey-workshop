@@ -6,7 +6,9 @@ sidebar_position: 2
 
 In the previous section we described how to install Android Studio and build a simple App. This section will add knowledge to build the backendpart of this workshop to be used with Android.
 
-For more indepth discussion, please follow [this part of the workshop](../../).
+For more indepth discussion of the Relying Party and what this server should and will do, please follow the [Relying Party](/passkey-workshop/docs/category/relying-party) part of the workshop.
+
+The following paragraphs will highlight how to build the party, without going indepth how it works.
 
 ## docker
 
