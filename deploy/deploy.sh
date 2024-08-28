@@ -31,8 +31,7 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 	  N=$(echo $DEVELOPMENT_TEAM | wc -w)
 	  if [[ $N -lt 1 ]] ; then
 	    echo Cannot find a DEVELOPMENT_TEAM
-	    echo "Please edit your .env file and fill in your DEVELOPMENT_TEAM"
-	    exit
+	    echo "Please edit your .env file and fill in your DEVELOPMENT_TEAM, if you want to build the iOS examples."
 	  fi
 	  if [[ $N -gt 1 ]] ; then
 	    echo You have more than one Team ID
