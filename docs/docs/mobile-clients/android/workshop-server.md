@@ -81,7 +81,7 @@ your bank application will be deployed here:
 ### starting devtunnel. Type ^C to stop the tunnel and take down all containers
 ```
 
-To verify, let us browse to the status page of the just deployed webservice. Therefore, you need to take the url the devtunnel is running on and update it. From the example above, please take the ``` https://XXXXXXXXXXXXXX-3000.devtunnels.ms/test_panel``` url and replace the `3000` with the port the service is running on, `8080` in our case.
+To verify, let us browse to the status page of the just deployed webservice. Therefore, you need to take the url the devtunnel is running on and update it. From the example above, please take the ``` https://XXXXXXXXXXXXXX-3000.euw.devtunnels.ms/test_panel``` url and replace the `3000` with the port the service is running on, `8080` in our case.
 
 You should be able to visit the relying party running on  ```https://XXXXXXXXXXXXXX-8080.euw.devtunnels.ms/``` (please replace the X with your endpoint) and be greeted with a similar image then this screenshot:
 
