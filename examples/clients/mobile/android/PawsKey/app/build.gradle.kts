@@ -3,6 +3,15 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
 }
 
+fun getPropOrFail(name: String): String {
+    val property = providers.gradleProperty(name)
+    return if (property.isPresent && !property.get().startsWith("replace-with-your-")) {
+        "\"${property.get()}\""
+    } else {
+        throw GradleException("Gradle property '$name' invalid. Did you update it in '/gradle.properties'?")
+    }
+}
+
 android {
     namespace = "io.yubicolabs.pawskey"
     compileSdk = 34
@@ -28,6 +37,11 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+        all {
+            buildConfigField("String", "API_BASE_URI", getPropOrFail("API_BASE_URI"))
+            buildConfigField("String", "RELYING_PARTY_ID", getPropOrFail("RELYING_PARTY_ID"))
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -38,6 +52,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"

@@ -131,6 +131,11 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 		-e "s#^BANK_API_DOMAIN[= ].*#BANK_API_DOMAIN = $HOST-8082.$REGION#" \
 		../examples/clients/mobile/iOS/PKBank/Constants.xcconfig
 
+  echo "### editing pawskey android build scripts"
+	sed -i '' \
+		-e "s#^API_BASE_URI[=].*#API_BASE_URI=$HOST-8080.$REGION#" \
+		-e "s#^RELYING_PARTY_ID[=].*#RELYING_PARTY_ID=$hostname#" \
+    ../examples/clients/mobile/android/PawsKey/gradle.properties
 
 	# TODO: instead of editing source files, make endpoints configurable
 	sed -i '' "s#http://host.docker.internal#https://$hostname#;s#http://localhost#https://$hostname#" keycloak/source/src/main/java/com/yubicolabs/PasskeyAuthenticator/PasskeyAuthenticator.java
