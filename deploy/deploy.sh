@@ -48,7 +48,7 @@ fi
 
 # stop and remove any running containers as they may need to be restarted
 echo "### removing any running containers"
-docker compose stop
+docker compose stop || { echo "$(tput bold)Please start a docker machine.$(tput sgr0)"; exit; }
 docker compose rm
 
 # copy sources so they can be copied into docker images
