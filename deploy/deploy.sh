@@ -124,18 +124,16 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 		-e "s#^API_BASE_URI[= ].*#API_BASE_URI = $HOST-8080.$REGION#" \
 		-e "s#^RP_ID[= ].*#RP_ID = $hostname#" \
 		../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
+	sed -i '' \
+		-e "s#^API_BASE_URI[=].*#API_BASE_URI=$HOST-8080.$REGION#" \
+		-e "s#^RELYING_PARTY_ID[=].*#RELYING_PARTY_ID=$hostname#" \
+    ../examples/clients/mobile/android/PawsKey/gradle.properties
 
 	echo "### editing iOS BankApp sources"
 	sed -i '' \
 		-e "s#^BANK_AUTH_DOMAIN[= ].*#BANK_AUTH_DOMAIN = $HOST-8081.$REGION#" \
 		-e "s#^BANK_API_DOMAIN[= ].*#BANK_API_DOMAIN = $HOST-8082.$REGION#" \
 		../examples/clients/mobile/iOS/PKBank/Constants.xcconfig
-
-  echo "### editing pawskey android build scripts"
-	sed -i '' \
-		-e "s#^API_BASE_URI[=].*#API_BASE_URI=$HOST-8080.$REGION#" \
-		-e "s#^RELYING_PARTY_ID[=].*#RELYING_PARTY_ID=$hostname#" \
-    ../examples/clients/mobile/android/PawsKey/gradle.properties
 
 	# TODO: instead of editing source files, make endpoints configurable
 	sed -i '' "s#http://host.docker.internal#https://$hostname#;s#http://localhost#https://$hostname#" keycloak/source/src/main/java/com/yubicolabs/PasskeyAuthenticator/PasskeyAuthenticator.java
@@ -158,11 +156,47 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 		echo
 	fi
 
-	echo "### starting devtunnel. Type ^C to stop the tunnel and take down all containers"
-	devtunnel host $TUNNELID > /dev/null
+  if (echo $DEPLOYMENT_CLIENTS | tr ',' '\n' | grep -Fqx android); then
+    echo "### building android examples"
 
-	docker compose down
-	exit
+    if pushd ../examples/clients/mobile/android/PawsKey/  > /dev/null; then
+      if [[ $(command -v adb) ]]; then
+        ADB="adb"
+      elif [[ -e ${ANDROID_HOME}/platform-tools/adb ]]; then
+        ADB="${ANDROID_HOME}/platform-tools/adb"
+      else
+        ADB=""
+      fi
+
+      if [[ -n ${ADB} ]] && [[ $(${ADB} devices | wc -l) -gt 2 ]]; then
+        echo found a connected phone, installing app
+        ./gradlew installDebug
+
+        echo your android application ia deployed
+        echo
+        echo "$(tput bold) a connected phone $(tput sgr0)"
+        echo
+      else
+        echo no phone found, building app without installing
+        ./gradlew assembleDebug
+
+        echo your android application ia deployed here:
+        echo
+        echo "$(tput bold) ../examples/clients/mobile/android/PawsKey/app/build/outputs/apk/debug/app-debug.apk $(tput sgr0)"
+        echo
+      fi
+
+      popd > /dev/null
+    else
+      echo android example folder not found.
+    fi
+  fi
+
+  echo "### starting devtunnel. Type ^C to stop the tunnel and take down all containers"
+  devtunnel host $TUNNELID > /dev/null
+
+  docker compose down
+  exit
 fi
 
 # default is deploy on localhost
