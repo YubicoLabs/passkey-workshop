@@ -16,9 +16,9 @@ At the time of writing, `Koala` is the newest version of Android Studio, so plea
 
 https://developer.android.com/studio
 
-and continue to `Download Android Studio Koala`.
+and continue to `Download Android Studio Koala`. Newer versions will follow a similar approach while the screenshots might reflect a somewhat different state.
 
-Once you accepted the terms and conditions, you might face a specific for which version to download.
+Once you accepted the terms and conditions, you need to specify the cpu architecture you want to build on:
 
 <img
 src={require('/img/mobile/android/install-cpu-selection.png').default}
@@ -26,7 +26,7 @@ alt="Android Studio: Which CPU"
 style={{ width: "50%" }}
 />
 
-Please select the appropriate version and continue to download Android Studio.
+Please select the appropriate option and continue to download Android Studio.
 
 Once the download is complete, you can install Android Studio by finding it in the folder you downloaded it to. A double click on the symbol will start the installation.
 
