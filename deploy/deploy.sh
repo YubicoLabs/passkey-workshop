@@ -172,10 +172,14 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
         echo found a connected phone, installing app
         ./gradlew installDebug
 
-        echo your android application ia deployed
+        echo your android application is deployed to
         echo
         echo "$(tput bold) a connected phone $(tput sgr0)"
         echo
+
+	echo "starting it"
+	${ADB} shell am start -n io.yubicolabs.pawskey/io.yubicolabs.pawskey.MainActivity || { echo "Android app could not be launched. See above for details."; }
+
       else
         echo no phone found, building app without installing
         ./gradlew assembleDebug
