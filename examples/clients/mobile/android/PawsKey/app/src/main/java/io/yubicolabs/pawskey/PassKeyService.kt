@@ -2,7 +2,7 @@ package io.yubicolabs.pawskey
 
 import kotlinx.coroutines.delay
 
-class PassKeyService() {
+class PassKeyService {
     data class Key(
         val id: String,
     )
