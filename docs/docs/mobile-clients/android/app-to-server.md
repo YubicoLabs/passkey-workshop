@@ -13,13 +13,15 @@ Our [sample code](https://github.com/YubicoLabs/passkey-workshop/tree/main/examp
 
 [Relying Party](/passkey-workshop/docs/category/relying-party).
 
+## Deploy Script and Gradle Properties
+
+{deploy.sh --> gradlew.property adaption. If not build error ""CONVIENENENCE""}
+
+PULL VERSION FROM DEVTUNNEL:
+
 ## Dependencies
 
 (retrofit + kx.serial)
-
-## devtunnel and Android
-
-(devtunnel integration per build)
 
 ## Hello Relying Party Server
 

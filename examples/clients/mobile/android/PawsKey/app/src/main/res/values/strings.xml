@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PawsKey</string>
+    <string name="message_server_okay">Connected to %s.</string>
+    <string name="message_server_not_okay">Server returned unexpected status of \'%s\'.</string>
+    <string name="message_server_error">Connecting to server resulted in an error with message \'%s\'.</string>
+    <string name="message_server_timeout">Could not connect to server. Is it running and do you have internet?</string>
 </resources>
