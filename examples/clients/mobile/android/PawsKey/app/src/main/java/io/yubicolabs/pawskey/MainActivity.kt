@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +24,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import dagger.hilt.android.AndroidEntryPoint
+import io.yubicolabs.pawskey.Message.ServerError
+import io.yubicolabs.pawskey.Message.ServerNotOkay
+import io.yubicolabs.pawskey.Message.ServerOkay
+import io.yubicolabs.pawskey.Message.ServerTimeout
 import io.yubicolabs.pawskey.ui.theme.PawsKeyTheme
 
 @AndroidEntryPoint
@@ -70,18 +76,28 @@ fun PawskeyUi(
     Column(
         modifier = modifier
     ) {
-        if (uiState.apiConnected != null) {
-            Text(
-                style = MaterialTheme.typography.bodySmall,
-                text = "${if (uiState.apiConnected == true) "Successfully" else "Not"} connected to ${uiState.relyingPartyId}."
-            )
-        }
-
         if ((uiState.connectedKeys ?: emptyList()).isNotEmpty()) {
             Text(
                 style = MaterialTheme.typography.bodySmall,
                 text = "Found ${uiState.connectedKeys!!.size} key(s)."
             )
+        }
+
+        LazyColumn {
+            items(uiState.userMessages) {
+                val message = when (it) {
+                    is ServerOkay ->
+                        stringResource(id = R.string.message_server_okay, BuildConfig.RELYING_PARTY_ID)
+                    is ServerNotOkay -> stringResource(id = R.string.message_server_not_okay, it.status)
+                    is ServerError -> stringResource(id = R.string.message_server_error, it.message)
+                    is ServerTimeout -> stringResource(id = R.string.message_server_timeout)
+                }
+
+                Text(
+                    style = MaterialTheme.typography.bodySmall,
+                    text = "ℹ️ $message ℹ️"
+                )
+            }
         }
 
         Row {
