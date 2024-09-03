@@ -16,7 +16,7 @@ class RelyingPartyServiceTest {
     @Test
     fun getStatus() = runTest {
         val httpService = object : RelyingPartyHttpService {
-            override suspend fun getStatus(): Response<Status> = Status("OK")
+            override suspend fun getStatus(): Response<Status> = Response.success(Status("OK"))
         }
 
         val rpService = RelyingPartyService(httpService)
@@ -48,8 +48,10 @@ class RelyingPartyServiceTest {
             override suspend fun getStatus(): Response<Status> = throw SocketTimeoutException()
         }
 
+        // TODO: Make meaningful
+
         val rpService = RelyingPartyService(httpService)
-        assertThrows(HttpException::class.java) {
+        assertThrows(SocketTimeoutException::class.java) {
             runBlocking {
                 rpService.getStatus().status
             }
