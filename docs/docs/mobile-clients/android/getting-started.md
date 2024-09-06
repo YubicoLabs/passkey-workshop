@@ -1,103 +1,64 @@
 ---
-sidebar_position: 1
+sidebar_position: 0
 ---
 
-# First Android App
+# Getting Started Guide
 
-This section will guide you through the installing [Android Studio][1] and builds a simple Android app. We want to make sure your system is running and able to build Android apps. If your system is already setup for Android development, please feel free to [skip](workshop-server.md) this section.
+This section will get you started with a running the Android Pawskey example, as soon as possible. It requires you to
+have
 
-## Installing Android Studio
+1. a running docker installation (including a running docker virtual machine),
+2. a devtunnel setup and being logged in there and
+3. the ability to build Android apps through `gradle` (i.e. the `ANDROID_HOME` set to your SDK installation home.)
 
-Android Studio is the preferred development environment (sometimes referred to as an IDE, i.e. Integrated Development Environment) for developing Android apps. The most up-to-date information on how to install it can be found on the main developer page [of Android Studio][1], here you will find a snapshot for your convenience.
+If you are unsure about either installation or you want to understand the setup steps needed in detail, we recommend
+reading the [getting started section](getting-started.md) first.
 
-## Downloading Android Studio
+## Set Configuration to Android
 
-At the time of writing, `Koala` is the newest version of Android Studio, so please follow this link 
+Assuming everything is setup, please checkout this passkeys repository from `github.com/yubicolabs/passkey-workshop` on
+your machine and browse to the root of that repository in your `terminal` of choice.
 
-https://developer.android.com/studio
+Once arrived there, we need to change into the deploy folder like so:
 
-and continue to `Download Android Studio Koala`. Newer versions will follow a similar approach while the screenshots might reflect a somewhat different state.
+```shell
+cd deploy
+```
 
-Once you accepted the terms and conditions, you need to specify the cpu architecture you want to build on:
+Since we would like to build the Android example apps, we need to update the default configuration. Please copy the
+default environment configuration file `default.env` to a new file called `.env`:
 
-<img
-src={require('/img/mobile/android/install-cpu-selection.png').default}
-alt="Android Studio: Which CPU"
-style={{ width: "50%" }}
-/>
+```shell
+cp default.env .env
+```
 
-Please select the appropriate option and continue to download Android Studio.
+To update the configuration you need to open the newly created `.env` file and add `android` to the `DEPLOYMENT_CLIENTS`
+and make sure that we deploy the web components to the `devtunnel` environment. Please assigning `devtunnel` to the
+`DEPLOYMENT_ENVIRONMENT` configuration.
 
-Once the download is complete, you can install Android Studio by finding it in the folder you downloaded it to. A double click on the symbol will start the installation.
+Once done, the `.env` file should contain these changes, when compared to the `default.env`:
 
-Depending on your operating system, you now need to follow the onscreen instructions.
+```diff
+-DEPLOYMENT_ENVIRONMENT=localhost
++DEPLOYMENT_ENVIRONMENT=devtunnel
+ 
+-DEPLOYMENT_CLIENTS=bank,demo
++DEPLOYMENT_CLIENTS=bank,demo,android
+```
 
-<img
-src={require('/img/mobile/android/install-move.png').default}
-alt="Android Studio: Install to Move."
-style={{ width: "50%" }}
-/>
+## Deploy *Everything*
 
-For mac this is moving the symbol into the `Applications` folder as depicted above.
+With the configuration changes done, a call to the main deploy script, like shown below, should do the trick. Please
+connect a phone in order to automatically deploy the simple Android example App to that phone. Additionally, the script
+will automatically connect your the docker services on your local machine via a tunnel through to a public, tls secured
+domain we can access from the Android example app.
 
-Once Android Studio is installed, please start it to welcome the setup wizard.
+```shell
+./deploy.sh
+```
 
-## Starting Android Studio for the First Time
+## Troubleshooting
 
-After again following the prompt from Android Studio, you need to restart Android Studio one more time.
-
-After the final restart, you are greeted with a new project wizard:
-
-<img
-    src={require('/img/mobile/android/simple-project-template.png').default}
-    alt="Android Studio: Menu new project."
-    style={{ width: "50%" }}
-/>
-
-Please select `Empty Activity` with the rotated isometric cube in the middle, the second image in the wizard and highlighted in the screenshot. The cube is the logo for Jetpack Compose and will be used as the framework to render our user interfaces.
-
-
-Next we got to configure the new project. The following screenshot shows the updated configuration. Please enter the following information:
-
-* `Name` the name of the app. For consistency, we recommend naming the app `PawsKey`, a joke on the term `Passkeys` and our love for paws.
-* `Package Name` a name of a package, it should be including your company and your name of the app. Ideally in [Reverse domain name notation](https://en.wikipedia.org/wiki/Reverse_domain_name_notation). Similar to `io.yubicolabs.pawskey`.
-* `Save Location` is the location on your computer where to store the source code.
-* `Minimum SDK` the smallest version number of the Android SDK supported. Feel free to explore further by clicking on the `help me choose` link to find the right version. We are going with `API 24`.
-* and finally the `Build configuration language`: We are using `kotlin` for this example, and recommend you to do the same.
-
-All those settings are applied already in the following screenshot.
-
-<img
-    src={require('/img/mobile/android/simple-project-config.png').default}
-    alt="Android Studio: Menu new project."
-    style={{ width: "50%" }}
-/>
-
-## Building the First App
-
-The final step for configuring your machine to build an Android app is to actually build an Android app.
-
-Please click on the little play icon in the top left corner of Android Studio, next to the `app` name of your Android app. This tells Android Studio to actually build the app and run it in an emulator.
-
-<img
-src={require('/img/mobile/android/simple-project-first-run.png').default}
-alt="Android Studio: Menu new project."
-style={{ width: "25%" }}
-/>
-
-If everything went smoothly, you should see a window similar to the following screenshot:
-
-<img
-src={require('/img/mobile/android/simple-project-first-app.png').default}
-alt="Android Studio: Menu new project."
-style={{ width: "50%" }}
-/>
-
-Take note of the newly run app in the emulator on the right side of the screen: White background and a text reading `Hello World`.
-
-
-## Next Steps
-
-Now that you can build a simple Android app, congratulations, the [Next section](workshop-server.md) will explain how to run the workshop backend called relying party, so we can connect the app to it.
-
-[1]: https://developer.android.com/studio
+We build the deploy script in such a way that it reports errors and missing setup on your machine in an easy to correct
+manner. If you still feel stuck somewhere, or want a deeper understanding, please feel free to follow the more indepth
+steps starting with the [next section](app-to-rp.md) and the sections following.
