@@ -1,5 +1,6 @@
 package io.yubicolabs.pawskey
 
+import android.util.Log
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.HttpException
@@ -19,7 +20,7 @@ interface RelyingPartyHttpService {
 }
 
 class RelyingPartyService @Inject constructor(
-    private val httpService: RelyingPartyHttpService
+    private val httpService: RelyingPartyHttpService,
 ) {
     /**
      * Status: Is the server alive and kicking?
@@ -34,7 +35,10 @@ class RelyingPartyService @Inject constructor(
         if (response.isSuccessful && body != null) {
             return body
         } else {
-            throw HttpException(response)
+            val ex = HttpException(response)
+            Log.e(tagForLog, "Status endpoint returned error. Response was $response.", ex)
+            throw ex
         }
     }
 }
+

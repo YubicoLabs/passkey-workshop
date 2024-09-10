@@ -23,7 +23,7 @@ object ApiModule {
         relyingPartyHttpService: RelyingPartyHttpService,
     ): RelyingPartyService =
         RelyingPartyService(
-            relyingPartyHttpService
+            relyingPartyHttpService,
         )
 
     @Provides
@@ -52,14 +52,15 @@ object ApiModule {
         return builder.build()
     }
 
-    private val defaultJson = Json {
+    @Provides
+    fun providesJson(): Json = Json {
         encodeDefaults = true
         ignoreUnknownKeys = true
         prettyPrint = BuildConfig.DEBUG
     }
 
     @Provides
-    fun providesJsonFactory(): Converter.Factory = defaultJson
+    fun providesJsonFactory(json: Json): Converter.Factory = json
         .asConverterFactory(
             MediaType.get("application/json")
         )

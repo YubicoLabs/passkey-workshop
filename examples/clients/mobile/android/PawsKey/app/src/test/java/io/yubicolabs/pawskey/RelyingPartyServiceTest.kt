@@ -12,7 +12,6 @@ import java.net.SocketTimeoutException
 
 
 class RelyingPartyServiceTest {
-
     @Test
     fun getStatus() = runTest {
         val httpService = object : RelyingPartyHttpService {
@@ -53,7 +52,7 @@ class RelyingPartyServiceTest {
         val rpService = RelyingPartyService(httpService)
         assertThrows(SocketTimeoutException::class.java) {
             runBlocking {
-                rpService.getStatus().status
+                rpService.getStatus()
             }
         }
     }
