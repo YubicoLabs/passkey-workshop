@@ -1,9 +1,13 @@
 package io.yubicolabs.pawskey
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.yubicolabs.pawskey.net.DebugInterceptor
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
@@ -64,4 +68,17 @@ object ApiModule {
         .asConverterFactory(
             MediaType.get("application/json")
         )
+
+    @Provides
+    fun provideClipboard(
+        @ApplicationContext
+        context: Context
+    ): ClipboardProvider = object : ClipboardProvider {
+        override fun setContent(message: String) {
+            val manager = context.getSystemService(ClipboardManager::class.java)
+            manager.setPrimaryClip(
+                ClipData.newPlainText("Message from $tagForLog.", message)
+            )
+        }
+    }
 }
