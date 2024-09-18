@@ -1,5 +1,6 @@
 package com.yubicolabs.bank_app.api;
 
+import com.yubicolabs.bank_app.models.api.APIStatus;
 import com.yubicolabs.bank_app.models.api.CreateAccountRequest;
 import com.yubicolabs.bank_app.models.api.Error;
 import com.yubicolabs.bank_app.models.api.TransactionCreateRequest;
@@ -116,6 +117,14 @@ public class V1ApiController implements V1Api {
                 .getAuthentication();
         Jwt jwt = (Jwt) token.getCredentials();
         return Integer.parseInt((String) jwt.getClaims().get("acr"));
+    }
+
+    @Override
+    public ResponseEntity<APIStatus> aPIStatus() {
+        final APIStatus status = new APIStatus();
+        status.setStatus("ok");
+
+        return ResponseEntity.status(HttpStatus.OK).body(status);
     }
 
 }

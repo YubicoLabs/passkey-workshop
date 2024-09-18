@@ -8,7 +8,7 @@ Instructions for making the local environment available for testing from your mo
 
 ## Prerequisites
 
-1. Ensure you have completed the [deploy project](../deploy) section in the passkey workshop by navigating to the relying party API documentation running locally in your environment: [http://localhost:8080](http://localhost:8080)
+1. Ensure you have completed the [deploy project](../../../deploy) section in the passkey workshop by navigating to the relying party API documentation running locally in your environment: [http://localhost:8080](http://localhost:8080)
 2. An Apple Developer account with permission to create Associated Domains Entitlements
 3. Install Xcode 14.3 or newer
 4. Have a physical iPhone running iOS 16.4 or newer
@@ -16,7 +16,7 @@ Instructions for making the local environment available for testing from your mo
 
 ## PawsKey iOS app
 
-Once you have [cloned](../deploy#clone-the-repository) the passkey workshop, navigate into the Pawskey iOS project folder
+Once you have [cloned](../../deploy#clone-the-repository) the passkey workshop, navigate into the Pawskey iOS project folder
 
 ```javascript
 cd passkey-workshop/clients/mobile/iOS/Pawskey
