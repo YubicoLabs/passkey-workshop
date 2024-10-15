@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # Client Hints
 
-Client hints are in addition to the Level 3 version of the WebAuthn specification that aims to improve UX flows to aid in the adoption of passkeys. Hints provide a relying party a mechanism to suggest to a client application the type of authenticator that should be used to complete a WebAuthn ceremony.
+[Client hints](https://www.w3.org/TR/webauthn-3/#enum-hints) are in addition to the Level 3 version of the WebAuthn specification that aims to improve UX flows to aid in the adoption of passkeys. Hints provide a relying party a mechanism to suggest to a client application the type of authenticator that should be used to complete a WebAuthn ceremony.
 
 The ability to suggest a specific type of authenticator can be useful for a variety of situations that can include:
 
@@ -19,16 +19,16 @@ Earlier in this guide, we introduced the concept of [authenticator attachment](h
 - **Platform**, which indicates the built in authenticator on a device such as Windows Hello, and Touch ID
 - **Cross-platform**, which could be any roaming device such as a security key, or a phone acting as a roaming authenticator through the hybrid (QR code) flow
 
-The primary difference between hints and authenticator attachment is in the enforcement of the selection on the property. Hints will immediately provide the WebAuthn prompt indicated by the hint, but will allow the user to make another selection if they so choose. Authenticator attachment always enforces the use of the authenticator that was defined by the relying party (so if platform was selected, then security keys are no longer an option for the user).
+The primary difference between hints and authenticator attachment is in the enforcement of the selection on the property. Hints will immediately show the WebAuthn prompt defined by the hint, but will allow the user to make another selection of their choice. Authenticator attachment always enforces the use of the authenticator that was defined by the relying party (so if platform was selected, then security keys are no longer an option for the user).
 
 Use the outline below to understand how the two properties may interact as they continue to coexist in the WebAuthn specification.
 
-- Hints may contradict what's defined in the authenticator attachment property, when this occurs the hint setting should be given precedence.
-- Authenticator attachment should not be deprecated from a relying party as it should be used as a compliment to hints for clients (browsers, OS, and platforms) that have not yet adopted the feature.
+- Hints may contradict what's defined in the authenticator attachment, when this occurs the hint setting should be given precedence.
+- Authenticator attachment should not be deprecated from a relying party, as it should be used as a compliment to hints for clients (browsers, OS, and platforms) that have not adopted the use of hints
 
 ## Example
 
-Below is a demonstration of how hints work in a client application. The video denotes different (but not all) permutations for hints, and how the client reacts to the input. An in-depth explanation on the variations of hints, and a sequence diagram are included in the next section.
+Below is a demonstration of how hints work in a client application. The video denotes different (but not all) permutations for hints, and how the client reacts to the input. An in-depth explanation on the different hints enumerations is included in the next section.
 
 \*\*TODO - Add a video once the jws changes are complete
 
@@ -67,6 +67,8 @@ When using this option you should set the `authenticatorAttachment` property to 
 Before attempting to implement hints from your relying party, ensure that your chosen platform (browser, OS, client) has support for Client Hints. You can use the [device support matrix on passkeys.dev](https://passkeys.dev/device-support/) to see if your platform is supported.
 
 ## Implementation guidance
+
+These code snippets will continue to build off of the guidance provided in the earlier sections of this guide. Please note that client hints are only available in version 2.6+ of the java-webauthn-server library.
 
 ** Here is where we will add the new snippet of the java-webauthn-server
 ** Also link to the new section that are scattered through the docs (mentioned in my outline above)
