@@ -30,11 +30,19 @@ Below is the request body of the `/assertion/options` method
 
 ```json
 {
-  "userName": "user@acme.com"
+  "userName": "user@acme.com",
+  "hints": ["security-key", "client-device", "hybrid"]
 }
 ```
 
-In this case, we are only signaling to the relying party the user which we are trying to authenticate. This method is implemented in a way that will support **BOTH** discoverable and non-discoverable credential flows. For the sake of this workshop, our focus will be on the discoverable credential flow, but we will outline how the non-discoverable credential flow is handled.
+`hints` defines the [PublicKeyCredentialHints](https://w3c.github.io/webauthn/#enum-hints) option, or the ability for a relying party to suggest to a client the type of authenticator that can be used. More information on this new feature can be found later in this guide in the section [Advanced concepts > Client Hints](https://yubicolabs.github.io/passkey-workshop/docs/advanced_use_cases/client_hints).
+
+- security-key
+- client-device
+- hybrid
+- Empty | none | exclude property
+
+`userName` will signal to the relying party which user is trying to authenticate. This method is implemented in a way that will support **BOTH** discoverable and non-discoverable credential flows. For the sake of this workshop, our focus will be on the discoverable credential flow, but we will outline how the non-discoverable credential flow is handled.
 
 ##### Discoverable credential flow
 
@@ -42,7 +50,8 @@ As you may recall from the fundamentals section, a WebAuthn credential must be d
 
 ```json
 {
-  "userName": ""
+  "userName": "",
+  ...
 }
 ```
 
@@ -52,7 +61,8 @@ In order to trigger the use of a non-discoverable credential flow, you will incl
 
 ```json
 {
-  "userName": "user@acme.com"
+  "userName": "user@acme.com",
+  ...
 }
 ```
 
@@ -71,7 +81,8 @@ Below is the response body of the `/attestation/options` method for a discoverab
     "challenge": "NGc3jpB4Q-VnOmbhFBnDAczlYPT4soKA7xviGeJmDhc",
     "timeout": 180000,
     "rpId": "localhost",
-    "userVerification": "preferred"
+    "userVerification": "preferred",
+    "hints": ["security-key", "client-device", "hybrid"]
   }
 }
 ```
@@ -93,7 +104,8 @@ Below is the response body of the `/attestation/options` method for a non-discov
         "type": "public-key"
       }
     ],
-    "userVerification": "preferred"
+    "userVerification": "preferred",
+    "hints": ["security-key", "client-device", "hybrid"]
   }
 }
 ```
@@ -113,6 +125,8 @@ With that said, non-discoverable credentials cannot be leveraged in the discover
 ::::
 
 ### Implementation
+
+TODO - Add hints section when available
 
 Below is a sample implementation of the /attestation/options method. Note that `request` should correlate to the request body mentioned in the previous section, and `response` should correlate to the request response mentioned in the previous section.
 
