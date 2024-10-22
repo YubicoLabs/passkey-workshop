@@ -1,6 +1,8 @@
 package com.yubicolabs.passkey_rp.models.api;
 
 import java.util.Objects;
+import java.util.Optional;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -24,6 +26,9 @@ public class AttestationOptionsRequest {
 
   @JsonProperty("authenticatorSelection")
   private AttestationOptionsRequestAuthenticatorSelection authenticatorSelection;
+
+  @JsonProperty("hints")
+  private Optional<String[]> hints = Optional.ofNullable(null);
 
   /**
    * Gets or Sets attestation
@@ -107,6 +112,20 @@ public class AttestationOptionsRequest {
     this.displayName = displayName;
   }
 
+  public AttestationOptionsRequest hints(Optional<String[]> hints) {
+    this.hints = hints;
+    return this;
+  }
+
+  @Schema(name = "hints", example = "[\"security-keys\", \"client-device\"]", required = false)
+  public Optional<String[]> getHints() {
+    return this.hints;
+  }
+
+  public void setHints(Optional<String[]> hints) {
+    this.hints = hints;
+  }
+
   public AttestationOptionsRequest authenticatorSelection(
       AttestationOptionsRequestAuthenticatorSelection authenticatorSelection) {
     this.authenticatorSelection = authenticatorSelection;
@@ -148,6 +167,7 @@ public class AttestationOptionsRequest {
     this.attestation = attestation;
   }
 
+  // TODO - Currently not checking equality of hints
   @Override
   public boolean equals(Object o) {
     if (this == o) {

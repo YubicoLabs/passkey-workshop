@@ -1,6 +1,8 @@
 package com.yubicolabs.passkey_rp.models.api;
 
 import java.util.Objects;
+import java.util.Optional;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -15,6 +17,9 @@ public class AssertionOptionsRequest {
 
   @JsonProperty("userName")
   private String userName;
+
+  @JsonProperty("hints")
+  private Optional<String[]> hints = Optional.ofNullable(null);
 
   public AssertionOptionsRequest userName(String userName) {
     this.userName = userName;
@@ -36,6 +41,16 @@ public class AssertionOptionsRequest {
     this.userName = userName;
   }
 
+  public void setHints(String[] hints) {
+    this.hints = Optional.ofNullable(hints);
+  }
+
+  @Schema(name = "hints", example = "[\"security-keys\", \"client-device\"]", required = false)
+  public Optional<String[]> getHints() {
+    return hints;
+  }
+
+  // TODO - Currently not checking equality of hints
   @Override
   public boolean equals(Object o) {
     if (this == o) {
