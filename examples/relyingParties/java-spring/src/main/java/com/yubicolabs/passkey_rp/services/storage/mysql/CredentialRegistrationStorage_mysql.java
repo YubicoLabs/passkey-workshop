@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
@@ -76,6 +77,8 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
   @Override
   public Boolean addRegistration(CredentialRegistration registration) {
     try {
+      mapper.registerModule(new Jdk8Module());
+
       CredentialRegistrationDBO newItem = CredentialRegistrationDBO.builder()
           .userHandle(registration.getUserIdentity().getId().getBase64Url())
           .credentialID(registration.getCredential().getCredentialId().getBase64Url())
