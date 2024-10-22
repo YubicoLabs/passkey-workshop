@@ -227,7 +227,16 @@
 
         async function registerPasskey(authenticatorAttachment) {
           try {
+            /** Create a string array for hints based on the authenticatorAttachment parameter */
 
+            let hinstSelection;
+            if(authenticatorAttachment === "cross-platform") {
+              hinstSelection = ["security-key"];
+            } else if(authenticatorAttachment === "platform") {
+              hinstSelection = ["client-device"];
+            } else {
+              hinstSelection = [];
+            }
             const request = {
               "method": "POST",
               "headers": {
@@ -242,7 +251,8 @@
                   authenticatorAttachment: authenticatorAttachment,
                   userVerification: "required"
                 },
-                attestation: "direct"
+                attestation: "direct",
+                hints: hinstSelection
               })
             }
 
