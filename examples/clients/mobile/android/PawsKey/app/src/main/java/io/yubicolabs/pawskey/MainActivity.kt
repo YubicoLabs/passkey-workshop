@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -42,6 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import dagger.hilt.android.AndroidEntryPoint
 import io.yubicolabs.pawskey.Message.AttestationOptionsReceived
 import io.yubicolabs.pawskey.Message.KeysFound
@@ -95,7 +97,12 @@ class MainActivity : ComponentActivity() {
                             uiState = state,
                             checkServer = vm::checkApiStatus,
                             register = vm::registerUser,
-                            copyToClipboard = vm::copyToClipboard,
+                            copyToClipboard = { message ->
+                                vm.copyToClipboard(message.toString())
+                            },
+                            delete = { message ->
+                                vm.deleteMessage(message)
+                            }
                         )
 
                         state.userInteractionNeeded?.let { interaction ->
@@ -315,7 +322,7 @@ fun PawskeyUi(
     modifier: Modifier = Modifier,
     uiState: UiState = UiState(
         userMessages = listOf<Message>(
-            ServerOkay,
+            ServerOkay(),
             PublicKeyGenerated("id", "type"),
             AttestationOptionsReceived("id", "key")
         )
@@ -323,7 +330,8 @@ fun PawskeyUi(
     checkServer: () -> Unit = {},
     register: (userName: String, pin: String) -> Unit = { _, _ ->
     },
-    copyToClipboard: (message: String) -> Unit = {},
+    copyToClipboard: (message: Message) -> Unit = {},
+    delete: (message: Message) -> Unit = {},
 ) {
     var userName: String by remember { mutableStateOf("Android Test User") }
     var pin: String by remember { mutableStateOf("123456") }
@@ -372,7 +380,11 @@ fun PawskeyUi(
         Card {
             LazyColumn {
                 items(uiState.userMessages.reversed()) { message ->
-                    UserMessage(message, copyToClipboard)
+                    UserMessage(
+                        message,
+                        { copyToClipboard(message) },
+                        { delete(message) }
+                    )
                 }
             }
         }
@@ -382,12 +394,12 @@ fun PawskeyUi(
 @Composable
 @Preview
 private fun UserMessage(
-    message: Message = ServerOkay,
-    copyToClipboard: (message: String) -> Unit = {}
+    message: Message = ServerOkay(),
+    copyToClipboard: () -> Unit = {},
+    delete: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier
-            .clickable { copyToClipboard(message.toString()) }
             .padding(16.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -398,7 +410,17 @@ private fun UserMessage(
             text = message.toString()
         )
         Icon(
-            modifier = Modifier.size(16.dp),
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { delete() },
+            painter = painterResource(id = R.drawable.baseline_outline_delete_24),
+            contentDescription = null
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            modifier = Modifier
+                .size(20.dp)
+                .clickable { copyToClipboard() },
             painter = painterResource(id = R.drawable.baseline_content_copy_24),
             contentDescription = null
         )

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package io.yubicolabs.pawskey
 
 import android.util.Log
@@ -12,9 +14,8 @@ import com.yubico.yubikit.fido.webauthn.PublicKeyCredentialParameters
 import com.yubico.yubikit.fido.webauthn.PublicKeyCredentialRpEntity
 import com.yubico.yubikit.fido.webauthn.PublicKeyCredentialUserEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.yubicolabs.pawskey.Message.UserNameWrong
+import io.yubicolabs.pawskey.Message.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,10 +27,9 @@ import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 sealed class UserInteraction {
     data object WaitForRP : UserInteraction()
@@ -45,8 +45,12 @@ sealed class UserInteraction {
     data object CreationError : UserInteraction()
 }
 
-sealed class Message {
-    data object ServerOkay : Message()
+sealed class Message(
+    val uuid: Uuid = Uuid.random()
+) {
+    data class ServerOkay(
+        val additionalInfo: String? = null
+    ) : Message()
 
     data class ServerNotOkay(
         val th: Throwable? = null
@@ -56,9 +60,13 @@ sealed class Message {
         val th: Throwable
     ) : Message()
 
-    data object ServerTimeout : Message()
+    data class ServerTimeout(
+        val additionalInfo: String? = null
+    ) : Message()
 
-    data object UserNameWrong : Message()
+    data class UserNameWrong(
+        val additionalInfo: String? = null
+    ) : Message()
 
     data class PublicKeyGenerated(
         val id: String,
@@ -117,15 +125,15 @@ class MainViewModel @Inject constructor(
                 val result = relyingPartyService.getStatus()
 
                 if (result) {
-                    Message.ServerOkay
+                    ServerOkay()
                 } else {
-                    Message.ServerNotOkay()
+                    ServerNotOkay()
                 }
 
             } catch (_: SocketTimeoutException) {
-                Message.ServerTimeout
+                ServerTimeout()
             } catch (exception: HttpException) {
-                Message.ServerError("${exception.code()}: ${exception.message()}")
+                ServerError("${exception.code()}: ${exception.message()}")
             }
 
             showUserInteraction(null)
@@ -135,7 +143,7 @@ class MainViewModel @Inject constructor(
 
     fun registerUser(userName: String, pin: String) {
         if (userName.isEmpty()) {
-            showUserMessage(UserNameWrong)
+            showUserMessage(UserNameWrong())
             showUserInteraction(UserInteraction.UserNameWrong)
         } else if (pin.isEmpty()) {
             showUserInteraction(UserInteraction.EnterPin)
@@ -204,12 +212,12 @@ class MainViewModel @Inject constructor(
 
             if (publicKey != null) {
                 showUserInteraction(null)
-                showUserMessage(Message.PublicKeyGenerated(publicKey!!.id, publicKey!!.type))
+                showUserMessage(PublicKeyGenerated(publicKey!!.id, publicKey!!.type))
             } else {
                 showUserInteraction(UserInteraction.CreationError)
             }
         } catch (throwable: Throwable) {
-            val message = Message.KeyCreationFailure(throwable)
+            val message = KeyCreationFailure(throwable)
             Log.e(tagForLog, message.toString(), throwable)
 
             attestation = null
@@ -231,24 +239,24 @@ class MainViewModel @Inject constructor(
                 hint.append(json.encodeToString(user))
 
                 showUserMessage(
-                    Message.AttestationOptionsReceived(
+                    AttestationOptionsReceived(
                         result.requestId,
                         result.publicKey.toString(),
                     )
                 )
                 result
             } else {
-                showUserMessage(Message.ServerNotOkay())
+                showUserMessage(ServerNotOkay())
                 null
             }
         } catch (e: ConnectException) {
-            showUserMessage(Message.ServerNotConnected(e))
+            showUserMessage(ServerNotConnected(e))
             null
         } catch (_: SocketTimeoutException) {
-            showUserMessage(Message.ServerTimeout)
+            showUserMessage(ServerTimeout())
             null
         } catch (exception: HttpException) {
-            showUserMessage(Message.ServerNotOkay(exception))
+            showUserMessage(ServerNotOkay(exception))
             null
         }
     }
@@ -272,6 +280,16 @@ class MainViewModel @Inject constructor(
 
     fun copyToClipboard(message: String) {
         clipboard.setContent(message)
+    }
+
+    fun deleteMessage(message: Message) {
+        _uiState.update {
+            it.copy(
+                userMessages = it.userMessages.filter {
+                    it.uuid != message.uuid
+                }
+            )
+        }
     }
 
     fun interactionCancelled() {
