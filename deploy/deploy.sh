@@ -177,8 +177,7 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
         echo "$(tput bold) a connected phone $(tput sgr0)"
         echo
 
-	echo "starting it"
-	${ADB} shell am start -n io.yubicolabs.pawskey/io.yubicolabs.pawskey.MainActivity || { echo "Android app could not be launched. See above for details."; }
+       ${ADB} -d shell am start -n io.yubicolabs.pawskey/io.yubicolabs.pawskey.MainActivity || { echo "Android app could not be launched. See above for details."; }
 
       else
         echo no phone found, building app without installing
