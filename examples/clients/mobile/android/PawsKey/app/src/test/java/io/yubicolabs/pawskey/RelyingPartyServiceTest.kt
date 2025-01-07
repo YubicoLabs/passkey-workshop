@@ -84,7 +84,7 @@ class RelyingPartyServiceTest {
                             ),
                             "Challenge String",
                             listOf(
-                                AttestationOptionsResponse.PublicKey.CredParam(
+                                AttestationOptionsResponse.PublicKey.CredentialParameter(
                                     "type",
                                     2134,
                                 )

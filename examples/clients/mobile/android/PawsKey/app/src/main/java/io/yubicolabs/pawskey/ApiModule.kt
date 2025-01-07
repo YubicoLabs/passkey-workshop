@@ -3,6 +3,7 @@ package io.yubicolabs.pawskey
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import com.yubico.yubikit.android.YubiKitManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,9 +20,6 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 @InstallIn(ViewModelComponent::class)
 @Module
 object ApiModule {
-    @Provides
-    fun providePasskeyService(): PassKeyService = PassKeyService()
-
     @Provides
     fun provideRelyingPartyService(
         relyingPartyHttpService: RelyingPartyHttpService,
@@ -81,4 +79,23 @@ object ApiModule {
             )
         }
     }
+
+    @Provides
+    fun provideActivityProvider(): ActivityProvider = PawskeyActivityProvider()
+
+    @Provides
+    fun providePasskeyService(
+        yubiKitManager: YubiKitManager,
+        activityProvider: ActivityProvider,
+    ): PassKeyService = PassKeyService(
+        yubico = yubiKitManager,
+        activityProvider = activityProvider
+    )
+
+    @Provides
+    fun provideYubiManager(
+        @ApplicationContext
+        context: Context
+    ): YubiKitManager =
+        YubiKitManager(context)
 }

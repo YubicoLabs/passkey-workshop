@@ -1,6 +1,7 @@
 package io.yubicolabs.pawskey
 
 import android.util.Log
+import io.yubicolabs.pawskey.AttestationOptionsRequest.AuthenticatorSelection
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.HttpException
@@ -41,10 +42,10 @@ data class AttestationOptionsResponse(
         val rp: RelyingParty,
         val user: User,
         val challenge: String,
-        val pubKeyCredParams: List<CredParam>,
+        val pubKeyCredParams: List<CredentialParameter>,
         val timeout: Long,
-        val excludeCredentials: List<String>,
-        val authenticatorSelection: AttestationOptionsRequest.AuthenticatorSelection,
+        val excludeCredentials: List<ExcludeCredential>,
+        val authenticatorSelection: AuthenticatorSelection,
         val attestation: String
     ) {
         @Serializable
@@ -61,9 +62,15 @@ data class AttestationOptionsResponse(
         )
 
         @Serializable
-        data class CredParam(
+        data class CredentialParameter(
             val type: String,
             val alg: Int,
+        )
+
+        @Serializable
+        data class ExcludeCredential(
+            val id: String,
+            val type: String,
         )
     }
 }
@@ -107,7 +114,7 @@ class RelyingPartyService @Inject constructor(
             AttestationOptionsRequest(
                 userName = userName,
                 displayName = userName,
-                authenticatorSelection = AttestationOptionsRequest.AuthenticatorSelection(
+                authenticatorSelection = AuthenticatorSelection(
                     residentKey = "preferred"
                 )
             )

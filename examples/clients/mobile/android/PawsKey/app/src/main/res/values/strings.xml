@@ -6,4 +6,13 @@
     <string name="message_server_timeout">Could not connect to server. Is it running and do you have internet?</string>
     <string name="message_server_attestation_received">Received options with id %s. Requesting passkey credentials matching this:\n%s.</string>
     <string name="message_keys_found">These keys are found: %s.</string>
+    <string name="user_name_label">User Name</string>
+    <string name="dialog_title_error">Error</string>
+    <string name="copy_to_clipboard">📋</string>
+    <string name="error_no_attestatation">Not a valid response from relying party received.</string>
+    <string name="error_wrong_user_name">The user name you provided is wrong.</string>
+    <string name="dialog_title_pin_needed">Enter Pin</string>
+    <string name="pin_dialog_need">A pin is needed</string>
+    <string name="error_not_created">Could not create credential.</string>
+    <string name="pin_label">Pin</string>
 </resources>
