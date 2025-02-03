@@ -45,6 +45,9 @@ public class AttestationOptionsResponsePublicKey {
   @JsonProperty("authenticatorSelection")
   private AttestationOptionsResponsePublicKeyAuthenticatorSelection authenticatorSelection;
 
+  @JsonProperty("hints")
+  private String[] hints;
+
   /**
    * Gets or Sets attestation
    */
@@ -103,6 +106,16 @@ public class AttestationOptionsResponsePublicKey {
 
   public void setRp(AttestationOptionsResponsePublicKeyRp rp) {
     this.rp = rp;
+  }
+
+  @Valid
+  @Schema(name = "hints", required = false)
+  public String[] getHints() {
+    return hints;
+  }
+
+  public void setHints(String[] hints) {
+    this.hints = hints;
   }
 
   public AttestationOptionsResponsePublicKey user(AttestationOptionsResponsePublicKeyUser user) {

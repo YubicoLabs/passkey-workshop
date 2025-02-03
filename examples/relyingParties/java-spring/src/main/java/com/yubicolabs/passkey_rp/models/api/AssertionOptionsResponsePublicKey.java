@@ -38,6 +38,9 @@ public class AssertionOptionsResponsePublicKey {
   @Valid
   private List<AssertionOptionsResponsePublicKeyAllowCredentialsInner> allowCredentials = null;
 
+  @JsonProperty("hints")
+  private String[] hints;
+
   /**
    * Gets or Sets userVerification
    */
@@ -73,6 +76,16 @@ public class AssertionOptionsResponsePublicKey {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+  }
+
+  @Valid
+  @Schema(name = "hints", required = false)
+  public String[] getHints() {
+    return hints;
+  }
+
+  public void setHints(String[] hints) {
+    this.hints = hints;
   }
 
   @JsonProperty("userVerification")

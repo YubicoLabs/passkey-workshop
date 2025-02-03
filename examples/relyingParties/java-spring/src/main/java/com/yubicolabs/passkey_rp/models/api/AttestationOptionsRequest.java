@@ -117,7 +117,7 @@ public class AttestationOptionsRequest {
     return this;
   }
 
-  @Schema(name = "hints", example = "[\"security-keys\", \"client-device\"]", required = false)
+  @Schema(name = "hints", example = "[\"security-key\", \"client-device\"]", required = false)
   public Optional<String[]> getHints() {
     return this.hints;
   }

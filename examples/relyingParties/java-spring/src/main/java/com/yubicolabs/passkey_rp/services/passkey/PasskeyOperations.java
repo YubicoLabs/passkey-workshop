@@ -26,6 +26,7 @@ import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.StartRegistrationOptions;
 import com.yubico.webauthn.AssertionRequest.AssertionRequestBuilder;
 import com.yubico.webauthn.StartAssertionOptions.StartAssertionOptionsBuilder;
+import com.yubico.webauthn.StartRegistrationOptions.StartRegistrationOptionsBuilder;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.AuthenticatorAttachment;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
@@ -108,12 +109,16 @@ public class PasskeyOperations {
       AuthenticatorSelectionCriteria optionsSelectionCriteria = resolveAuthenticatorSelectionCriteria(
           request.getAuthenticatorSelection());
 
+      StartRegistrationOptionsBuilder regOptionsBuilder = StartRegistrationOptions.builder().user(userIdentity);
+      regOptionsBuilder.authenticatorSelection(optionsSelectionCriteria);
+      regOptionsBuilder.timeout(180000); // 3 minutes
+
+      if (request.getHints().isPresent()) {
+        regOptionsBuilder.hints(request.getHints().get());
+      }
+
       PublicKeyCredentialCreationOptions pkc = relyingPartyInstance.getRelyingParty()
-          .startRegistration(StartRegistrationOptions.builder()
-              .user(userIdentity)
-              .authenticatorSelection(optionsSelectionCriteria)
-              .timeout(180000) // 3 minutes
-              .build());
+          .startRegistration(regOptionsBuilder.build());
 
       ByteArray requestId = generateRandomByteArray(32);
 
@@ -235,6 +240,9 @@ public class PasskeyOperations {
          */
 
         optionsBuilder.username(request.getUserName());
+      }
+      if (request.getHints().isPresent()) {
+        optionsBuilder.hints(request.getHints().get());
       }
       AssertionRequest pkc = relyingPartyInstance.getRelyingParty()
           .startAssertion(optionsBuilder.build());

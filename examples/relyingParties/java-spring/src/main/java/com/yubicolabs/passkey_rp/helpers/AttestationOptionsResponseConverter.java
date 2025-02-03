@@ -91,6 +91,7 @@ public class AttestationOptionsResponseConverter {
                                         .excludeCredentials(exCred)
                                         .authenticatorSelection(builder.build())
                                         .attestation(AttestationEnum.fromValue(pkc.getAttestation().getValue()))
+                                        .hints(pkc.getHints().stream().toArray(String[]::new))
                                         .build();
 
                         return AttestationOptionsResponse.builder()

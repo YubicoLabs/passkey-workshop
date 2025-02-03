@@ -40,6 +40,7 @@ public class AssertionOptionsResponseConverter {
                          * Add known values
                          */
                         pkBuilder.challenge(pkc.getChallenge().getBase64Url())
+                                        .hints(pkc.getHints().stream().toArray(String[]::new))
                                         .timeout(pkc.getTimeout().get().intValue())
                                         .rpId(pkc.getRpId())
                                         .userVerification(UserVerificationEnum

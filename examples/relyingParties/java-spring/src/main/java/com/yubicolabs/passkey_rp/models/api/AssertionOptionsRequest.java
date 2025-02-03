@@ -45,7 +45,7 @@ public class AssertionOptionsRequest {
     this.hints = Optional.ofNullable(hints);
   }
 
-  @Schema(name = "hints", example = "[\"security-keys\", \"client-device\"]", required = false)
+  @Schema(name = "hints", example = "[\"security-key\", \"client-device\"]", required = false)
   public Optional<String[]> getHints() {
     return hints;
   }

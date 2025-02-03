@@ -211,6 +211,31 @@ public interface V1Api {
 
     }
 
+    @Operation(operationId = "serverPublicKeyCredentialGetOptionsRequest", summary = "Request public-key credential authentication options for user", responses = {
+            @ApiResponse(responseCode = "200", description = "Assertion options response from server", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = AssertionOptionsResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "4xx response", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
+            })
+    })
+    @RequestMapping(method = RequestMethod.POST, value = "/v1/assertion/test", produces = {
+            "application/json" }, consumes = { "application/json" })
+    default ResponseEntity<AssertionOptionsResponse> serverTestMethod(
+            @Parameter(name = "AssertionOptionsRequest", description = "Request credential options for user", required = true) @Valid @RequestBody AssertionOptionsRequest assertionOptionsRequest) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"requestId\" : \"B-J4odOi9vcV-4TN_gpokEb1f1EI...\", \"errorMessage\" : \"\", \"publicKey\" : { \"userVerification\" : \"preferred\", \"challenge\" : \"m7xl_TkTcCe0WcXI2M-4ro9vJAuwcj4m\", \"rpId\" : \"example.com\", \"timeout\" : 20000, \"allowCredentials\" : [ { \"id\" : \"opQf1WmYAa5aupUKJIQp\", \"type\" : \"public-key\" }, { \"id\" : \"opQf1WmYAa5aupUKJIQp\", \"type\" : \"public-key\" } ] } }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
     /**
      * DELETE /v1/user/credentials : Delete a user credential
      * Deletes a user credential by id
