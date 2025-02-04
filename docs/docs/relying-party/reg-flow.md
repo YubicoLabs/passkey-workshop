@@ -159,8 +159,6 @@ The `challenge` should be randomly generated. This random number should be based
 
 ### Implementation
 
-TODO - Add hints section when available
-
 Below is a sample implementation of the /attestation/options method. Note that `request` should correlate to the request body mentioned in the previous section, and `response` should correlate to the request response mentioned in the previous section.
 
 ```java
@@ -187,15 +185,22 @@ public AttestationOptionsResponse attestationOptions(AttestationOptionsRequest r
       * The goal is to convert the string values into valid ENUM for the
       * AuthenticatorSelectionCriteria
       */
-    AuthenticatorSelectionCriteria optionsSelectionCriteria = resolveAuthenticatorSelectionCriteria(
-        request.getAuthenticatorSelection());
+      AuthenticatorSelectionCriteria optionsSelectionCriteria = resolveAuthenticatorSelectionCriteria(
+          request.getAuthenticatorSelection());
 
-    PublicKeyCredentialCreationOptions pkc = relyingPartyInstance.getRelyingParty()
-        .startRegistration(StartRegistrationOptions.builder()
-            .user(userIdentity)
-            .authenticatorSelection(optionsSelectionCriteria)
-            .timeout(180000) // 3 minutes
-            .build());
+      StartRegistrationOptionsBuilder regOptionsBuilder = StartRegistrationOptions.builder().user(userIdentity);
+      regOptionsBuilder.authenticatorSelection(optionsSelectionCriteria);
+      regOptionsBuilder.timeout(180000); // 3 minutes
+
+      /**
+       * If hints are present in the request, then add them to the Registration Options object
+      */
+      if (request.getHints().isPresent()) {
+        regOptionsBuilder.hints(request.getHints().get());
+      }
+
+      PublicKeyCredentialCreationOptions pkc = relyingPartyInstance.getRelyingParty()
+          .startRegistration(regOptionsBuilder.build());
 
     ByteArray requestId = generateRandomByteArray(32);
 

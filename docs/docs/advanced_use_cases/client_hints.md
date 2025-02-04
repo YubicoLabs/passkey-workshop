@@ -2,6 +2,8 @@
 sidebar_position: 2
 ---
 
+import ReactPlayer from "react-player";
+
 # Client Hints
 
 [Client hints](https://www.w3.org/TR/webauthn-3/#enum-hints) are in addition to the Level 3 version of the WebAuthn specification that aims to improve UX flows to aid in the adoption of passkeys. Hints provide a relying party a mechanism to suggest to a client application the type of authenticator that should be used to complete a WebAuthn ceremony.
@@ -30,11 +32,17 @@ Use the outline below to understand how the two properties may interact as they 
 
 Below is a demonstration of how hints work in a client application. The video denotes different (but not all) permutations for hints, and how the client reacts to the input. An in-depth explanation on the different hints enumerations is included in the next section.
 
-\*\*TODO - Add a video once the jws changes are complete
+<ReactPlayer
+controls
+width="100%"
+height="100%"
+url="/passkey-workshop/videos/hints-video.mp4"
+style={{ marginBottom: "2em" }}
+/>
 
 ## Types of hints
 
-The WebAuthn specification notes a few different options that can be expressed to the client from the relying party. Hints are expressed in the attestation and assertion requests as the hintsproperty, which is an array list of the enumerations listed below.
+The WebAuthn specification notes a few different options that can be expressed to the client from the relying party. Hints are expressed in the attestation and assertion requests as the hints property, which is an array list of the enumerations listed below.
 
 The enumerations are ordered in the following decreasing preference: `security-key, client-device, hybrid`. This means that if two hints are contradictory, then the option with the higher preference will be presented over the other.
 
@@ -68,7 +76,42 @@ Before attempting to implement hints from your relying party, ensure that your c
 
 ## Implementation guidance
 
-These code snippets will continue to build off of the guidance provided in the earlier sections of this guide. Please note that client hints are only available in version 2.6+ of the java-webauthn-server library.
+### Relying party
 
-** Here is where we will add the new snippet of the java-webauthn-server
-** Also link to the new section that are scattered through the docs (mentioned in my outline above)
+The goal of implementing Client Hints for a Relying Party is ensuring that you add the property to the `PublicKeyCredentialCreationOptions` for `create()` calls, and `PublicKeyCredentialRequestOptions` for `get()` calls.An example of both can be found below.
+
+Attestation options for passkey creation:
+
+```json
+"publicKey": {
+  "rp": ...,
+  "user": ...,
+  "challenge": "uhUjPNlZfvn7onwuhNdsLPkkE5Fv-lUN",
+  "pubKeyCredParams": ...,
+  "authenticatorSelection": ...,
+  "attestation": "direct",
+  // highlight-start
+  "hints": ["security-key", "client-device", "hybrid"]
+  // highlight-end
+}
+```
+
+Assertion options for passkey authentication:
+
+```json
+"publicKey": {
+  "challenge": "NGc3jpB4Q-VnOmbhFBnDAczlYPT4soKA7xviGeJmDhc",
+  "timeout": 180000,
+  "rpId": "localhost",
+  "userVerification": "preferred",
+  // highlight-start
+  "hints": ["security-key", "client-device", "hybrid"]
+  // highlight-end
+}
+```
+
+In-depth implementation guidance can be found on the Relying Party pages for both [registration](/docs/relying-party/reg-flow) and [authentication](/docs/relying-party/auth-flow).
+
+### Clients
+
+There's no additional code that's needed to leverage hints from a client application, assuming that the client has support for hints (as outlined in the previous section on platform support).

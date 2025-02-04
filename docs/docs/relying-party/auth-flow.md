@@ -126,8 +126,6 @@ With that said, non-discoverable credentials cannot be leveraged in the discover
 
 ### Implementation
 
-TODO - Add hints section when available
-
 Below is a sample implementation of the /attestation/options method. Note that `request` should correlate to the request body mentioned in the previous section, and `response` should correlate to the request response mentioned in the previous section.
 
 ```java
@@ -160,6 +158,9 @@ public AssertionOptionsResponse assertionOptions(AssertionOptionsRequest request
         */
 
       optionsBuilder.username(request.getUserName());
+    }
+    if (request.getHints().isPresent()) {
+        optionsBuilder.hints(request.getHints().get());
     }
     AssertionRequest pkc = relyingPartyInstance.getRelyingParty()
         .startAssertion(optionsBuilder.build());
