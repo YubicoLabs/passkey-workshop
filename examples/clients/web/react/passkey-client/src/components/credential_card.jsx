@@ -8,7 +8,6 @@ import Stack from "react-bootstrap/Stack";
 import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 
-import Utils from "../services/Utils";
 import PasskeyServices from "../services/PasskeyServices";
 export default function CredentialCard({ credential, refreshCallback }) {
   const [loading, setLoading] = useState(false);
@@ -112,10 +111,12 @@ export default function CredentialCard({ credential, refreshCallback }) {
               </Card.Title>
               <Stack gap={1}>
                 <span>
-                  Reg time: {Utils.convertDate(credential.registrationTime)}
+                  Reg time:{" "}
+                  {new Date(credential.registrationTime).toLocaleString()}
                 </span>
                 <span>
-                  Last used: {Utils.convertDate(credential.lastUsedTime)}
+                  Last used:{" "}
+                  {new Date(credential.lastUsedTime).toLocaleString()}
                 </span>
               </Stack>
             </div>

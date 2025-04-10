@@ -10,17 +10,17 @@ const PasskeyServices = {
 
 const baseURL = process.env.REACT_APP_RP_API || "http://localhost:8080/v1";
 
-async function getAttestationOptions(username, residentKeyReq, authAttachment, uvReq, attestation) {
+async function getAttestationOptions(username) {
   try {
     const reqData = {
       userName: username,
       displayName: username,
       authenticatorSelection: {
-        residentKey: residentKeyReq,
-        authenticatorAttachment: authAttachment,
-        userVerification: uvReq
+        residentKey: "preferred",
+        authenticatorAttachment: "",
+        userVerification: "preferred"
       },
-      attestation: attestation
+      attestation: "direct"
     };
 
     const requestOptions = {
@@ -144,6 +144,9 @@ async function getCredentials(username) {
     }
 
     const response = await fetch(`${baseURL}/user/credentials/${username}`, requestOptions);
+    if(response.status !== 200) {
+      throw Error("User not found")
+    }
     const responseJSON = await response.json();
 
     console.info(`Printing credentials list for ${username}`);
