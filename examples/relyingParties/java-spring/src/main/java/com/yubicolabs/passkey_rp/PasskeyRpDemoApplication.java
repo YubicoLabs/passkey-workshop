@@ -27,7 +27,7 @@ public class PasskeyRpDemoApplication {
      */
     System.setProperty("datasource.type", "mysql");
     System.setProperty("spring.jpa.hibernate.ddl-auto", "update");
-    System.setProperty("spring.datasource.url", "jdbc:mysql://host.docker.internal:3306/passkeyStorage");
+    System.setProperty("spring.datasource.url", "jdbc:mysql://localhost:3306/passkeyStorage");
     System.setProperty("spring.datasource.username", "root");
     System.setProperty("spring.datasource.driver-class-name", "com.mysql.cj.jdbc.Driver");
 

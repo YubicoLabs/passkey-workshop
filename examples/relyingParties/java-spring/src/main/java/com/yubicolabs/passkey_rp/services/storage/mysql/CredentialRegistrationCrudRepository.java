@@ -10,7 +10,7 @@ import com.yubicolabs.passkey_rp.models.dbo.mysql.CredentialRegistrationDBO;
 
 @Repository
 @ConditionalOnExpression("#{'${datasource.type}'.contains('mysql')}")
-public interface CredentialRegistrationRepositoryMySql extends CrudRepository<CredentialRegistrationDBO, Long> {
+public interface CredentialRegistrationCrudRepository extends CrudRepository<CredentialRegistrationDBO, Long> {
 
   List<CredentialRegistrationDBO> findByUserHandle(String stringID);
 

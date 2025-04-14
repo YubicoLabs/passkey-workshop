@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +28,6 @@ import lombok.Getter;
 public class RelyingPartyInstance {
 
   @Getter
-  @Autowired
   private StorageInstance storageInstance;
 
   @Getter
@@ -38,7 +36,9 @@ public class RelyingPartyInstance {
   @Getter
   private Optional<FidoMetadataService> mds;
 
-  // @TODO - Read these value from ENV
+  public RelyingPartyInstance(StorageInstance storageInstance) {
+    this.storageInstance = storageInstance;
+  }
 
   @PostConstruct
   private void setRPInstance() {

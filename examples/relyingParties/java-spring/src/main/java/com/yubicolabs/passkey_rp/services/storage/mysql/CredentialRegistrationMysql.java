@@ -7,8 +7,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -21,11 +21,16 @@ import com.yubicolabs.passkey_rp.models.common.CredentialRegistration;
 import com.yubicolabs.passkey_rp.models.common.CredentialRegistration.StateEnum;
 import com.yubicolabs.passkey_rp.models.dbo.mysql.CredentialRegistrationDBO;
 
-@Component
-public class CredentialRegistrationStorage_mysql implements CredentialStorage {
+@Service
+@ConditionalOnProperty(name = "datasource.type", havingValue = "mysql", matchIfMissing = true)
+public class CredentialRegistrationMysql implements CredentialStorage {
 
-  @Autowired(required = false)
-  private CredentialRegistrationRepositoryMySql credentialRegistrationRepositoryMySql;
+  private CredentialRegistrationCrudRepository credentialRegistrationCrudRepository;
+
+  public CredentialRegistrationMysql(
+      CredentialRegistrationCrudRepository credentialRegistrationCrudRepository) {
+    this.credentialRegistrationCrudRepository = credentialRegistrationCrudRepository;
+  }
 
   ObjectMapper mapper = new ObjectMapper();
 
@@ -94,7 +99,7 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
           .state(registration.getState().getValue())
           .build();
 
-      credentialRegistrationRepositoryMySql.save(newItem);
+      credentialRegistrationCrudRepository.save(newItem);
       return true;
     } catch (Exception e) {
       e.printStackTrace();
@@ -105,7 +110,7 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
   @Override
   public Collection<CredentialRegistration> getRegistrationsByUsername(String username) {
 
-    Collection<CredentialRegistrationDBO> credRegList = credentialRegistrationRepositoryMySql.findAll();
+    Collection<CredentialRegistrationDBO> credRegList = credentialRegistrationCrudRepository.findAll();
 
     return credRegList.stream().filter(reg -> usernameToDBOUserIdentity(reg.getUserIdentity(), username))
         .map(regDBO -> buildCredentialRegistration(regDBO))
@@ -115,7 +120,7 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
   @Override
   public Collection<CredentialRegistration> getRegistrationsByUserHandle(ByteArray userHandle) {
     try {
-      Collection<CredentialRegistrationDBO> credRegList = credentialRegistrationRepositoryMySql
+      Collection<CredentialRegistrationDBO> credRegList = credentialRegistrationCrudRepository
           .findByUserHandle(userHandle.getBase64Url());
 
       return credRegList.stream()
@@ -164,7 +169,7 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
 
   @Override
   public Collection<CredentialRegistration> getByCredentialId(ByteArray credentialId) {
-    Collection<CredentialRegistrationDBO> credList = credentialRegistrationRepositoryMySql
+    Collection<CredentialRegistrationDBO> credList = credentialRegistrationCrudRepository
         .findByCredentialID(credentialId.getBase64Url());
 
     return credList.stream().filter(reg -> reg.getState().equals(StateEnum.ENABLED.getValue()))
@@ -182,11 +187,11 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
       Collection<CredentialRegistration> credList = getByCredentialId(credentialId);
 
       if (!credList.isEmpty()) {
-        CredentialRegistrationDBO dboItem = credentialRegistrationRepositoryMySql
+        CredentialRegistrationDBO dboItem = credentialRegistrationCrudRepository
             .findByCredentialID(credentialId.getBase64Url()).get(0);
         dboItem.setState(StateEnum.DELETED.getValue());
 
-        CredentialRegistrationDBO newDbo = credentialRegistrationRepositoryMySql.save(dboItem);
+        CredentialRegistrationDBO newDbo = credentialRegistrationCrudRepository.save(dboItem);
 
         if (newDbo.getState().equals(StateEnum.DELETED.getValue())) {
           return true;
@@ -225,7 +230,7 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
       Collection<CredentialRegistration> credList = getRegistrationsByUserHandle(userHandle);
 
       if (!credList.isEmpty()) {
-        CredentialRegistrationDBO dboItem = credentialRegistrationRepositoryMySql
+        CredentialRegistrationDBO dboItem = credentialRegistrationCrudRepository
             .findByCredentialID(credentialId.getBase64Url()).get(0);
 
         if (dboItem.getState().equals(StateEnum.DELETED.getValue())) {
@@ -234,7 +239,7 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
 
         dboItem.setState(newState.getValue());
 
-        CredentialRegistrationDBO newDbo = credentialRegistrationRepositoryMySql.save(dboItem);
+        CredentialRegistrationDBO newDbo = credentialRegistrationCrudRepository.save(dboItem);
 
         if (newDbo.getState().equals(newState.getValue())) {
           return true;
@@ -256,11 +261,11 @@ public class CredentialRegistrationStorage_mysql implements CredentialStorage {
       Collection<CredentialRegistration> credList = getByCredentialId(credentialId);
 
       if (!credList.isEmpty()) {
-        CredentialRegistrationDBO dboObj = credentialRegistrationRepositoryMySql
+        CredentialRegistrationDBO dboObj = credentialRegistrationCrudRepository
             .findByCredentialID(credentialId.getBase64Url()).get(0);
         dboObj.setCredentialNickname(newNickname);
 
-        CredentialRegistrationDBO newObj = credentialRegistrationRepositoryMySql.save(dboObj);
+        CredentialRegistrationDBO newObj = credentialRegistrationCrudRepository.save(dboObj);
 
         if (newObj.getCredentialNickname().equals(newNickname)) {
           return true;

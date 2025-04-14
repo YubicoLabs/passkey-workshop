@@ -6,12 +6,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.yubicolabs.passkey_rp.models.dbo.mysql.AdvancedProtectionStatusDBO;
+import com.yubicolabs.passkey_rp.models.dbo.mysql.AssertionOptionsDBO;
 
 @Repository
 @ConditionalOnExpression("#{'${datasource.type}'.contains('mysql')}")
-public interface AdvancedProtectionStatusRepositoryMysql extends CrudRepository<AdvancedProtectionStatusDBO, Long> {
+public interface AssertionRequestCrudRepository extends CrudRepository<AssertionOptionsDBO, Long> {
 
-  List<AdvancedProtectionStatusDBO> findByUserHandle(String userHandle);
-
+  List<AssertionOptionsDBO> findByRequestId(String requestID);
 }
