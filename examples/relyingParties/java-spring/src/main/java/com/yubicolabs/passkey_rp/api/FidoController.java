@@ -37,7 +37,8 @@ public class FidoController {
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/attestation/options", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity attestationOptions(@RequestBody AttestationOptionsRequest attestationOptionsRequest)
+  public ResponseEntity<AttestationOptionsResponse> attestationOptions(
+      @RequestBody AttestationOptionsRequest attestationOptionsRequest)
       throws Exception {
     final AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
 
@@ -47,7 +48,8 @@ public class FidoController {
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/attestation/result", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity attestationResult(@RequestBody AttestationResultRequest attestationResultRequest)
+  public ResponseEntity<AttestationResultResponse> attestationResult(
+      @RequestBody AttestationResultRequest attestationResultRequest)
       throws Exception {
     final AttestationResultResponse response = passkeyOperations.attestationResult(attestationResultRequest);
 
@@ -57,7 +59,8 @@ public class FidoController {
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/assertion/options", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity assertionOptions(@RequestBody AssertionOptionsRequest assertionOptionsRequest)
+  public ResponseEntity<AssertionOptionsResponse> assertionOptions(
+      @RequestBody AssertionOptionsRequest assertionOptionsRequest)
       throws Exception {
     final AssertionOptionsResponse response = passkeyOperations.assertionOptions(assertionOptionsRequest);
 
@@ -67,7 +70,8 @@ public class FidoController {
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/assertion/result", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity assertionResult(@RequestBody AssertionResultRequest assertionResultRequest) throws Exception {
+  public ResponseEntity<AssertionResultResponse> assertionResult(
+      @RequestBody AssertionResultRequest assertionResultRequest) throws Exception {
     final AssertionResultResponse response = passkeyOperations.assertionResponse(assertionResultRequest);
 
     return ResponseEntity.status(HttpStatus.OK)

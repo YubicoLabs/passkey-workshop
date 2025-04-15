@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.yubico.fido.metadata.FidoMetadataDownloader;
@@ -24,7 +23,6 @@ import com.yubicolabs.passkey_rp.services.storage.StorageInstance;
 import lombok.Getter;
 
 @Service
-@Scope("singleton")
 public class RelyingPartyInstance {
 
   @Getter

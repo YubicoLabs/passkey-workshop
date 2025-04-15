@@ -16,6 +16,7 @@ public class ControllerExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   private ResponseEntity handleGlobalError(Exception e) {
+    e.printStackTrace();
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .contentType(MediaType.APPLICATION_JSON).body(e);
   }
