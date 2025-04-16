@@ -66,7 +66,7 @@
         </div>
       </div>      
 
-      <script type="text/javascript" src="${url.resourcesCommonPath}/node_modules/jquery/dist/jquery.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
       <script type="text/javascript">
 
         async function getAssertionOptions(username) {

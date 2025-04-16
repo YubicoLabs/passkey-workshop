@@ -19,8 +19,8 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HTTP;
@@ -124,7 +124,7 @@ public class PasskeyRegister implements Authenticator {
 
           AttestationResponse attestationResponse = mapper.readValue(response.body(), AttestationResponse.class);
 
-          AcrStore acrStore = new AcrStore(context.getAuthenticationSession());
+          AcrStore acrStore = new AcrStore(context.getSession(), context.getAuthenticationSession());
           acrStore.setLevelAuthenticated(attestationResponse.getCredential().isHighAssurance() ? 2 : 1);
 
           /**

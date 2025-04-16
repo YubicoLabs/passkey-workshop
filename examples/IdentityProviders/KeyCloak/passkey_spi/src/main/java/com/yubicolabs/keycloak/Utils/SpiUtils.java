@@ -18,7 +18,7 @@ public class SpiUtils {
     token.subject(userModel.getId());
     token.issuer(Urls.realmIssuer(keycloakContext.getUri().getBaseUri(), keycloakContext.getRealm().getName()));
     token.issuedNow();
-    token.expiration((int) (token.getIat() + 100L));
+    token.exp(token.getIat() + 10L);
 
     KeyWrapper key = context.getSession().keys().getActiveKey(keycloakContext.getRealm(), KeyUse.SIG, "RS256");
 

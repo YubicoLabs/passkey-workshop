@@ -70,7 +70,6 @@ Copy-Item -Force -Recurse "..\examples\relyingParties\java-spring\" "java-app\so
 
 # IdP
 Write-Host "### copying keycloak passkey authenticator source code"
-Copy-Item -Force -Recurse "..\examples\IdentityProviders\KeyCloak\passkey_authenticator\" "keycloak\source\"
 Copy-Item -Force -Recurse "..\examples\IdentityProviders\KeyCloak\passkey_spi\" "keycloak\bank_source\"
 
 # bank application

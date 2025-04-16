@@ -12,15 +12,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yubicolabs.keycloak.Utils.SpiUtils;
 import com.yubicolabs.keycloak.models.AssertionResponse;
 
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HTTP;
@@ -61,9 +61,9 @@ public class PasskeyAuthenticate implements Authenticator {
     if (url.startsWith("http://host.docker.internal", 0)) {
       url = url.replaceFirst("host.docker.internal", "localhost"); // kludge when running in a docker container
     }
-    if (context.getHttpRequest().getUri().getQueryParameters().get("username") != null
-        && !context.getHttpRequest().getUri().getQueryParameters().get("username").isEmpty()) {
-      String currentUser = context.getHttpRequest().getUri().getQueryParameters().get("username").get(0);
+    if (context.getUriInfo().getQueryParameters().get("username") != null
+        && !context.getUriInfo().getQueryParameters().get("username").isEmpty()) {
+      String currentUser = context.getUriInfo().getQueryParameters().get("username").get(0);
       Response form = context.form()
           .setAttribute("username", currentUser)
           .setAttribute("action_type", "STEPUP")
@@ -119,7 +119,7 @@ public class PasskeyAuthenticate implements Authenticator {
          * 
          * 
          */
-        AcrStore acrStore = new AcrStore(context.getAuthenticationSession());
+        AcrStore acrStore = new AcrStore(context.getSession(), context.getAuthenticationSession());
         acrStore.setLevelAuthenticated(assertionResponse.getLoa());
         context.success();
       } else {
