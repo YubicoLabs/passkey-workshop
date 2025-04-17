@@ -221,7 +221,7 @@ function App() {
                   <h5>Credential list</h5>
                   <div className="card-list">
                     {credentialList.map((item) => (
-                      <CredentialCard credential={item} />
+                      <CredentialCard key={item.id} credential={item} />
                     ))}
                   </div>
                 </div>

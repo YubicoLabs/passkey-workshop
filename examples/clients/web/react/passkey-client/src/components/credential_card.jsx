@@ -78,7 +78,8 @@ export default function CredentialCard({ credential, refreshCallback }) {
           style={{ padding: "1em 0 0 0" }}>
           <Col sm={2} xs={12}>
             <div className="svg-container">
-              {credential.iconURI !== null ? (
+              {credential.iconURI !== null &&
+              credential.iconURI !== undefined ? (
                 <Image
                   className="test-center"
                   roundedCircle

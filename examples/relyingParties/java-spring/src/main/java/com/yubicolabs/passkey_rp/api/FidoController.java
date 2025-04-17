@@ -38,8 +38,8 @@ public class FidoController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/attestation/options", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AttestationOptionsResponse> attestationOptions(
-      @RequestBody AttestationOptionsRequest attestationOptionsRequest)
-      throws Exception {
+      @RequestBody AttestationOptionsRequest attestationOptionsRequest) {
+
     final AttestationOptionsResponse response = passkeyOperations.attestationOptions(attestationOptionsRequest);
 
     return ResponseEntity.status(HttpStatus.OK)
@@ -49,8 +49,7 @@ public class FidoController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/attestation/result", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AttestationResultResponse> attestationResult(
-      @RequestBody AttestationResultRequest attestationResultRequest)
-      throws Exception {
+      @RequestBody AttestationResultRequest attestationResultRequest) {
     final AttestationResultResponse response = passkeyOperations.attestationResult(attestationResultRequest);
 
     return ResponseEntity.status(HttpStatus.OK)
@@ -60,8 +59,7 @@ public class FidoController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/assertion/options", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AssertionOptionsResponse> assertionOptions(
-      @RequestBody AssertionOptionsRequest assertionOptionsRequest)
-      throws Exception {
+      @RequestBody AssertionOptionsRequest assertionOptionsRequest) {
     final AssertionOptionsResponse response = passkeyOperations.assertionOptions(assertionOptionsRequest);
 
     return ResponseEntity.status(HttpStatus.OK)
@@ -71,7 +69,7 @@ public class FidoController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/assertion/result", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AssertionResultResponse> assertionResult(
-      @RequestBody AssertionResultRequest assertionResultRequest) throws Exception {
+      @RequestBody AssertionResultRequest assertionResultRequest) {
     final AssertionResultResponse response = passkeyOperations.assertionResponse(assertionResultRequest);
 
     return ResponseEntity.status(HttpStatus.OK)
@@ -129,7 +127,7 @@ public class FidoController {
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/status", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity getApiStatus() throws Exception {
+  public ResponseEntity getApiStatus() {
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON).build();
   }

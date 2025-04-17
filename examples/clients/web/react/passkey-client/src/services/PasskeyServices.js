@@ -32,7 +32,12 @@ async function getAttestationOptions(username) {
     };
 
     const response = await fetch(`${baseURL}/attestation/options`, requestOptions);
+
     const responseJSON = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
 
     console.info("Printing registration options");
     console.info(responseJSON);
@@ -63,6 +68,10 @@ async function sendAttestationResult(requestID, makeCredentialResponse) {
     const response = await fetch(`${baseURL}/attestation/result`, requestOptions);
     const responseJSON = await response.json();
 
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
+
     console.info("Printing registration result");
     console.info(responseJSON);
 
@@ -91,6 +100,10 @@ async function getAssertionOptions(username) {
 
     const response = await fetch(`${baseURL}/assertion/options`, requestOptions);
     const responseJSON = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
 
     console.info("Printing authentication options");
     console.info(responseJSON);
@@ -121,6 +134,10 @@ async function sendAssertionResult(requestID, assertionResult) {
 
     const response = await fetch(`${baseURL}/assertion/result`, requestOptions);
     const responseJSON = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
 
     console.info("Printing authentication result");
     console.info(responseJSON);
@@ -180,6 +197,10 @@ async function deleteCredential(credentialId) {
     const response = await fetch(`${baseURL}/user/credentials`, requestOptions);
     const responseJSON = await response.json();
 
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
+
     return responseJSON;
 
   } catch (e) {
@@ -208,6 +229,10 @@ async function updateCredential(credentialId, newNickname) {
 
     const response = await fetch(`${baseURL}/user/credentials`, requestOptions);
     const responseJSON = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
 
     return responseJSON;
 
