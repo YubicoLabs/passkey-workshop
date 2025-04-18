@@ -48,9 +48,9 @@ The enumerations are ordered in the following decreasing preference: `security-k
 
 Meaning that if a hints property is set with a value of `["hybrid", "security-key"]`, then the user will be presented with a modal to register or authenticate with a security key.
 
-### None
+### None (null)
 
-The option of no hint can be denoted by not including the hints property, or by passing a hints property with an empty array. This indicates to the client application that your relying party has no preference on the authenticator used, and will show a standard modal presenting all of the standard WebAuthn options of the client.
+The option of no hint can be denoted by not including the hints property, setting the property to `null`, or by passing a hints property with an empty array. This indicates to the client application that your relying party has no preference on the authenticator used, and will show a standard modal presenting all of the standard WebAuthn options of the client.
 
 ### security-key
 
