@@ -441,6 +441,30 @@ a .text-1:hover {
   border: none;
 }
 
+.button-danger {
+  display: inline-flex;
+  padding: 6px 32px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  border-radius: 4px;
+  background: var(--primary-default, #F24822);
+
+  color: var(--text-text-1, #F2F0FF);
+
+  /* Button/Basic */
+  font-family: Helvetica Neue;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  /* 200% */
+  letter-spacing: 0.72px;
+  text-transform: uppercase;
+  border: none;
+}
+
 .button-outlined {
   display: inline-flex;
   padding: 6px 32px;
@@ -779,4 +803,20 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
   /* Firefox */
+}
+
+.passkey-info {
+  border: 1px solid #FFE8A3;
+  border-radius: 16px;
+  color: var(--text-text-1, #F2F0FF);
+  margin: 1em 0;
+  padding: 25px;
+}
+
+.passkey-success-box {
+  border: 1px solid #65BF8C;
+  border-radius: 16px;
+  color: var(--text-text-1, #F2F0FF);
+  margin: 1em 0;
+  padding: 25px;
 }

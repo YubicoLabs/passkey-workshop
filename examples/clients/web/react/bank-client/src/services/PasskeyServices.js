@@ -10,17 +10,17 @@ const PasskeyServices = {
 
 const baseURL = process.env.REACT_APP_RP_API || "http://localhost:8080/v1";
 
-async function getAttestationOptions(username, residentKeyReq, authAttachment, uvReq, attestation) {
+async function getAttestationOptions(username) {
   try {
     const reqData = {
       userName: username,
       displayName: username,
       authenticatorSelection: {
-        residentKey: residentKeyReq,
-        authenticatorAttachment: authAttachment,
-        userVerification: uvReq
+        residentKey: "preferred",
+        authenticatorAttachment: "",
+        userVerification: "preferred"
       },
-      attestation: attestation
+      attestation: "direct"
     };
 
     const requestOptions = {
