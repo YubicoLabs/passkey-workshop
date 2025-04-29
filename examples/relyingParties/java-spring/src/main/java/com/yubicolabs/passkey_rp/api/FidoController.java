@@ -77,8 +77,9 @@ public class FidoController {
         .body(response);
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/user/credentials/{username}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity userCredentialsByUsername(@PathVariable String username) throws Exception {
+  @RequestMapping(method = RequestMethod.GET, value = "/user/credentials/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<UserCredentialsResponse> userCredentialsByUsername(@PathVariable String username)
+      throws Exception {
     final UserCredentialsResponse response = passkeyOperations.getUserCredentials(username);
 
     return ResponseEntity.status(HttpStatus.OK)
@@ -87,7 +88,8 @@ public class FidoController {
   }
 
   @RequestMapping(method = RequestMethod.PUT, value = "/user/credentials", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity updateCredentialNicknameById(@RequestBody UserCredentialUpdate userCredentialUpdate)
+  public ResponseEntity<UserCredentialUpdateResponse> updateCredentialNicknameById(
+      @RequestBody UserCredentialUpdate userCredentialUpdate)
       throws Exception {
     final UserCredentialUpdateResponse response = passkeyOperations.updateCredentialNickname(userCredentialUpdate);
 
@@ -97,7 +99,8 @@ public class FidoController {
   }
 
   @RequestMapping(method = RequestMethod.DELETE, value = "/user/credentials", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity deleteCredentialNicknameById(@RequestBody UserCredentialDelete userCredentialDelete)
+  public ResponseEntity<UserCredentialDeleteResponse> deleteCredentialNicknameById(
+      @RequestBody UserCredentialDelete userCredentialDelete)
       throws Exception {
     final UserCredentialDeleteResponse response = passkeyOperations.deleteCredential(userCredentialDelete);
 
@@ -106,8 +109,9 @@ public class FidoController {
         .body(response);
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/user/advanced-protection/{userHandle}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity getAdvancedProtectionStatus(@PathVariable String userHandle) throws Exception {
+  @RequestMapping(method = RequestMethod.GET, value = "/user/advanced-protection/{userHandle}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<AdvancedProtection> getAdvancedProtectionStatus(@PathVariable String userHandle)
+      throws Exception {
     AdvancedProtection response = passkeyOperations.getAdvancedProtectionStatus(userHandle);
 
     return ResponseEntity.status(HttpStatus.OK)
@@ -116,7 +120,7 @@ public class FidoController {
   }
 
   @RequestMapping(method = RequestMethod.PUT, value = "/user/advanced-protection/{userHandle}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity updateAdvancedProtectionStatus(@PathVariable String userHandle,
+  public ResponseEntity<AdvancedProtection> updateAdvancedProtectionStatus(@PathVariable String userHandle,
       @RequestBody UpdateAdvancedProtectionStatusRequest updateAdvancedProtectionStatusRequest) throws Exception {
     AdvancedProtection response = passkeyOperations.updateAdvancedProtectionStatus(userHandle,
         updateAdvancedProtectionStatusRequest);
@@ -126,7 +130,7 @@ public class FidoController {
         .body(response);
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/status", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(method = RequestMethod.GET, value = "/status", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity getApiStatus() {
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON).build();
