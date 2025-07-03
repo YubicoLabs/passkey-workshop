@@ -64,7 +64,6 @@ cp -r  ../examples/relyingParties/java-spring/ java-app/source/
 
 # IdP
 echo "### copying keycloak passkey authenticator source code"
-cp -r ../examples/IdentityProviders/KeyCloak/passkey_authenticator/ keycloak/source/
 cp -r ../examples/IdentityProviders/KeyCloak/passkey_spi/ keycloak/bank_source/
 
 # bank application

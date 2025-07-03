@@ -37,7 +37,8 @@ Below is the request body of the `/attestation/options` method
     "authenticatorAttachment": "cross-platform",
     "userVerification": "preferred"
   },
-  "attestation": "direct"
+  "attestation": "direct",
+  "hints": ["security-key", "client-device", "hybrid"]
 }
 ```
 
@@ -81,15 +82,26 @@ Keep in mind that some devices, like security keys, may have a limit on the numb
 
 ::::tip Best to be permissive
 Err on the side of caution when using this setting. For most use cases you should not set this setting, and instead allow your users to use any authenticator that they want to use. Allow for both the convenience of platform authenticators, and the high degree of assurance of security keys for the users who want it.
+
+Leveraging the `hints` property (covered below) will allow you to guide the user to a specific authenticator type without restricting their options.
 ::::
 
 ::::danger cross-platform will always present multiple options
-If a developer declares the preference for cross-platform, the user will always see options for both security keys and the hybrid flow (QR code). As of now there is not an implementation that allows a developer to hide one option, both will always be presented
+If a developer declares the preference for cross-platform, the user will always see options for both security keys and the hybrid flow (QR code). As of now there is not an implementation that allows a developer to hide one option, both will always be presented.
+
+To prevent the multiple options issue with `cross-platform` you may attempt to use the `hints` property listed in the next section.
 ::::
 
 - platform
 - cross-platform
 - Empty | none | exclude property (default)
+
+`hints` defines the [PublicKeyCredentialHints](https://w3c.github.io/webauthn/#enum-hints) option, or the ability for a relying party to suggest to a client the type of authenticator that can be used. More information on this new feature can be found later in this guide in the section [Advanced concepts > Client Hints](https://yubicolabs.github.io/passkey-workshop/docs/advanced_use_cases/client_hints).
+
+- security-key
+- client-device
+- hybrid
+- Empty | none | exclude property
 
 #### Response
 
@@ -127,7 +139,8 @@ Below is the response body of the `/attestation/options` method
       "authenticatorAttachment": "cross-platform",
       "userVerification": "preferred"
     },
-    "attestation": "direct"
+    "attestation": "direct",
+    "hints": ["security-key", "client-device", "hybrid"]
   }
 }
 ```
@@ -172,15 +185,22 @@ public AttestationOptionsResponse attestationOptions(AttestationOptionsRequest r
       * The goal is to convert the string values into valid ENUM for the
       * AuthenticatorSelectionCriteria
       */
-    AuthenticatorSelectionCriteria optionsSelectionCriteria = resolveAuthenticatorSelectionCriteria(
-        request.getAuthenticatorSelection());
+      AuthenticatorSelectionCriteria optionsSelectionCriteria = resolveAuthenticatorSelectionCriteria(
+          request.getAuthenticatorSelection());
 
-    PublicKeyCredentialCreationOptions pkc = relyingPartyInstance.getRelyingParty()
-        .startRegistration(StartRegistrationOptions.builder()
-            .user(userIdentity)
-            .authenticatorSelection(optionsSelectionCriteria)
-            .timeout(180000) // 3 minutes
-            .build());
+      StartRegistrationOptionsBuilder regOptionsBuilder = StartRegistrationOptions.builder().user(userIdentity);
+      regOptionsBuilder.authenticatorSelection(optionsSelectionCriteria);
+      regOptionsBuilder.timeout(180000); // 3 minutes
+
+      /**
+       * If hints are present in the request, then add them to the Registration Options object
+      */
+      if (request.getHints().isPresent()) {
+        regOptionsBuilder.hints(request.getHints().get());
+      }
+
+      PublicKeyCredentialCreationOptions pkc = relyingPartyInstance.getRelyingParty()
+          .startRegistration(regOptionsBuilder.build());
 
     ByteArray requestId = generateRandomByteArray(32);
 

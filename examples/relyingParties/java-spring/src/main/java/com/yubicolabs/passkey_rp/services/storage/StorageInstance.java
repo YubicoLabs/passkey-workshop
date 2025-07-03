@@ -1,10 +1,6 @@
 package com.yubicolabs.passkey_rp.services.storage;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.yubicolabs.passkey_rp.interfaces.AdvancedProtectionStatusStorage;
 import com.yubicolabs.passkey_rp.interfaces.AssertionRequestStorage;
@@ -13,21 +9,8 @@ import com.yubicolabs.passkey_rp.interfaces.CredentialStorage;
 
 import lombok.Getter;
 
-@Component
-@Scope("singleton")
+@Service
 public class StorageInstance {
-
-  @Autowired
-  private AssertionRequestStorageFactoryBean assertionRequestStorageFactoryBean;
-
-  @Autowired
-  private AttestationRequestStorageFactoryBean attestationRequestStorageFactoryBean;
-
-  @Autowired
-  private CredentialRegistrationStorageFactoryBean credentialRegistrationStorageFactoryBean;
-
-  @Autowired
-  private AdvancedProtectionStatusStorageFactoryBean advancedProtectionStatusStorageFactoryBean;
 
   @Getter
   private AssertionRequestStorage assertionRequestStorage;
@@ -41,11 +24,12 @@ public class StorageInstance {
   @Getter
   private AdvancedProtectionStatusStorage advancedProtectionStatusStorage;
 
-  @PostConstruct
-  private void setStorageInstance() {
-    this.assertionRequestStorage = assertionRequestStorageFactoryBean.getObject();
-    this.attestationRequestStorage = attestationRequestStorageFactoryBean.getObject();
-    this.credentialStorage = credentialRegistrationStorageFactoryBean.getObject();
-    this.advancedProtectionStatusStorage = advancedProtectionStatusStorageFactoryBean.getObject();
+  public StorageInstance(AttestationRequestStorage attestationRequestStorage,
+      AssertionRequestStorage assertionRequestStorage, CredentialStorage credentialStorage,
+      AdvancedProtectionStatusStorage advancedProtectionStatusStorage) {
+    this.attestationRequestStorage = attestationRequestStorage;
+    this.assertionRequestStorage = assertionRequestStorage;
+    this.credentialStorage = credentialStorage;
+    this.advancedProtectionStatusStorage = advancedProtectionStatusStorage;
   }
 }

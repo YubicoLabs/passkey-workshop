@@ -1411,3 +1411,28 @@ h3 {
     order: 1;
   }
 }
+
+.passkey-info {
+  border: 1px solid #FFE8A3;
+  border-radius: 16px;
+  color: var(--text-text-1, #F2F0FF);
+  margin: 1em 0;
+  padding: 25px;
+}
+
+#modal_reg_second .modal-content {
+  width: 40em;
+}
+
+#modal_reg_second .modal-content .button_row {
+  justify-content: right;
+  width: 100%;
+}
+
+.button_row button {
+  width: auto;
+}
+
+.button_row .button_outlined {
+  margin-right: 2em;
+}

@@ -5,7 +5,6 @@
     <#elseif section = "form">
       <form id="register" action="${url.loginAction}" method="post">
         <div>
-          <input type="hidden" id="attestationResult_String" name="attestationResult_String" />
           <input type="hidden" id="username" name="username" />
           <input type="hidden" id="userHandle" name="userHandle" />
           <input type="hidden" id="action_type" name="action_type" />
@@ -39,7 +38,46 @@
             <button onclick="submitForm()" class="button_basic">Continue</button>
           </div>
         </div>
+      </div>
 
+      <div id="modal_reg_second" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <div class="row">
+            <svg xmlns="http://www.w3.org/2000/svg" width="73" height="72" viewBox="0 0 73 72" fill="none">
+              <g clip-path="url(#clip0_518_3955)">
+                <path d="M36.5 6C19.94 6 6.5 19.44 6.5 36C6.5 52.56 19.94 66 36.5 66C53.06 66 66.5 52.56 66.5 36C66.5 19.44 53.06 6 36.5 6ZM36.5 60C23.27 60 12.5 49.23 12.5 36C12.5 22.77 23.27 12 36.5 12C49.73 12 60.5 22.77 60.5 36C60.5 49.23 49.73 60 36.5 60ZM50.27 22.74L30.5 42.51L22.73 34.77L18.5 39L30.5 51L54.5 27L50.27 22.74Z" fill="#6EC500"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_518_3955">
+                  <rect width="72" height="72" fill="white" transform="translate(0.5)"/>
+                </clipPath>
+              </defs>
+            </svg>
+          </div>
+          <div class="row">
+            <div style="width: 100%">
+              <h3 style="margin-bottom: auto;">Successfully added!!</h3>
+            </div>
+            <div style="width: 100%; text-align: center;">
+              <span class="body_1_default">Your new passkey was added to your account and is ready to use.</span>
+            </div>
+          </div>
+           <div class="row">
+            <div style="width: 100%; text-align: center;" class="passkey-info">
+              <span class="body_1_default"><b>Only one passkey is registered.</b> For better convenience and smoother access across different platforms or devices, we suggest adding at least one more passkey.</span>
+            </div>
+          </div>
+           <div class="row">
+            <div style="width: 100%; text-align: center;">
+              <span class="body_1_default">Would you like to add another passkey?</span>
+            </div>
+          </div>
+          <div class="row button_row">
+            <button onclick="registerPasskey('', false)" class="button_outlined">Yes, add another</button>
+            <button onclick="submitForm()" class="button_basic">No. I'm done for now</button>
+          </div>
+        </div>
       </div>
 
       <div id="modal_error" class="modal">
@@ -68,28 +106,6 @@
       <div class="action register-passkey">
         <div class="header_login">
           <h2>Add a new passkey</h2>
-          <div class="collapsible collapse_div" onclick="triggerCollapse()">
-            <span class="body_2_default collapse_text">What is a passkey?</span> 
-            <svg id="collapse_arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M16.59 8.58984L12 13.1698L7.41 8.58984L6 9.99984L12 15.9998L18 9.99984L16.59 8.58984Z" fill="#F2F0FF"/>
-            </svg>
-          </div>
-          <div id="passkey_info" class="collapsible_content">
-            <div class="collapsible_content_inner">
-              <div class="collapsible_content_inner_item">
-                <span class="body_1_bold">Why should I use passkeys?</span>
-                <span class="body_1_default">With passkeys, you don't need to remember complex passwords.</span>
-              </div>
-              <div class="collapsible_content_inner_item">
-                <span class="body_1_bold">What are passkeys?</span>
-                <span class="body_1_default" >Passkeys are phishing-resistant digital keys you create using your fingerprint, face, screen lock, or security key.</span>            
-              </div>
-              <div class="collapsible_content_inner_item">
-                <span class="body_1_bold">Where are passkeys saved?</span>
-                <span class="body_1_default">Passkeys are saved to your personal devices, security keys, or password managers</span>              
-              </div>
-            </div>
-          </div> 
         </div>
           <div class="row" style="row-gap: 48px; width: 100%; justify-content: center;">
             <div class="col-sm-12 col-md-5">
@@ -112,7 +128,7 @@
                       <li>Begin using your new account!</li>
                     </ol>
                   </div>
-                  <button class="button_secondary" onclick="registerPasskey('platform')">REGISTER WITH BIOMETRICS</button>
+                  <button class="button_secondary" onclick="registerPasskey('platform', true)">REGISTER WITH BIOMETRICS</button>
                 </div>
               </div>  
             </div>
@@ -140,16 +156,16 @@
                       <li>Begin using your new account!</li>
                     </ol>
                   </div>
-                  <button class="button_secondary" onclick="registerPasskey('cross-platform')">REGISTER WITH SECURITY KEY</button>
+                  <button class="button_secondary" onclick="registerPasskey('cross-platform', true)">REGISTER WITH SECURITY KEY</button>
                 </div>
               </div>
             </div>
           </div> 
       </div>
 
-      <script type="text/javascript" src="${url.resourcesCommonPath}/node_modules/jquery/dist/jquery.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
       <script type="text/javascript">
-
+      
         function submitForm() {
             $("#register").submit();
         };
@@ -225,9 +241,18 @@
         }
 
 
-        async function registerPasskey(authenticatorAttachment) {
+        async function registerPasskey(authenticatorAttachment, firstPasskeyFlow) {
           try {
+            /** Create a string array for hints based on the authenticatorAttachment parameter */
 
+            let hinstSelection;
+            if(authenticatorAttachment === "cross-platform") {
+              hinstSelection = ["security-key"];
+            } else if(authenticatorAttachment === "platform") {
+              hinstSelection = ["client-device"];
+            } else {
+              hinstSelection = [];
+            }
             const request = {
               "method": "POST",
               "headers": {
@@ -242,7 +267,8 @@
                   authenticatorAttachment: authenticatorAttachment,
                   userVerification: "required"
                 },
-                attestation: "direct"
+                attestation: "direct",
+                hints: hinstSelection
               })
             }
 
@@ -263,6 +289,12 @@
             attestationOptions.publicKey.user.id = base64urlToBuffer(
               attestationOptions.publicKey.user.id
             );
+
+            if(attestationOptions.publicKey.excludeCredentials.length === 1) {
+              attestationOptions.publicKey.excludeCredentials[0].id = base64urlToBuffer(
+              attestationOptions.publicKey.excludeCredentials[0].id
+            );
+            }
 
             const makeCredential = await navigator.credentials.create(
               attestationOptions
@@ -286,20 +318,41 @@
 
             console.log(makeCredentialResult_base64url);
 
-            $("#attestationResult_String").val(JSON.stringify({
-                requestId: attestationOptions.requestId,
-                makeCredentialResult: makeCredentialResult_base64url
-              })
-            );
+            const request_result = {
+              "method": "POST",
+              "headers": {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+              },
+              "body": JSON.stringify({
+                  requestId: attestationOptions.requestId,
+                  makeCredentialResult: makeCredentialResult_base64url
+                })
+            };
 
-            $("#username").val("${username}");
-            $("#userHandle").val(userHandle);
-            $("#action_type").val("${action_type}");
+            const url_result = "${webauthnAPI}" + "/attestation/result";
 
-            modalOpen("modal_success");
+            const response_result = await fetch(url_result, request_result);
+            const attestationResult = await response_result.json();
+
+            console.log("Credential was: " + attestationResult.status);
+
+
+            if(firstPasskeyFlow) {
+              $("#username").val("${username}");
+              $("#userHandle").val(userHandle);
+              $("#action_type").val("${action_type}");
+              modalOpen("modal_reg_second");
+            } else {
+              modalClose("modal_reg_second");
+              modalOpen("modal_success");
+            }
+
 
           } catch(e) {
             console.error(e);
+            modalClose("modal_success");
+            modalClose("modal_reg_second");
             modalOpen("modal_error");
             $("error").val(e);
             //$("register").submit();

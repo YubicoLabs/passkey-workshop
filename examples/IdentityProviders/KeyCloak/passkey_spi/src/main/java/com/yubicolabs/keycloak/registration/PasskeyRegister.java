@@ -11,6 +11,8 @@ import org.keycloak.models.UserModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yubicolabs.keycloak.Utils.SpiUtils;
 import com.yubicolabs.keycloak.models.AttestationResponse;
+import com.yubicolabs.keycloak.models.CredentialResponse;
+import com.yubicolabs.keycloak.models.CredentialResponseInner;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,9 +20,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Optional;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HTTP;
@@ -100,49 +103,42 @@ public class PasskeyRegister implements Authenticator {
       }
     } else if (actionType.equals("PASSKEY_CREATE")) {
       try {
-        String formResult = getFormResult(context);
+        // Pull all of the credentials from the new user, and see if any of them were
+        // high assurance
+        String chosenUsername = getUsername(context);
 
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(webauthnAPIurl + "/attestation/result"))
+            .uri(URI.create(webauthnAPIurl + "/user/credentials/" + chosenUsername))
             .header(HTTP.CONTENT_TYPE, "application/json")
             .header("accept", "application/json")
-            .POST(BodyPublishers.ofString(formResult))
+            .GET()
             .build();
 
         HttpResponse<String> response = HttpClient.newBuilder().build().send(request,
             BodyHandlers.ofString());
 
         if (response.statusCode() == HttpStatus.SC_OK) {
-          String chosenUsername = getUsername(context);
-          String userHandle = getUserHandle(context);
 
-          UserModel um = context.getSession().users().addUser(context.getRealm(), userHandle, chosenUsername, false,
-              false);
+          CredentialResponse credentialResponse = mapper.readValue(response.body(), CredentialResponse.class);
 
-          um.setEnabled(true);
-          context.setUser(um);
+          if (credentialResponse.getCredentials().size() > 0) {
+            String userHandle = getUserHandle(context);
 
-          AttestationResponse attestationResponse = mapper.readValue(response.body(), AttestationResponse.class);
+            UserModel um = context.getSession().users().addUser(context.getRealm(), userHandle, chosenUsername, false,
+                false);
 
-          AcrStore acrStore = new AcrStore(context.getAuthenticationSession());
-          acrStore.setLevelAuthenticated(attestationResponse.getCredential().isHighAssurance() ? 2 : 1);
+            um.setEnabled(true);
+            context.setUser(um);
 
-          /**
-           * At this stage is when we need to create the bank account on behalf of the
-           * user
-           * 
-           * Generate an access token that can be used by Keycloak to call to the bank API
-           * Call to the bank API
-           * Confirm success, and report an error if something happened
-           */
+            Optional<CredentialResponseInner> haCred = credentialResponse.getCredentials().stream()
+                .filter(cred -> cred.isHighAssurance()).findFirst();
+            AcrStore acrStore = new AcrStore(context.getSession(), context.getAuthenticationSession());
+            acrStore.setLevelAuthenticated(haCred.isPresent() ? 2 : 1);
 
-          /**
-           * System.out.println("---------------Token call---------------");
-           * String brandNewToken = spiUtils.getAccessToken(context, um);
-           * System.out.println(brandNewToken);
-           */
-
-          context.success();
+            context.success();
+          } else {
+            throw new Exception("User does not have any registered credentials");
+          }
         } else {
           throw new Exception("The HTTP call did not return 200: " + response.body());
         }
@@ -194,6 +190,12 @@ public class PasskeyRegister implements Authenticator {
   private String getFormResult(AuthenticationFlowContext context) {
     MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
     String secret = formData.getFirst("attestationResult_String");
+    return secret;
+  }
+
+  private String getFormResult2(AuthenticationFlowContext context) {
+    MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
+    String secret = formData.getFirst("attestationResult2_String");
     return secret;
   }
 

@@ -1,7 +1,6 @@
 package com.yubicolabs.keycloak.registration;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.keycloak.provider.ProviderConfigProperty.STRING_TYPE;
@@ -10,13 +9,10 @@ import org.jboss.logging.Logger;
 import org.keycloak.Config.Scope;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
-import org.keycloak.authentication.RequiredActionFactory;
-import org.keycloak.authentication.RequiredActionProvider;
 import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
-import org.keycloak.provider.EnvironmentDependentProviderFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
 public class PasskeyRegisterFactory implements AuthenticatorFactory {
@@ -94,11 +90,10 @@ public class PasskeyRegisterFactory implements AuthenticatorFactory {
     name.setHelpText("Register a new user with a passkey");
 
     ProviderConfigProperty p = new ProviderConfigProperty(
-      CONFIG_WEBAUTHN_API_URL, 
-      "WebAuthn API URL",
-      "URL of the webauthn API", 
-      STRING_TYPE, PasskeyRegister.DEFAULT_WEBAUTHN_API_URL
-    );
+        CONFIG_WEBAUTHN_API_URL,
+        "WebAuthn API URL",
+        "URL of the webauthn API",
+        STRING_TYPE, PasskeyRegister.DEFAULT_WEBAUTHN_API_URL);
 
     return Arrays.asList(name, p);
 

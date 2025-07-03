@@ -8,11 +8,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.UserIdentity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Builder
+@AllArgsConstructor
 public class CredentialRegistration {
   @Getter
   UserIdentity userIdentity;

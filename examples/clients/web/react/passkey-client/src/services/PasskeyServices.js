@@ -10,17 +10,17 @@ const PasskeyServices = {
 
 const baseURL = process.env.REACT_APP_RP_API || "http://localhost:8080/v1";
 
-async function getAttestationOptions(username, residentKeyReq, authAttachment, uvReq, attestation) {
+async function getAttestationOptions(username) {
   try {
     const reqData = {
       userName: username,
       displayName: username,
       authenticatorSelection: {
-        residentKey: residentKeyReq,
-        authenticatorAttachment: authAttachment,
-        userVerification: uvReq
+        residentKey: "preferred",
+        authenticatorAttachment: "",
+        userVerification: "preferred"
       },
-      attestation: attestation
+      attestation: "direct"
     };
 
     const requestOptions = {
@@ -32,7 +32,12 @@ async function getAttestationOptions(username, residentKeyReq, authAttachment, u
     };
 
     const response = await fetch(`${baseURL}/attestation/options`, requestOptions);
+
     const responseJSON = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
 
     console.info("Printing registration options");
     console.info(responseJSON);
@@ -63,6 +68,10 @@ async function sendAttestationResult(requestID, makeCredentialResponse) {
     const response = await fetch(`${baseURL}/attestation/result`, requestOptions);
     const responseJSON = await response.json();
 
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
+
     console.info("Printing registration result");
     console.info(responseJSON);
 
@@ -91,6 +100,10 @@ async function getAssertionOptions(username) {
 
     const response = await fetch(`${baseURL}/assertion/options`, requestOptions);
     const responseJSON = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
 
     console.info("Printing authentication options");
     console.info(responseJSON);
@@ -122,6 +135,10 @@ async function sendAssertionResult(requestID, assertionResult) {
     const response = await fetch(`${baseURL}/assertion/result`, requestOptions);
     const responseJSON = await response.json();
 
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
+
     console.info("Printing authentication result");
     console.info(responseJSON);
 
@@ -144,6 +161,9 @@ async function getCredentials(username) {
     }
 
     const response = await fetch(`${baseURL}/user/credentials/${username}`, requestOptions);
+    if(response.status !== 200) {
+      throw Error("User not found")
+    }
     const responseJSON = await response.json();
 
     console.info(`Printing credentials list for ${username}`);
@@ -177,6 +197,10 @@ async function deleteCredential(credentialId) {
     const response = await fetch(`${baseURL}/user/credentials`, requestOptions);
     const responseJSON = await response.json();
 
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
+
     return responseJSON;
 
   } catch (e) {
@@ -205,6 +229,10 @@ async function updateCredential(credentialId, newNickname) {
 
     const response = await fetch(`${baseURL}/user/credentials`, requestOptions);
     const responseJSON = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(responseJSON.errorMessage);
+    }
 
     return responseJSON;
 

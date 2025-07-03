@@ -1,6 +1,10 @@
-FROM eclipse-temurin
-#COPY com.yubicolabs.passkey_rp.jar com.yubicolabs.passkey_rp.jar
-COPY /source /source
-RUN apt-get update; apt-get install -y maven; mvn -f /source/pom.xml clean package
-#ENTRYPOINT ["cd", "source", "&&", "mvn", "clean", "package"]
-ENTRYPOINT ["java", "-jar", "/source/target/com.yubicolabs.passkey_rp.jar"]
+FROM eclipse-temurin:21
+
+WORKDIR /app
+COPY source .
+
+RUN ./mvnw --batch-mode --update-snapshots package
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "/app/target/com.yubicolabs.passkey_rp.jar"]

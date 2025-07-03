@@ -16,7 +16,6 @@ import javax.annotation.Generated;
  */
 
 @JsonTypeName("UserCredentialsResponse_credentials_inner")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-01-31T11:58:50.125043-06:00[America/Chicago]")
 @Builder
 public class UserCredentialsResponseCredentialsInner {
 
@@ -30,12 +29,10 @@ public class UserCredentialsResponseCredentialsInner {
   private String nickName;
 
   @JsonProperty("registrationTime")
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private OffsetDateTime registrationTime;
+  private long registrationTime;
 
   @JsonProperty("lastUsedTime")
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private OffsetDateTime lastUsedTime;
+  private long lastUsedTime;
 
   public UserCredentialsResponseCredentialsInner id(String id) {
     this.id = id;
@@ -106,7 +103,7 @@ public class UserCredentialsResponseCredentialsInner {
     this.nickName = nickName;
   }
 
-  public UserCredentialsResponseCredentialsInner registrationTime(OffsetDateTime registrationTime) {
+  public UserCredentialsResponseCredentialsInner registrationTime(long registrationTime) {
     this.registrationTime = registrationTime;
     return this;
   }
@@ -118,15 +115,15 @@ public class UserCredentialsResponseCredentialsInner {
    */
   @Valid
   @Schema(name = "registrationTime", example = "2022-07-21T17:32:28Z", required = false)
-  public OffsetDateTime getRegistrationTime() {
+  public long getRegistrationTime() {
     return registrationTime;
   }
 
-  public void setRegistrationTime(OffsetDateTime registrationTime) {
+  public void setRegistrationTime(long registrationTime) {
     this.registrationTime = registrationTime;
   }
 
-  public UserCredentialsResponseCredentialsInner lastUsedTime(OffsetDateTime lastUsedTime) {
+  public UserCredentialsResponseCredentialsInner lastUsedTime(long lastUsedTime) {
     this.lastUsedTime = lastUsedTime;
     return this;
   }
@@ -138,11 +135,11 @@ public class UserCredentialsResponseCredentialsInner {
    */
   @Valid
   @Schema(name = "lastUsedTime", example = "2022-07-21T18:15:06Z", required = false)
-  public OffsetDateTime getLastUsedTime() {
+  public long getLastUsedTime() {
     return lastUsedTime;
   }
 
-  public void setLastUsedTime(OffsetDateTime lastUsedTime) {
+  public void setLastUsedTime(long lastUsedTime) {
     this.lastUsedTime = lastUsedTime;
   }
 
