@@ -31,8 +31,7 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 	  N=$(echo $DEVELOPMENT_TEAM | wc -w)
 	  if [[ $N -lt 1 ]] ; then
 	    echo Cannot find a DEVELOPMENT_TEAM
-	    echo "Please edit your .env file and fill in your DEVELOPMENT_TEAM"
-	    exit
+	    echo "Please edit your .env file and fill in your DEVELOPMENT_TEAM, if you want to build the iOS examples."
 	  fi
 	  if [[ $N -gt 1 ]] ; then
 	    echo You have more than one Team ID
@@ -49,7 +48,7 @@ fi
 
 # stop and remove any running containers as they may need to be restarted
 echo "### removing any running containers"
-docker compose stop
+docker compose stop || { echo "$(tput bold)Please start a docker machine.$(tput sgr0)"; exit; }
 docker compose rm
 
 # copy sources so they can be copied into docker images
@@ -124,13 +123,16 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 		-e "s#^API_BASE_URI[= ].*#API_BASE_URI = $HOST-8080.$REGION#" \
 		-e "s#^RP_ID[= ].*#RP_ID = $hostname#" \
 		../examples/clients/mobile/iOS/PawsKey/Constants.xcconfig
+	sed -i '' \
+		-e "s#^API_BASE_URI[=].*#API_BASE_URI=$HOST-8080.$REGION#" \
+		-e "s#^RELYING_PARTY_ID[=].*#RELYING_PARTY_ID=$hostname#" \
+    ../examples/clients/mobile/android/PawsKey/gradle.properties
 
 	echo "### editing iOS BankApp sources"
 	sed -i '' \
 		-e "s#^BANK_AUTH_DOMAIN[= ].*#BANK_AUTH_DOMAIN = $HOST-8081.$REGION#" \
 		-e "s#^BANK_API_DOMAIN[= ].*#BANK_API_DOMAIN = $HOST-8082.$REGION#" \
 		../examples/clients/mobile/iOS/PKBank/Constants.xcconfig
-
 
 	# TODO: instead of editing source files, make endpoints configurable
 	sed -i '' "s#http://host.docker.internal#https://$hostname#;s#http://localhost#https://$hostname#" keycloak/source/src/main/java/com/yubicolabs/PasskeyAuthenticator/PasskeyAuthenticator.java
@@ -153,11 +155,50 @@ if [ "$DEPLOYMENT_ENVIRONMENT" == "devtunnel" ]; then
 		echo
 	fi
 
-	echo "### starting devtunnel. Type ^C to stop the tunnel and take down all containers"
-	devtunnel host $TUNNELID > /dev/null
+  if (echo $DEPLOYMENT_CLIENTS | tr ',' '\n' | grep -Fqx android); then
+    echo "### building android examples"
 
-	docker compose down
-	exit
+    if pushd ../examples/clients/mobile/android/PawsKey/  > /dev/null; then
+      if [[ $(command -v adb) ]]; then
+        ADB="adb"
+      elif [[ -e ${ANDROID_HOME}/platform-tools/adb ]]; then
+        ADB="${ANDROID_HOME}/platform-tools/adb"
+      else
+        ADB=""
+      fi
+
+      if [[ -n ${ADB} ]] && [[ $(${ADB} devices | wc -l) -gt 2 ]]; then
+        echo found a connected phone, installing app
+        ./gradlew installDebug
+
+        echo your android application is deployed to
+        echo
+        echo "$(tput bold) a connected phone $(tput sgr0)"
+        echo
+
+       ${ADB} -d shell am start -n io.yubicolabs.pawskey/io.yubicolabs.pawskey.MainActivity || { echo "Android app could not be launched. See above for details."; }
+
+      else
+        echo no phone found, building app without installing
+        ./gradlew assembleDebug
+
+        echo your android application ia deployed here:
+        echo
+        echo "$(tput bold) ../examples/clients/mobile/android/PawsKey/app/build/outputs/apk/debug/app-debug.apk $(tput sgr0)"
+        echo
+      fi
+
+      popd > /dev/null
+    else
+      echo android example folder not found.
+    fi
+  fi
+
+  echo "### starting devtunnel. Type ^C to stop the tunnel and take down all containers"
+  devtunnel host $TUNNELID > /dev/null
+
+  docker compose down
+  exit
 fi
 
 # default is deploy on localhost
