@@ -64,8 +64,9 @@ export default function CredentialCard({ credential, refreshCallback }) {
     setUpdateNickname(e.target.value);
   };
 
-  const onEnterKeyUp = async (e) => {
+  const onEnterKeyDown = async (e) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       await updateButton();
     }
   };
@@ -103,7 +104,7 @@ export default function CredentialCard({ credential, refreshCallback }) {
                         type="text"
                         value={updateNickname}
                         onChange={usernameOnChange}
-                        onKeyUp={onEnterKeyUp}></Form.Control>
+                        onKeyDown={onEnterKeyDown}></Form.Control>
                     </Form.Group>
                   </Form>
                 ) : (
