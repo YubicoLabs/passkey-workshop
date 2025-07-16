@@ -186,6 +186,9 @@ function App() {
               value={username}
               placeholder={username}
               onChange={onUsernameChange}
+              onKeyDown={(e) => {
+                e.key === 'Enter' && e.preventDefault();
+              }}
               autoComplete="username webauthn"
             />
           </Form>
@@ -221,7 +224,11 @@ function App() {
                   <h5>Credential list</h5>
                   <div className="card-list">
                     {credentialList.map((item) => (
-                      <CredentialCard key={item.id} credential={item} />
+                      <CredentialCard
+                        key={item.id}
+                        credential={item}
+                        refreshCallback={getCredentials}
+                      />
                     ))}
                   </div>
                 </div>
