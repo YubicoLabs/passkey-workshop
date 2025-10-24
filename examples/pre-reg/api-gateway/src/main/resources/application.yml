@@ -1,0 +1,88 @@
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.server: DEBUG
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        # Get shipment by ID
+        - id: shipment-proxy
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/shipments/{shipmentId}
+          filters:
+            - SetRequestHeader=X-Api-Key, my-secret-key
+            - RewritePath=/api/shipments/(?<segment>.*),/v1/fpr/shipments/${segment}
+            - AddResponseHeader=X-Gateway-Transformed, true
+
+        # Create a new FIDO pre-registration shipment
+        - id: create-shipment
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/shipments
+          filters:
+            - SetRequestHeader=X-Api-Key, my-secret-key
+            - RewritePath=/api/shipments,/v1/fpr/shipments
+            - AddResponseHeader=X-Gateway-Transformed, true
+
+        # Get credential request by ID
+        - id: credential-request-get
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/credential-requests/{credentialRequestId}
+          filters:
+            - SetRequestHeader=X-Api-Key, my-secret-key
+            - RewritePath=/api/credential-requests/(?<segment>.*),/v1/credential-requests/${segment}
+            - AddResponseHeader=X-Gateway-Transformed, true
+
+        # Create a new credential request
+        - id: credential-request-create
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/credential-requests
+          filters:
+            - SetRequestHeader=X-Api-Key, my-secret-key
+            - RewritePath=/api/credential-requests,/v1/credential-requests
+            - AddResponseHeader=X-Gateway-Transformed, true
+
+        # Process credential request activation
+        - id: credential-request-activation
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/credential-requests/process-activation
+          filters:
+            - SetRequestHeader=X-Api-Key, my-secret-key
+            - RewritePath=/api/credential-requests/process-activation,/v1/credential-requests/process-activation
+            - AddResponseHeader=X-Gateway-Transformed, true
+
+        # Process active shipments
+        - id: process-shipments
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/operations/process-shipments
+          filters:
+            - SetRequestHeader=X-Api-Key, my-secret-key
+            - RewritePath=/api/operations/process-shipments,/v1/operations/process-shipments
+            - AddResponseHeader=X-Gateway-Transformed, true
+
+        # Resend PIN for a completed shipment
+        - id: resend-pin
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/operations/resend-pin/{shipmentId}
+          filters:
+            - SetRequestHeader=X-Api-Key, my-secret-key
+            - RewritePath=/api/operations/resend-pin/(?<segment>.*),/v1/operations/resend-pin/${segment}
+            - AddResponseHeader=X-Gateway-Transformed, true
+
+        # Application status
+        - id: status
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/status
+          filters:
+            - SetRequestHeader=X-Api-Key, my-secret-key
+            - RewritePath=/api/status,/v1/status
+            - AddResponseHeader=X-Gateway-Transformed, true
