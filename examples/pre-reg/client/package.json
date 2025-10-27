@@ -1,39 +1,109 @@
 {
-  "name": "client",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
-  },
+  "name": "yubikey-launchpad",
+  "version": "1.0.0",
+  "description": "YubiKey LaunchPad - Secure, embeddable platform for ordering pre-registered YubiKeys",
+  "type": "module",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type-check": "tsc --noEmit"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    },
+    "./components": {
+      "import": "./dist/components/index.es.js"
+    },
+    "./types": {
+      "import": "./dist/types/index.d.ts"
+    }
+  },
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.2",
+    "@mui/material": "^7.3.2",
+    "@tanstack/react-query": "^5.87.4",
+    "@tanstack/react-query-devtools": "^5.87.4",
+    "axios": "^1.12.1",
+    "dompurify": "^3.0.11",
+    "i18next": "^25.5.2",
+    "lucide-react": "^0.300.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^15.7.3",
+    "react-router-dom": "^7.9.1",
+    "zod": "^4.1.8"
+  },
+  "devDependencies": {
+    "@emotion/babel-plugin": "^11.11.0",
+    "@eslint/js": "^9.33.0",
+    "@playwright/test": "^1.55.0",
+    "@storybook/addon-links": "^9.1.5",
+    "@storybook/addon-vitest": "^9.1.5",
+    "@storybook/react": "^9.1.5",
+    "@storybook/react-vite": "^9.1.5",
+    "@storybook/test-runner": "^0.23.0",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/dompurify": "^3.0.5",
+    "@types/node": "^24.3.2",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.0",
+    "@vitest/browser": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "jsdom": "^26.1.0",
+    "msw": "^2.11.2",
+    "msw-storybook-addon": "^2.0.5",
+    "snyk": "^1.1287.0",
+    "storybook": "^9.1.5",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.39.1",
+    "vite": "^7.1.2",
+    "vitest": "^3.2.4"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "keywords": [
+    "yubikey",
+    "fido2",
+    "webauthn",
+    "security",
+    "authentication",
+    "react",
+    "typescript"
+  ],
+  "author": "Yubico",
+  "license": "MIT"
 }
