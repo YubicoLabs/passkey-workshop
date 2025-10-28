@@ -4,7 +4,6 @@ import {
   TextField,
   Button,
   Typography,
-  Grid,
   MenuItem,
   Alert,
   CircularProgress,
@@ -14,16 +13,40 @@ import {
   Collapse,
 } from '@mui/material';
 import { ChevronDown, ChevronUp, Check, X } from 'lucide-react';
-import { Address, Country } from '@/types/api';
+import Grid from '@mui/material/Grid';
+import { Address} from '@/types/api';
+
+interface DeliveryType {
+  value: number;
+  name: string;
+}
+
+interface Country {
+  country_id: number;
+  country_name: string;
+  country_code_2: string;
+  country_code_3: string;
+  country_vat_rate: number;
+  delivery_types: DeliveryType[];
+  states?: { code: string; name: string }[];
+}
+
+interface CountriesResponse {
+  count: number;
+  total_count: number;
+  countries: Country[];
+}
+
+export type { CountriesResponse };
 import { useQuery } from '@tanstack/react-query';
 
 interface AddressFormProps {
   address: Address | null;
   onAddressChange: (address: Address) => void;
-  onValidate: (address: Address) => Promise<{ validated: boolean; errors?: string[] }>;
+  onValidate: (address: Address) => Promise<{ validated: boolean; errors?: string[]; suggestedAddress?: any }>;
   onNext: () => void;
   onBack: () => void;
-  getCountries: () => Promise<Country[]>;
+  getCountries: () => Promise<CountriesResponse>;
 }
 
 export const AddressForm: React.FC<AddressFormProps> = ({
@@ -53,21 +76,23 @@ export const AddressForm: React.FC<AddressFormProps> = ({
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const { data: countries = [], isLoading: countriesLoading } = useQuery({
+  const { data: countriesData = undefined, isLoading: countriesLoading } = useQuery<CountriesResponse>({
     queryKey: ['countries'],
     queryFn: getCountries,
   });
+  const countries: Country[] = countriesData?.countries ?? [];
 
   // Set default country once countries are loaded
   useEffect(() => {
     if (countries.length > 0 && !formData.country) {
-      const defaultCountry = countries.find(c => c.code === 'US') || countries[0];
-      setFormData(prev => ({ ...prev, country: defaultCountry.code }));
-      onAddressChange({ ...formData, country: defaultCountry.code });
+      const defaultCountry = countries.find(c => c.country_code_2 === 'US') || countries[0];
+      setFormData(prev => ({ ...prev, country: defaultCountry.country_code_2 }));
+      onAddressChange({ ...formData, country: defaultCountry.country_code_2 });
     }
   }, [countries]);
 
-  const selectedCountry = countries.find(c => c.code === formData.country);
+  const selectedCountry = countries.find(c => c.country_code_2 === formData.country);
+  // If you have states in the API, map them here. Otherwise, keep as empty array.
   const states = selectedCountry?.states || [];
 
   const handleFieldChange = (field: keyof Address) => (
@@ -391,8 +416,8 @@ export const AddressForm: React.FC<AddressFormProps> = ({
               helperText={fieldErrors.country || (formData.country === 'US' ? 'United States format expected' : formData.country === 'CA' ? 'Canadian format expected' : '')}
             >
               {countries.map((country) => (
-                <MenuItem key={country.code} value={country.code}>
-                  {country.name}
+                <MenuItem key={country.country_code_2} value={country.country_code_2}>
+                  {country.country_name}
                 </MenuItem>
               ))}
             </TextField>

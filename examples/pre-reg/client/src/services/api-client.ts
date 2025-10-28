@@ -14,6 +14,7 @@ import {
   ShipmentSchema,
   ShipmentListResponseSchema,
 } from '@/types/api';
+import type { CountriesResponse } from '../components/order-flow/AddressForm';
 
 export interface ApiClientConfig {
   baseURL: string;
@@ -109,17 +110,33 @@ export class YubiKeyApiClient {
   // Address endpoints
   async validateAddress(request: ValidateAddressRequest): Promise<ValidateAddressResponse> {
     const response = await this.client.post('/addresses/validate', request);
-    return ValidateAddressResponseSchema.parse(response.data);
+    const deliverable = response.data && response.data.status === 'Deliverable address' && (!response.data.errors || response.data.errors.length === 0);
+    return {
+      validated: deliverable,
+      errors: response.data.errors ? response.data.errors.map((e: any) => e.message || JSON.stringify(e)) : [],
+      suggestedAddress: response.data.address,
+    };
   }
 
   // Countries endpoint
-  async getCountries(): Promise<Country[]> {
+  async getCountries(): Promise<CountriesResponse> {
     const response = await this.client.get('/countries');
-    // Handle array response
-    if (Array.isArray(response.data)) {
-      return response.data.map((item: any) => CountrySchema.parse(item));
+    if (response.data && Array.isArray(response.data.countries)) {
+      return {
+        count: response.data.count,
+        total_count: response.data.total_count,
+        countries: response.data.countries.map((item: any) => ({
+          country_id: item.country_id,
+          country_name: item.country_name,
+          country_code_2: item.country_code_2,
+          country_code_3: item.country_code_3,
+          country_vat_rate: item.country_vat_rate,
+          delivery_types: item.delivery_types,
+          states: item.states ?? [],
+        })),
+      };
     }
-    return [];
+    return { count: 0, total_count: 0, countries: [] };
   }
 
   async getCountry(countryCode: string): Promise<Country> {
@@ -175,7 +192,7 @@ export class YubiKeyApiClient {
 // Factory function for creating API client
 export const createApiClient = (config: Partial<ApiClientConfig> = {}): YubiKeyApiClient => {
   const defaultConfig: ApiClientConfig = {
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
     ...config,
   };
   

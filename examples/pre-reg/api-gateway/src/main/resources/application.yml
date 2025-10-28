@@ -6,7 +6,42 @@ logging:
 spring:
   cloud:
     gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/api/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+              - Accept
+            allowCredentials: true
       routes:
+        # Address validation
+        - id: validate-address
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/validate-address
+          filters:
+            - SetRequestHeader=X-Api-Key, my-secret-key
+            - RewritePath=/api/validate-address,/v1/validate-address
+            - AddResponseHeader=X-Gateway-Transformed, true
+        # Get countries list
+        - id: countries-list
+          uri: https://iap-piercer.graywave-eec1246c.westus2.azurecontainerapps.io
+          predicates:
+            - Path=/api/countries
+          filters:
+            - SetRequestHeader=Authorization, Bearer my-secret-key
+            - RewritePath=/api/countries,/v1/countries
+            - AddResponseHeader=X-Gateway-Transformed, true
         # Get shipment by ID
         - id: shipment-proxy
           uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}

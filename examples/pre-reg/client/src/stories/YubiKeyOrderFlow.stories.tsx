@@ -25,7 +25,7 @@ const meta = {
     ),
   ],
   args: {
-    apiClient: createApiClient({ baseURL: '/api' }),
+    apiClient: createApiClient({ baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api' }),
     userEmail: 'demo@example.com',
   },
 } satisfies Meta<typeof YubiKeyOrderFlow>;
