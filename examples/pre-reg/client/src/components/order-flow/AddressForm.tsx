@@ -14,30 +14,8 @@ import {
 } from '@mui/material';
 import { ChevronDown, ChevronUp, Check, X } from 'lucide-react';
 import Grid from '@mui/material/Grid';
-import { Address} from '@/types/api';
+import { Address, Country, CountriesResponse, DeliveryType } from '@/types/api';
 
-interface DeliveryType {
-  value: number;
-  name: string;
-}
-
-interface Country {
-  country_id: number;
-  country_name: string;
-  country_code_2: string;
-  country_code_3: string;
-  country_vat_rate: number;
-  delivery_types: DeliveryType[];
-  states?: { code: string; name: string }[];
-}
-
-interface CountriesResponse {
-  count: number;
-  total_count: number;
-  countries: Country[];
-}
-
-export type { CountriesResponse };
 import { useQuery } from '@tanstack/react-query';
 
 interface AddressFormProps {

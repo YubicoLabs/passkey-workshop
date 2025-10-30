@@ -157,14 +157,52 @@ export const ValidateAddressResponseSchema = z.object({
   errors: z.array(z.string()).optional(),
 });
 
+
 // Country schema
-export const CountrySchema = z.object({
-  code: z.string().length(2),
+export const DeliveryTypeSchema = z.object({
+  value: z.number(),
   name: z.string(),
-  states: z.array(z.object({
-    code: z.string(),
-    name: z.string(),
-  })).optional(),
+});
+
+export const CountryApiSchema = z.object({
+  country_id: z.number(),
+  country_name: z.string(),
+  country_code_2: z.string().length(2),
+  country_code_3: z.string().length(3),
+  country_vat_rate: z.number(),
+  delivery_types: z.array(DeliveryTypeSchema),
+  states: z.array(z.object({ code: z.string(), name: z.string() })).optional(),
+});
+
+export const CountriesResponseSchema = z.object({
+  count: z.number(),
+  total_count: z.number(),
+  countries: z.array(CountryApiSchema),
+});
+
+// Validate API Schema
+export const ApiValidateAddressRequestSchema = z.object({
+  street_line1: z.string().max(60),
+  street_line2: z.string().max(60).optional(),
+  street_line3: z.string().max(60).optional(), // deprecated but may still be in response
+  city: z.string().max(60),
+  postal_code: z.string().max(50),
+  region: z.string().max(50).optional(), // Required for US/CA
+  country_code_2: z.string().length(2)
+});
+
+export const ApiValidateAddressResponseSchema = z.object({
+  status: z.string(),
+  details: z.array(z.any()).optional(), // Array of error details
+  address: z.object({
+    street_line1: z.string(),
+    street_line2: z.string().optional(),
+    street_line3: z.string().optional(),
+    city: z.string(),
+    postal_code: z.string(),
+    region: z.string().optional(),
+    country_code_2: z.string()
+  }).optional()
 });
 
 // Shipment schemas
@@ -207,10 +245,15 @@ export type SelectedProduct = z.infer<typeof SelectedProductSchema>;
 export type Address = z.infer<typeof AddressSchema>;
 export type ValidateAddressRequest = z.infer<typeof ValidateAddressRequestSchema>;
 export type ValidateAddressResponse = z.infer<typeof ValidateAddressResponseSchema>;
-export type Country = z.infer<typeof CountrySchema>;
+export type Country = z.infer<typeof CountryApiSchema>;
 export type CreateShipmentRequest = z.infer<typeof CreateShipmentRequestSchema>;
 export type Shipment = z.infer<typeof ShipmentSchema>;
 export type ShipmentListResponse = z.infer<typeof ShipmentListResponseSchema>;
+export type DeliveryType = z.infer<typeof DeliveryTypeSchema>;
+export type CountriesResponse = z.infer<typeof CountriesResponseSchema>;
+export type ApiValidateAddressRequest = z.infer<typeof ApiValidateAddressRequestSchema>;
+export type ApiValidateAddressResponse = z.infer<typeof ApiValidateAddressResponseSchema>;
+
 
 // Order flow state
 export interface OrderFlowState {
