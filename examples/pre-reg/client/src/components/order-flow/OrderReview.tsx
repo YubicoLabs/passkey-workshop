@@ -11,7 +11,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Paper,
   Chip,
 } from '@mui/material';
 import { Key as KeyIcon, MapPin, User, Phone } from 'lucide-react';

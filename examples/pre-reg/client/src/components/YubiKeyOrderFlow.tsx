@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  Box, 
   Container, 
   Paper,
 } from '@mui/material';
@@ -13,6 +12,8 @@ import {
   Product, 
   SelectedProduct, 
   Address, 
+  Shipment,
+  Shipment2,
   ShipmentRequest,
 } from '@/types/api';
 import { YubiKeyApiClient } from '@/services/api-client';
@@ -21,7 +22,7 @@ import ErrorBoundary from './common/ErrorBoundary';
 export interface YubiKeyOrderFlowProps {
   apiClient: YubiKeyApiClient;
   userEmail?: string;
-  onComplete?: (shipment: Shipment) => void;
+  onComplete?: (shipment: Shipment2) => void;
   onCancel?: () => void;
   locale?: string;
   translations?: Record<string, string>;
@@ -88,7 +89,7 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
   const [currentStep, setCurrentStep] = useState<OrderStep>('products');
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
-  const [shipment, setShipment] = useState<Shipment | null>(null);
+  const [shipment, setShipment] = useState<Shipment2 | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleProductsChange = (products: SelectedProduct[]) => {
@@ -137,7 +138,7 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
     try {
       // Build shipment request according to CreateShipmentRequest type
       const shipmentRequest: ShipmentRequest = {
-        user_id: userEmail || "testuser",
+        user_id: "alanvalz",
         pin_request: {
           type: "generate",
           length: 8,
@@ -159,12 +160,14 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
             postal_code: shippingAddress?.postalCode || "",
             country_code_2: shippingAddress?.country || "US",
           },
-          shipment_items: selectedProducts.map(() => ({
-            product_id: 3,
-            inventory_product_id: 133,
-            product_quantity: 1,
-            customization_id: "test00",
-          })),
+          shipment_items: [
+            {
+              product_id: 3,
+              inventory_product_id: 133,
+              product_quantity: 1,
+              customization_id: "test00"
+            }
+          ],
         },
       };
 

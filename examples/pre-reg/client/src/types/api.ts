@@ -205,7 +205,6 @@ export const ApiValidateAddressResponseSchema = z.object({
   }).optional()
 });
 
-
 // Shipment API Schema
 export const ShipmentItemSchema = z.object({
   product_id: z.number(),
@@ -252,14 +251,6 @@ export const ShipmentRequestSchema = z.object({
 // Shipment schemas
 export const ShipmentStatus = z.enum(['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']);
 
-export const CreateShipmentRequestSchema = z.object({
-  products: z.array(SelectedProductSchema),
-  shippingAddress: AddressWithValidationSchema,
-  userEmail: z.string()
-    .regex(emailRegex, 'Invalid email format'),
-  metadata: z.record(z.string(), z.any()).optional().nullable(),
-});
-
 export const ShipmentSchema = z.object({
   id: z.string(),
   orderId: z.string(),
@@ -276,6 +267,10 @@ export const ShipmentSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional().nullable(),
 });
 
+export const ShipmentSchema2 = z.object({
+  id: z.string()
+});
+
 export const ShipmentListResponseSchema = z.object({
   shipments: z.array(ShipmentSchema),
   total: z.number(),
@@ -290,8 +285,8 @@ export type Address = z.infer<typeof AddressSchema>;
 export type ValidateAddressRequest = z.infer<typeof ValidateAddressRequestSchema>;
 export type ValidateAddressResponse = z.infer<typeof ValidateAddressResponseSchema>;
 export type Country = z.infer<typeof CountryApiSchema>;
-export type CreateShipmentRequest = z.infer<typeof CreateShipmentRequestSchema>;
 export type Shipment = z.infer<typeof ShipmentSchema>;
+export type Shipment2 = z.infer<typeof ShipmentSchema2>;
 export type ShipmentRequest = z.infer<typeof ShipmentRequestSchema>;
 export type ShipmentListResponse = z.infer<typeof ShipmentListResponseSchema>;
 export type DeliveryType = z.infer<typeof DeliveryTypeSchema>;

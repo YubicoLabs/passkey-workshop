@@ -1,21 +1,17 @@
 import axios, { AxiosInstance } from 'axios';
 import {
-  Product,
   ValidateAddressRequest,
   ValidateAddressResponse,
-  CreateShipmentRequest,
   Shipment,
-  ShipmentListResponse,
-  ProductSchema,
   ValidateAddressResponseSchema,
   ShipmentSchema,
-  ShipmentListResponseSchema,
+  ShipmentSchema2,
+  Shipment2,
   CountriesResponse,
   CountriesResponseSchema,
   ApiValidateAddressRequest,
   ApiValidateAddressRequestSchema,
   ApiValidateAddressResponseSchema,
-  ShipmentRequestSchema,
   ShipmentRequest
 } from '@/types/api';
 
@@ -155,20 +151,19 @@ export class YubiKeyApiClient {
     return validatedData;
   }
 
-
   // Shipment endpoints
-  async createShipment(request: ShipmentRequest): Promise<Shipment> {
+  async createShipment(request: ShipmentRequest): Promise<Shipment2> {
     const response = await this.client.post('/shipments', request);
 
     // The response data should already be a plain object
     // Don't try to parse the request, parse the response
     try {
-      return ShipmentSchema.parse(response.data);
+      return ShipmentSchema2.parse(response.data);
     } catch (error) {
       console.error('Failed to parse shipment response:', error);
       console.error('Response data:', response.data);
       // Return the raw data if parsing fails (for debugging)
-      return response.data as Shipment;
+      return response.data as Shipment2;
     }
   }
 }
