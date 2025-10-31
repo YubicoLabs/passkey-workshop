@@ -9,12 +9,11 @@ import {
   CircularProgress,
   Chip,
   Stack,
-  IconButton,
   Collapse,
 } from '@mui/material';
-import { ChevronDown, ChevronUp, Check, X } from 'lucide-react';
+import { ChevronDown, Check } from 'lucide-react';
 import Grid from '@mui/material/Grid';
-import { Address, Country, CountriesResponse, DeliveryType } from '@/types/api';
+import { Address, Country, CountriesResponse } from '@/types/api';
 
 import { useQuery } from '@tanstack/react-query';
 

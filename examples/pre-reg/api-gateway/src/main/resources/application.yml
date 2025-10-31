@@ -26,12 +26,12 @@ spring:
       routes:
         # Address validation
         - id: validate-address
-          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          uri: https://iap-piercer.graywave-eec1246c.westus2.azurecontainerapps.io
           predicates:
-            - Path=/api/validate-address
+            - Path=/api/addresses/validate
           filters:
-            - SetRequestHeader=X-Api-Key, my-secret-key
-            - RewritePath=/api/validate-address,/v1/validate-address
+            - SetRequestHeader=Authorization, Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2FwaS5jb25zb2xlLmRldi55dWJpY28uY29tIiwiZXhwIjoxNzkyODczMjczLCJpYXQiOjE3NjEzMzcyNzMsImp0aSI6IlB3UXZxd1pScDFRcVlUWERuYXRhcFoiLCJvcmciOiJHR1FmcUI2UnhTbzNZR3hGTFZZeExzIiwic3ViIjoiTFhCTGNpQ0hNQ3U5ZnJBZlA3Y1dyWiIsInZlciI6InYyIn0.3-0H55SGztCHctxL_J6fu4SUnJ54y6FyBplvQ2DmoVg
+            - RewritePath=/api/addresses/validate,/v1/validate-address
             - AddResponseHeader=X-Gateway-Transformed, true
         # Get countries list
         - id: countries-list
@@ -39,7 +39,7 @@ spring:
           predicates:
             - Path=/api/countries
           filters:
-            - SetRequestHeader=Authorization, Bearer my-secret-key
+            - SetRequestHeader=Authorization, Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2FwaS5jb25zb2xlLmRldi55dWJpY28uY29tIiwiZXhwIjoxNzkyODczMjczLCJpYXQiOjE3NjEzMzcyNzMsImp0aSI6IlB3UXZxd1pScDFRcVlUWERuYXRhcFoiLCJvcmciOiJHR1FmcUI2UnhTbzNZR3hGTFZZeExzIiwic3ViIjoiTFhCTGNpQ0hNQ3U5ZnJBZlA3Y1dyWiIsInZlciI6InYyIn0.3-0H55SGztCHctxL_J6fu4SUnJ54y6FyBplvQ2DmoVg
             - RewritePath=/api/countries,/v1/countries
             - AddResponseHeader=X-Gateway-Transformed, true
         # Get shipment by ID
@@ -54,7 +54,7 @@ spring:
 
         # Create a new FIDO pre-registration shipment
         - id: create-shipment
-          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8080}
           predicates:
             - Path=/api/shipments
           filters:
@@ -121,3 +121,6 @@ spring:
             - SetRequestHeader=X-Api-Key, my-secret-key
             - RewritePath=/api/status,/v1/status
             - AddResponseHeader=X-Gateway-Transformed, true
+
+server:
+  port: 8086

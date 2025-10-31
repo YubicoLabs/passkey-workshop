@@ -13,8 +13,7 @@ import {
   Product, 
   SelectedProduct, 
   Address, 
-  Shipment,
-  CreateShipmentRequest,
+  ShipmentRequest,
 } from '@/types/api';
 import { YubiKeyApiClient } from '@/services/api-client';
 import ErrorBoundary from './common/ErrorBoundary';
@@ -136,20 +135,42 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
     setIsSubmitting(true);
 
     try {
-      const request: CreateShipmentRequest = {
-        products: selectedProducts,
-        shippingAddress,
-        userEmail,
-        metadata: {
-          source: 'yubikey-launchpad',
-          timestamp: new Date().toISOString(),
+      // Build shipment request according to CreateShipmentRequest type
+      const shipmentRequest: ShipmentRequest = {
+        user_id: userEmail || "testuser",
+        pin_request: {
+          type: "generate",
+          length: 8,
+        },
+        yubico_shipment_request: {
+          delivery_type: 1,
+          recipient: {
+            recipient_company: "Yubico",
+            recipient_email: userEmail,
+            recipient_firstname: shippingAddress?.firstName || "",
+            recipient_lastname: shippingAddress?.lastName || "",
+            recipient_telephone: shippingAddress?.phone || "",
+          },
+          mailing_address: {
+            street_line1: shippingAddress?.addressLine1 || "",
+            street_line2: shippingAddress?.addressLine2 || "",
+            city: shippingAddress?.city || "",
+            region: shippingAddress?.stateProvince || "",
+            postal_code: shippingAddress?.postalCode || "",
+            country_code_2: shippingAddress?.country || "US",
+          },
+          shipment_items: selectedProducts.map(() => ({
+            product_id: 3,
+            inventory_product_id: 133,
+            product_quantity: 1,
+            customization_id: "test00",
+          })),
         },
       };
 
-      const newShipment = await apiClient.createShipment(request);
+      const newShipment = await apiClient.createShipment(shipmentRequest);
       setShipment(newShipment);
       setCurrentStep('confirmation');
-      
       if (onComplete) {
         onComplete(newShipment);
       }

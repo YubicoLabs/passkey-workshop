@@ -7,7 +7,7 @@ import { theme } from './theme';
 
 function App() {
   const apiClient = createApiClient({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8086/api',
     // In production, you'd get this from your auth provider
     getIdToken: async () => {
       return 'mock-id-token';

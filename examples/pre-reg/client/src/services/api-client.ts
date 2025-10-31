@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import {
   Product,
   ValidateAddressRequest,
@@ -14,7 +14,9 @@ import {
   CountriesResponseSchema,
   ApiValidateAddressRequest,
   ApiValidateAddressRequestSchema,
-  ApiValidateAddressResponseSchema
+  ApiValidateAddressResponseSchema,
+  ShipmentRequestSchema,
+  ShipmentRequest
 } from '@/types/api';
 
 export interface ApiClientConfig {
@@ -92,21 +94,6 @@ export class YubiKeyApiClient {
     );
   }
 
-  // Products endpoints
-  async getProducts(): Promise<Product[]> {
-    const response = await this.client.get('/products');
-    // Handle array response
-    if (Array.isArray(response.data)) {
-      return response.data.map((item: any) => ProductSchema.parse(item));
-    }
-    return [];
-  }
-
-  async getProduct(productId: string): Promise<Product> {
-    const response = await this.client.get(`/products/${productId}`);
-    return ProductSchema.parse(response.data);
-  }
-
   async validateAddress(request: ValidateAddressRequest): Promise<ValidateAddressResponse> {
     // For US addresses, region should be the state code (e.g., 'TX'), not the full state name
     let region = request.address.stateProvince;
@@ -170,8 +157,8 @@ export class YubiKeyApiClient {
 
 
   // Shipment endpoints
-  async createShipment(request: CreateShipmentRequest): Promise<Shipment> {
-    const response = await this.client.post('/fido2PreRegisteredShipments', request);
+  async createShipment(request: ShipmentRequest): Promise<Shipment> {
+    const response = await this.client.post('/shipments', request);
 
     // The response data should already be a plain object
     // Don't try to parse the request, parse the response
@@ -184,40 +171,12 @@ export class YubiKeyApiClient {
       return response.data as Shipment;
     }
   }
-
-  async getShipment(shipmentId: string): Promise<Shipment> {
-    const response = await this.client.get(`/fido2PreRegisteredShipments/${shipmentId}`);
-    try {
-      return ShipmentSchema.parse(response.data);
-    } catch (error) {
-      console.error('Failed to parse shipment:', error);
-      return response.data as Shipment;
-    }
-  }
-
-  async getShipments(params?: {
-    page?: number;
-    pageSize?: number;
-    status?: string;
-  }): Promise<ShipmentListResponse> {
-    const response = await this.client.get('/fido2PreRegisteredShipments', { params });
-    try {
-      return ShipmentListResponseSchema.parse(response.data);
-    } catch (error) {
-      console.error('Failed to parse shipments list:', error);
-      return response.data as ShipmentListResponse;
-    }
-  }
-
-  async cancelShipment(shipmentId: string): Promise<void> {
-    await this.client.delete(`/fido2PreRegisteredShipments/${shipmentId}`);
-  }
 }
 
 // Factory function for creating API client
 export const createApiClient = (config: Partial<ApiClientConfig> = {}): YubiKeyApiClient => {
   const defaultConfig: ApiClientConfig = {
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8086/api',
     ...config,
   };
 
