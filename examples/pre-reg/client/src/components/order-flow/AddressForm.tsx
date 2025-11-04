@@ -59,14 +59,6 @@ export const AddressForm: React.FC<AddressFormProps> = ({
   });
   const countries: Country[] = countriesData?.countries ?? [];
 
-  // Set default country once countries are loaded
-  useEffect(() => {
-    if (countries.length > 0 && !formData.country) {
-      const defaultCountry = countries.find(c => c.country_code_2 === 'US') || countries[0];
-      setFormData(prev => ({ ...prev, country: defaultCountry.country_code_2 }));
-      onAddressChange({ ...formData, country: defaultCountry.country_code_2 });
-    }
-  }, [countries]);
 
   const selectedCountry = countries.find(c => c.country_code_2 === formData.country);
   // If you have states in the API, map them here. Otherwise, keep as empty array.
@@ -391,6 +383,14 @@ export const AddressForm: React.FC<AddressFormProps> = ({
               fullWidth
               error={!!fieldErrors.country}
               helperText={fieldErrors.country || (formData.country === 'US' ? 'United States format expected' : formData.country === 'CA' ? 'Canadian format expected' : '')}
+              sx={{ minWidth: 340 }}
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: {
+                    style: { minWidth: 340 },
+                  },
+                },
+              }}
             >
               {countries.map((country) => (
                 <MenuItem key={country.country_code_2} value={country.country_code_2}>
