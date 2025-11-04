@@ -9,11 +9,10 @@ import { AddressForm } from './order-flow/AddressForm';
 import { OrderReview } from './order-flow/OrderReview';
 import { OrderStatus } from './order-management/OrderStatus';
 import { 
-  Product, 
   SelectedProduct, 
-  Address, 
+  Address,
+  Product,
   Shipment,
-  Shipment2,
   ShipmentRequest,
 } from '@/types/api';
 import { YubiKeyApiClient } from '@/services/api-client';
@@ -22,7 +21,7 @@ import ErrorBoundary from './common/ErrorBoundary';
 export interface YubiKeyOrderFlowProps {
   apiClient: YubiKeyApiClient;
   userEmail?: string;
-  onComplete?: (shipment: Shipment2) => void;
+  onComplete?: (shipment: Shipment) => void;
   onCancel?: () => void;
   locale?: string;
   translations?: Record<string, string>;
@@ -55,24 +54,44 @@ const createQueryClient = () => new QueryClient({
 // Default products for demonstration
 const defaultProducts: Product[] = [
   {
-    id: 'yubikey-5c-nfc',
-    name: 'Security Key (USB-C)',
-    description: 'USB-C with NFC for mobile',
-    price: 55,
-    currency: 'USD',
-    formFactor: 'USB-C',
-    capabilities: ['FIDO2', 'U2F', 'Smart Card', 'OTP', 'NFC'],
-    inStock: true,
-  },
-  {
     id: 'yubikey-5-nfc',
-    name: 'Security Key (USB-A)',
-    description: 'USB-A with NFC for mobile',
+    productId: 1,
+    name: 'YubiKey 5 NFC',
+    description: 'USB-A with NFC for mobile and desktop',
     price: 50,
     currency: 'USD',
     formFactor: 'USB-A',
     capabilities: ['FIDO2', 'U2F', 'Smart Card', 'OTP', 'NFC'],
-    inStock: true,
+  },
+  {
+    id: 'yubikey-5-nano',
+    productId: 2,
+    name: 'YubiKey 5 Nano',
+    description: 'Ultra-small USB-A for laptops',
+    price: 60,
+    currency: 'USD',
+    formFactor: 'Nano',
+    capabilities: ['FIDO2', 'U2F', 'Smart Card', 'OTP'],
+  },
+  {
+    id: 'yubikey-5c',
+    productId: 3,
+    name: 'YubiKey 5C',
+    description: 'USB-C for modern devices',
+    price: 55,
+    currency: 'USD',
+    formFactor: 'USB-C',
+    capabilities: ['FIDO2', 'U2F', 'Smart Card', 'OTP'],
+  },
+  {
+    id: 'yubikey-5c-nano',
+    productId: 4,
+    name: 'YubiKey 5C Nano',
+    description: 'Ultra-small USB-C for laptops',
+    price: 65,
+    currency: 'USD',
+    formFactor: 'Nano',
+    capabilities: ['FIDO2', 'U2F', 'Smart Card', 'OTP'],
   },
 ];
 
@@ -89,7 +108,7 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
   const [currentStep, setCurrentStep] = useState<OrderStep>('products');
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
-  const [shipment, setShipment] = useState<Shipment2 | null>(null);
+  const [shipment, setShipment] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleProductsChange = (products: SelectedProduct[]) => {
@@ -136,7 +155,6 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
     setIsSubmitting(true);
 
     try {
-      // Build shipment request according to CreateShipmentRequest type
       const shipmentRequest: ShipmentRequest = {
         user_id: "alanvalz",
         pin_request: {
@@ -171,11 +189,35 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
         },
       };
 
-      const newShipment = await apiClient.createShipment(shipmentRequest);
-      setShipment(newShipment);
-      setCurrentStep('confirmation');
-      if (onComplete) {
-        onComplete(newShipment);
+      const shipment = await apiClient.createShipment(shipmentRequest);
+      // Use returned shipment object for confirmation
+      if (shipment && shipment.shipment_id) {
+        const mappedShipment = {
+          id: shipment.shipment_id,
+          orderId: '',
+          status: 'PROCESSING',
+          products: selectedProducts.map((item) => ({
+            product: item.product,
+            quantity: item.quantity,
+            isPrimary: item.isPrimary || false,
+          })),
+          shippingAddress: shippingAddress,
+          userEmail: userEmail || '',
+          requestDate: new Date().toISOString(),
+          requestor: shippingAddress?.firstName + ' ' + shippingAddress?.lastName,
+          trackingNumber: '',
+          carrier: '',
+          estimatedDelivery: '',
+          actualDelivery: '',
+          metadata: {},
+        };
+        setShipment(mappedShipment);
+        setCurrentStep('confirmation');
+        if (onComplete) {
+          onComplete(mappedShipment);
+        }
+      } else {
+        throw new Error('Shipment creation failed or did not return a valid shipment_id');
       }
     } catch (error) {
       console.error('Failed to create shipment:', error);

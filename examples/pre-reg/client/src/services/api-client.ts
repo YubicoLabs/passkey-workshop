@@ -2,11 +2,9 @@ import axios, { AxiosInstance } from 'axios';
 import {
   ValidateAddressRequest,
   ValidateAddressResponse,
-  Shipment,
   ValidateAddressResponseSchema,
   ShipmentSchema,
-  ShipmentSchema2,
-  Shipment2,
+  Shipment,
   CountriesResponse,
   CountriesResponseSchema,
   ApiValidateAddressRequest,
@@ -91,10 +89,8 @@ export class YubiKeyApiClient {
   }
 
   async validateAddress(request: ValidateAddressRequest): Promise<ValidateAddressResponse> {
-    // For US addresses, region should be the state code (e.g., 'TX'), not the full state name
     let region = request.address.stateProvince;
     if (request.address.country === 'US' && request.address.stateProvince) {
-      // If stateProvince is a full name, map to code (basic mapping for demo, ideally use a lookup)
       const usStates: Record<string, string> = {
         'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA', 'Colorado': 'CO',
         'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA', 'Hawaii': 'HI', 'Idaho': 'ID',
@@ -119,6 +115,7 @@ export class YubiKeyApiClient {
     const validatedApiRequest = ApiValidateAddressRequestSchema.parse(apiRequest);
     const response = await this.client.post('/addresses/validate', validatedApiRequest);
     const apiResponse = ApiValidateAddressResponseSchema.parse(response.data);
+    
     // Map API response back to your internal format
     const mappedResponse: ValidateAddressResponse = {
       validated: apiResponse.status === 'deliverable',
@@ -127,7 +124,7 @@ export class YubiKeyApiClient {
           typeof detail === 'string' ? detail : JSON.stringify(detail)
         ) : [],
       suggestedAddress: apiResponse.address ? {
-        // Map API format back to your Address format
+        // Map API format back to Address format
         firstName: request.address.firstName, // Preserve from original
         lastName: request.address.lastName,   // Preserve from original
         addressLine1: apiResponse.address.street_line1,
@@ -152,18 +149,18 @@ export class YubiKeyApiClient {
   }
 
   // Shipment endpoints
-  async createShipment(request: ShipmentRequest): Promise<Shipment2> {
+  async createShipment(request: ShipmentRequest): Promise<Shipment> {
     const response = await this.client.post('/shipments', request);
-
-    // The response data should already be a plain object
-    // Don't try to parse the request, parse the response
+    // Extract shipment_id from response.data.data
+    const shipmentData = response.data?.data;
     try {
-      return ShipmentSchema2.parse(response.data);
+      // Validate response shape at runtime
+      return ShipmentSchema.parse(shipmentData);
     } catch (error) {
       console.error('Failed to parse shipment response:', error);
-      console.error('Response data:', response.data);
-      // Return the raw data if parsing fails (for debugging)
-      return response.data as Shipment2;
+      console.error('Response data:', shipmentData);
+      // Return raw data for debugging if validation fails
+      return shipmentData as Shipment;
     }
   }
 }

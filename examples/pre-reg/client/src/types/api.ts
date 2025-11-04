@@ -18,6 +18,7 @@ const restrictedCountries = [
 // Product schemas
 export const ProductSchema = z.object({
   id: z.string(),
+  productId: z.number().optional(),
   name: z.string(),
   description: z.string(),
   price: z.number(),
@@ -25,7 +26,6 @@ export const ProductSchema = z.object({
   image: z.string().optional(),
   formFactor: z.enum(['USB-A', 'USB-C', 'NFC', 'Nano']),
   capabilities: z.array(z.string()),
-  inStock: z.boolean().default(true),
 });
 
 export const SelectedProductSchema = z.object({
@@ -252,30 +252,7 @@ export const ShipmentRequestSchema = z.object({
 export const ShipmentStatus = z.enum(['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']);
 
 export const ShipmentSchema = z.object({
-  id: z.string(),
-  orderId: z.string(),
-  status: ShipmentStatus,
-  products: z.array(SelectedProductSchema),
-  shippingAddress: AddressSchema,
-  userEmail: z.string(),
-  requestDate: z.string(),
-  requestor: z.string(),
-  trackingNumber: z.string().optional().nullable(),
-  carrier: z.string().optional().nullable(),
-  estimatedDelivery: z.string().optional().nullable(),
-  actualDelivery: z.string().optional().nullable(),
-  metadata: z.record(z.string(), z.any()).optional().nullable(),
-});
-
-export const ShipmentSchema2 = z.object({
-  id: z.string()
-});
-
-export const ShipmentListResponseSchema = z.object({
-  shipments: z.array(ShipmentSchema),
-  total: z.number(),
-  page: z.number(),
-  pageSize: z.number(),
+  shipment_id: z.string()
 });
 
 // Type exports
@@ -286,9 +263,7 @@ export type ValidateAddressRequest = z.infer<typeof ValidateAddressRequestSchema
 export type ValidateAddressResponse = z.infer<typeof ValidateAddressResponseSchema>;
 export type Country = z.infer<typeof CountryApiSchema>;
 export type Shipment = z.infer<typeof ShipmentSchema>;
-export type Shipment2 = z.infer<typeof ShipmentSchema2>;
 export type ShipmentRequest = z.infer<typeof ShipmentRequestSchema>;
-export type ShipmentListResponse = z.infer<typeof ShipmentListResponseSchema>;
 export type DeliveryType = z.infer<typeof DeliveryTypeSchema>;
 export type CountriesResponse = z.infer<typeof CountriesResponseSchema>;
 export type ApiValidateAddressRequest = z.infer<typeof ApiValidateAddressRequestSchema>;

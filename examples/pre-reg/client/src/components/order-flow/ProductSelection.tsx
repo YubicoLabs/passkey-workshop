@@ -3,9 +3,7 @@ import {
   Box,
   Card,
   CardContent,
-  CardMedia,
   Typography,
-  Checkbox,
   Radio,
   FormControlLabel,
   RadioGroup,
@@ -13,10 +11,8 @@ import {
   Button,
   Chip,
   Stack,
-  Divider,
-  Paper,
 } from '@mui/material';
-import { Usb as UsbIcon, Wifi as WifiIcon, Key as KeyIcon } from 'lucide-react';
+import { Wifi as WifiIcon, Key as KeyIcon } from 'lucide-react';
 import { Product, SelectedProduct } from '@/types/api';
 import DOMPurify from 'dompurify';
 
@@ -33,7 +29,6 @@ export const ProductSelection: React.FC<ProductSelectionProps> = ({
   selectedProducts,
   onProductsChange,
   onNext,
-  maxProducts = 2,
 }) => {
   // Initialize state from props
   const [primaryKeyId, setPrimaryKeyId] = useState<string>(() => {
@@ -212,7 +207,7 @@ export const ProductSelection: React.FC<ProductSelectionProps> = ({
             onChange={handlePrimaryChange}
             name="primary-key-group"
           >
-            {products.filter(p => p.formFactor === 'USB-A' || p.formFactor === 'USB-C').map(product => 
+            {products.map(product => 
               renderProductCard(product, true)
             )}
           </RadioGroup>
@@ -227,7 +222,7 @@ export const ProductSelection: React.FC<ProductSelectionProps> = ({
             onChange={handleBackupChange}
             name="backup-key-group"
           >
-            {products.filter(p => p.formFactor === 'USB-A' || p.formFactor === 'USB-C').map(product => 
+            {products.map(product => 
               renderProductCard(product, false)
             )}
           </RadioGroup>
