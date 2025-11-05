@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 // Validation patterns
-const emailRegex = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\\-]*\.)+[A-Z]{2,}$/i;
 const latinCharOnlyRegex = /^[0-9A-Za-z #'.,-/()&\u00C0-\u017F]*$/;
 const usPostalCodeRegex = /^\d{5}(-\d{4})?$/;
 const caPostalCodeRegex = /^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/i;
@@ -124,7 +123,7 @@ export const AddressWithValidationSchema = AddressSchema.superRefine((data, ctx)
       });
     }
   }
-  
+
   // Canadian postal code validation
   if (data.country === 'CA') {
     if (!caPostalCodeRegex.test(data.postalCode)) {
@@ -187,7 +186,7 @@ export const ApiValidateAddressRequestSchema = z.object({
   street_line3: z.string().max(60).optional(), // deprecated but may still be in response
   city: z.string().max(60),
   postal_code: z.string().max(50),
-  region: z.string().max(50).optional(), // Required for US/CA
+  region: z.string().max(50).optional(),
   country_code_2: z.string().length(2)
 });
 
@@ -248,9 +247,6 @@ export const ShipmentRequestSchema = z.object({
   yubico_shipment_request: YubicoShipmentRequestSchema,
 });
 
-// Shipment schemas
-export const ShipmentStatus = z.enum(['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']);
-
 export const ShipmentSchema = z.object({
   shipment_id: z.string()
 });
@@ -268,29 +264,3 @@ export type DeliveryType = z.infer<typeof DeliveryTypeSchema>;
 export type CountriesResponse = z.infer<typeof CountriesResponseSchema>;
 export type ApiValidateAddressRequest = z.infer<typeof ApiValidateAddressRequestSchema>;
 export type ApiValidateAddressResponse = z.infer<typeof ApiValidateAddressResponseSchema>;
-
-
-// Order flow state
-export interface OrderFlowState {
-  step: 'products' | 'address' | 'review' | 'confirmation';
-  selectedProducts: SelectedProduct[];
-  shippingAddress: Address | null;
-  shipmentId: string | null;
-  validationErrors: string[];
-}
-
-// Helper functions
-export const isRestrictedCountry = (countryCode: string): boolean => {
-  return restrictedCountries.includes(countryCode as any);
-};
-
-export const validatePostalCode = (postalCode: string, countryCode: string): boolean => {
-  switch (countryCode) {
-    case 'US':
-      return usPostalCodeRegex.test(postalCode);
-    case 'CA':
-      return caPostalCodeRegex.test(postalCode);
-    default:
-      return true; // No specific validation for other countries
-  }
-};
