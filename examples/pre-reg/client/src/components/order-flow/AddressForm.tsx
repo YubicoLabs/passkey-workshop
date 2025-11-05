@@ -343,34 +343,15 @@ export const AddressForm: React.FC<AddressFormProps> = ({
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            {states.length > 0 ? (
-              <TextField
-                select
-                label="State/Province"
-                value={formData.stateProvince}
-                onChange={handleFieldChange('stateProvince')}
-                required
-                fullWidth
-                error={!!fieldErrors.stateProvince}
-                helperText={fieldErrors.stateProvince}
-              >
-                {states.map((state) => (
-                  <MenuItem key={state.code} value={state.code}>
-                    {state.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            ) : (
-              <TextField
-                label="State/Province"
-                value={formData.stateProvince}
-                onChange={handleFieldChange('stateProvince')}
-                required
-                fullWidth
-                error={!!fieldErrors.stateProvince}
-                helperText={fieldErrors.stateProvince}
-              />
-            )}
+            <TextField
+              label="State/Province"
+              value={formData.stateProvince}
+              onChange={handleFieldChange('stateProvince')}
+              required
+              fullWidth
+              error={!!fieldErrors.stateProvince}
+              helperText={fieldErrors.stateProvince}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6}>
