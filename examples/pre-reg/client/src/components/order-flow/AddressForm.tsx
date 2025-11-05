@@ -43,7 +43,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
       city: '',
       stateProvince: '',
       postalCode: '',
-      country: '', // Start with empty string until countries load
+      country: '',
       phone: '',
     }
   );

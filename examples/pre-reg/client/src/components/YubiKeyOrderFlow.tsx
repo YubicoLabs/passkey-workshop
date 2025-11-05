@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { 
   Container, 
   Paper,
+  Box,
+  Typography,
 } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProductSelection } from './order-flow/ProductSelection';
@@ -17,6 +19,7 @@ import {
 } from '@/types/api';
 import { YubiKeyApiClient } from '@/services/api-client';
 import ErrorBoundary from './common/ErrorBoundary';
+import { UserInfoStep } from './order-flow/UserInfoStep';
 
 export interface YubiKeyOrderFlowProps {
   apiClient: YubiKeyApiClient;
@@ -30,7 +33,7 @@ export interface YubiKeyOrderFlowProps {
   paperProps?: React.ComponentProps<typeof Paper>;
 }
 
-type OrderStep = 'products' | 'address' | 'review' | 'confirmation';
+type OrderStep = 'products' | 'address' | 'userInfo' | 'review' | 'confirmation';
 
 // Create query client outside component to avoid recreation
 const createQueryClient = () => new QueryClient({
@@ -108,8 +111,11 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
   const [currentStep, setCurrentStep] = useState<OrderStep>('products');
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
+  const [userId, setUserId] = useState('');
   const [shipment, setShipment] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const resellerOrgId = 'YUBI-RESELLER-ORG-001';
 
   const handleProductsChange = (products: SelectedProduct[]) => {
     setSelectedProducts(products);
@@ -143,12 +149,18 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
 
   const handleAddressNext = () => {
     if (shippingAddress) {
+      setCurrentStep('userInfo');
+    }
+  };
+
+  const handleUserInfoNext = () => {
+    if (userId.trim()) {
       setCurrentStep('review');
     }
   };
 
   const handleReviewConfirm = async () => {
-    if (!shippingAddress || selectedProducts.length === 0) {
+    if (!shippingAddress || selectedProducts.length === 0 || !userId.trim()) {
       return;
     }
 
@@ -156,7 +168,7 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
 
     try {
       const shipmentRequest: ShipmentRequest = {
-        user_id: "alanvalz",
+        user_id: userId.trim(),
         pin_request: {
           type: "generate",
           length: 8,
@@ -214,7 +226,7 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
         setShipment(mappedShipment);
         setCurrentStep('confirmation');
         if (onComplete) {
-          onComplete(mappedShipment);
+          onComplete({ shipment_id: shipment.shipment_id });
         }
       } else {
         throw new Error('Shipment creation failed or did not return a valid shipment_id');
@@ -232,8 +244,11 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
       case 'address':
         setCurrentStep('products');
         break;
-      case 'review':
+      case 'userInfo':
         setCurrentStep('address');
+        break;
+      case 'review':
+        setCurrentStep('userInfo');
         break;
       case 'confirmation':
         setCurrentStep('review');
@@ -252,7 +267,6 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
             onNext={handleProductsNext}
           />
         );
-      
       case 'address':
         return (
           <AddressForm
@@ -264,26 +278,41 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
             getCountries={apiClient.getCountries.bind(apiClient)}
           />
         );
-      
+      case 'userInfo':
+        return (
+          <UserInfoStep
+            userId={userId}
+            onUserIdChange={setUserId}
+            resellerOrgId={resellerOrgId}
+            onNext={handleUserInfoNext}
+            onBack={handleBack}
+          />
+        );
       case 'review':
         return (
           <OrderReview
             selectedProducts={selectedProducts}
             shippingAddress={shippingAddress!}
+            userId={userId}
+            resellerOrgId={resellerOrgId}
             onConfirm={handleReviewConfirm}
             onBack={handleBack}
             isSubmitting={isSubmitting}
           />
         );
-      
       case 'confirmation':
         return shipment ? (
-          <OrderStatus
-            shipment={shipment}
-            onBack={onCancel}
-          />
+          <>
+            <OrderStatus
+              shipment={shipment}
+              onBack={onCancel}
+            />
+            <Box mt={3}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>Keycloak User ID</Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>{userId}</Typography>
+            </Box>
+          </>
         ) : null;
-      
       default:
         return null;
     }
