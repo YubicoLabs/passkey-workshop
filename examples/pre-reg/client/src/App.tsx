@@ -1,35 +1,99 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
+import { CssBaseline, CircularProgress, Button, Box, Typography } from '@mui/material';
 import { YubiKeyOrderFlow } from './components/YubiKeyOrderFlow';
 import { createApiClient } from './services/api-client';
 import { theme } from './theme';
+import { AuthProvider, useAuth } from 'react-oidc-context';
+import { oidcConfig } from './auth/config';
 
-function App() {
-  const apiClient = createApiClient({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8086/api',
-    // In production, you'd get this from your auth provider
-    getIdToken: async () => {
-      return 'mock-id-token';
-    },
-  });
+function AuthenticatedApp() {
+  const auth = useAuth();
+
+  const apiClient = React.useMemo(() => {
+    return createApiClient({
+      baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8086/api',
+      getIdToken: async () => {
+        return auth.user?.access_token || '';
+      },
+    });
+  }, [auth.user?.access_token]);
+
+  if (auth.isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Loading authentication...</Typography>
+      </Box>
+    );
+  }
+
+  if (auth.error) {
+    return (
+      <Box sx={{ p: 4 }}>
+        <Typography variant="h6" color="error">Authentication Error</Typography>
+        <Typography>{auth.error.message}</Typography>
+        <Button variant="contained" onClick={() => auth.signinRedirect()}>
+          Try Again
+        </Button>
+      </Box>
+    );
+  }
+
+  if (!auth.isAuthenticated) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <Typography variant="h4" sx={{ mb: 2 }}>YubiKey Order System</Typography>
+        <Typography variant="body1" sx={{ mb: 4 }}>Please log in to continue</Typography>
+        <Button 
+          variant="contained" 
+          size="large"
+          onClick={() => auth.signinRedirect()}
+        >
+          Log In with Keycloak
+        </Button>
+      </Box>
+    );
+  }
+
+  // User is authenticated - show the actual app
+  const userId = auth.user?.profile.sub;
+  const userEmail = auth.user?.profile.email;
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <>
+      {/* Optional: Add a logout button in the corner */}
+      <Button 
+        variant="outlined" 
+        size="small"
+        sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
+        onClick={() => auth.signoutRedirect()}
+      >
+        Logout ({userEmail})
+      </Button>
+
       <YubiKeyOrderFlow
         apiClient={apiClient}
-        userEmail="demo@example.com"
+        userEmail={userEmail || 'demo@example.com'}
         onComplete={(shipment) => {
           console.log('Order completed:', shipment);
-          // In production, you might redirect or show a success message
         }}
         onCancel={() => {
           console.log('Order cancelled');
-          // Handle cancellation
         }}
       />
-    </ThemeProvider>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider {...oidcConfig}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AuthenticatedApp />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 

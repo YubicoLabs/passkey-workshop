@@ -19,11 +19,12 @@ import {
 } from '@/types/api';
 import { YubiKeyApiClient } from '@/services/api-client';
 import ErrorBoundary from './common/ErrorBoundary';
-import { UserInfoStep } from './order-flow/UserInfoStep';
+// Removed unused UserInfoStep import
 
 export interface YubiKeyOrderFlowProps {
   apiClient: YubiKeyApiClient;
   userEmail?: string;
+  userId?: string;
   onComplete?: (shipment: Shipment) => void;
   onCancel?: () => void;
   locale?: string;
@@ -31,6 +32,7 @@ export interface YubiKeyOrderFlowProps {
   products?: Product[];
   containerProps?: React.ComponentProps<typeof Container>;
   paperProps?: React.ComponentProps<typeof Paper>;
+  keycloakUserId?: string;
 }
 
 type OrderStep = 'products' | 'address' | 'userInfo' | 'review' | 'confirmation';
@@ -101,6 +103,7 @@ const defaultProducts: Product[] = [
 const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
   apiClient,
   userEmail = 'user@example.com',
+  userId = '',
   onComplete,
   onCancel,
   products = defaultProducts,
@@ -111,7 +114,8 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
   const [currentStep, setCurrentStep] = useState<OrderStep>('products');
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
-  const [userId, setUserId] = useState('');
+  // Use userId from function argument
+  const propUserId = userId;
   const [shipment, setShipment] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -147,17 +151,14 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
     }
   };
 
+  // After address, go directly to review
   const handleAddressNext = () => {
     if (shippingAddress) {
-      setCurrentStep('userInfo');
-    }
-  };
-
-  const handleUserInfoNext = () => {
-    if (userId.trim()) {
       setCurrentStep('review');
     }
-  };
+  }
+
+  // Removed unused handleUserInfoNext function
 
   const handleReviewConfirm = async () => {
     if (!shippingAddress || selectedProducts.length === 0 || !userId.trim()) {
@@ -278,22 +279,12 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
             getCountries={apiClient.getCountries.bind(apiClient)}
           />
         );
-      case 'userInfo':
-        return (
-          <UserInfoStep
-            userId={userId}
-            onUserIdChange={setUserId}
-            resellerOrgId={resellerOrgId}
-            onNext={handleUserInfoNext}
-            onBack={handleBack}
-          />
-        );
       case 'review':
         return (
           <OrderReview
             selectedProducts={selectedProducts}
             shippingAddress={shippingAddress!}
-            userId={userId}
+            userId={propUserId}
             resellerOrgId={resellerOrgId}
             onConfirm={handleReviewConfirm}
             onBack={handleBack}
@@ -309,7 +300,7 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
             />
             <Box mt={3}>
               <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>Keycloak User ID</Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>{userId}</Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>{propUserId}</Typography>
             </Box>
           </>
         ) : null;
