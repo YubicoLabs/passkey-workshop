@@ -19,12 +19,11 @@ import {
 } from '@/types/api';
 import { YubiKeyApiClient } from '@/services/api-client';
 import ErrorBoundary from './common/ErrorBoundary';
-// Removed unused UserInfoStep import
+import { UserInfoStep } from './order-flow/UserInfoStep';
 
 export interface YubiKeyOrderFlowProps {
   apiClient: YubiKeyApiClient;
   userEmail?: string;
-  userId?: string;
   onComplete?: (shipment: Shipment) => void;
   onCancel?: () => void;
   locale?: string;
@@ -32,7 +31,7 @@ export interface YubiKeyOrderFlowProps {
   products?: Product[];
   containerProps?: React.ComponentProps<typeof Container>;
   paperProps?: React.ComponentProps<typeof Paper>;
-  keycloakUserId?: string;
+  keycloakUserId?: string; 
 }
 
 type OrderStep = 'products' | 'address' | 'userInfo' | 'review' | 'confirmation';
@@ -103,21 +102,24 @@ const defaultProducts: Product[] = [
 const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
   apiClient,
   userEmail = 'user@example.com',
-  userId = '',
   onComplete,
   onCancel,
   products = defaultProducts,
   containerProps = {},
   paperProps = {},
+  keycloakUserId,
 }) => {
   const [queryClient] = useState(createQueryClient);
   const [currentStep, setCurrentStep] = useState<OrderStep>('products');
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
-  // Use userId from function argument
-  const propUserId = userId;
+  const [userId, setUserId] = useState(keycloakUserId || '');
   const [shipment, setShipment] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  React.useEffect(() => {
+    console.log('🎯 YubiKeyOrderFlow received:', { keycloakUserId, userId });
+  }, [keycloakUserId, userId]);
 
   const resellerOrgId = 'YUBI-RESELLER-ORG-001';
 
@@ -151,14 +153,24 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
     }
   };
 
-  // After address, go directly to review
-  const handleAddressNext = () => {
-    if (shippingAddress) {
+const handleAddressNext = () => {
+  if (shippingAddress) {
+    // If we have a Keycloak ID, skip the manual entry step
+    if (keycloakUserId) {
+      console.log('✅ Skipping user info step, using Keycloak ID:', keycloakUserId);
       setCurrentStep('review');
+    } else {
+      console.log('❌ No Keycloak ID, showing user info step');
+      setCurrentStep('userInfo');
     }
   }
+};
 
-  // Removed unused handleUserInfoNext function
+  const handleUserInfoNext = () => {
+    if (userId.trim()) {
+      setCurrentStep('review');
+    }
+  };
 
   const handleReviewConfirm = async () => {
     if (!shippingAddress || selectedProducts.length === 0 || !userId.trim()) {
@@ -201,6 +213,8 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
           ],
         },
       };
+      // Print shipment request for debugging
+      console.log('🚚 ShipmentRequest:', JSON.stringify(shipmentRequest, null, 2));
 
       const shipment = await apiClient.createShipment(shipmentRequest);
       // Use returned shipment object for confirmation
@@ -279,12 +293,22 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
             getCountries={apiClient.getCountries.bind(apiClient)}
           />
         );
+      case 'userInfo':
+        return (
+          <UserInfoStep
+            userId={userId}
+            onUserIdChange={setUserId}
+            resellerOrgId={resellerOrgId}
+            onNext={handleUserInfoNext}
+            onBack={handleBack}
+          />
+        );
       case 'review':
         return (
           <OrderReview
             selectedProducts={selectedProducts}
             shippingAddress={shippingAddress!}
-            userId={propUserId}
+            userId={userId}
             resellerOrgId={resellerOrgId}
             onConfirm={handleReviewConfirm}
             onBack={handleBack}
@@ -300,7 +324,7 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
             />
             <Box mt={3}>
               <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>Keycloak User ID</Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>{propUserId}</Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>{userId}</Typography>
             </Box>
           </>
         ) : null;

@@ -10,6 +10,18 @@ import { oidcConfig } from './auth/config';
 function AuthenticatedApp() {
   const auth = useAuth();
 
+    React.useEffect(() => {
+    if (auth.user) {
+      console.log('🔐 Token Info:', {
+        sub: auth.user.profile.sub,
+        email: auth.user.profile.email,
+        name: auth.user.profile.name,
+        preffered_username: auth.user?.profile?.preferred_username,
+        fullProfile: auth.user.profile
+      });
+    }
+  }, [auth.user]);
+
   const apiClient = React.useMemo(() => {
     return createApiClient({
       baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8086/api',
@@ -75,6 +87,7 @@ function AuthenticatedApp() {
       <YubiKeyOrderFlow
         apiClient={apiClient}
         userEmail={userEmail || 'demo@example.com'}
+        keycloakUserId={userId}
         onComplete={(shipment) => {
           console.log('Order completed:', shipment);
         }}

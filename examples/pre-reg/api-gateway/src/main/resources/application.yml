@@ -1,17 +1,33 @@
 logging:
   level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.security.jwt: TRACE
     org.springframework.cloud.gateway: DEBUG
     reactor.netty.http.server: DEBUG
+    com.example.apigateway: DEBUG  # Your package
 
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/fido-connector-dev
+          # Optional: if you need to validate audience claim
+          #audiences: fido-connector-ui
+  
   cloud:
     gateway:
       globalcors:
+        default-filters:
+        - TokenRelay
         add-to-simple-url-handler-mapping: true
         corsConfigurations:
           '[/api/**]':
             allowedOrigins:
               - "http://localhost:5173"
+              - "http://localhost:5175"
+              - "http://localhost:5174"
             allowedMethods:
               - GET
               - POST
@@ -24,6 +40,17 @@ spring:
               - Accept
             allowCredentials: true
       routes:
+        # Proxy for Get Exact Shipment by ID (match both /api/shipments_exact/{shipmentId} and /api/v1/shipments_exact/{shipmentId})
+        - id: shipment-exact-proxy
+          uri: https://iap-piercer.graywave-eec1246c.westus2.azurecontainerapps.io
+          predicates:
+            - Path=/api/shipments_exact/{shipmentId}
+            - Path=/api/v1/shipments_exact/{shipmentId}
+          filters:
+            - SetRequestHeader=Authorization, Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2FwaS5jb25zb2xlLmRldi55dWJpY28uY29tIiwiZXhwIjoxNzkyODczMjczLCJpYXQiOjE3NjEzMzcyNzMsImp0aSI6IlB3UXZxd1pScDFRcVlUWERuYXRhcFoiLCJvcmciOiJHR1FmcUI2UnhTbzNZR3hGTFZZeExzIiwic3ViIjoiTFhCTGNpQ0hNQ3U5ZnJBZlA3Y1dyWiIsInZlciI6InYyIn0.3-0H55SGztCHctxL_J6fu4SUnJ54y6FyBplvQ2DmoVg
+            - SetRequestHeader=X-Api-Key, my-secret-key
+            - RewritePath=/api/(v1/)?shipments_exact/(?<segment>.*),/v1/shipments_exact/${segment}
+            - AddResponseHeader=X-Gateway-Transformed, true
         # Address validation
         - id: validate-address
           uri: https://iap-piercer.graywave-eec1246c.westus2.azurecontainerapps.io
@@ -58,9 +85,9 @@ spring:
           predicates:
             - Path=/api/shipments
           filters:
+            - UserInfo  # Add user info to headers
             - SetRequestHeader=X-Api-Key, my-secret-key
             - RewritePath=/api/shipments,/v1/fpr/shipments
-            - AddResponseHeader=X-Gateway-Transformed, true
 
         # Get credential request by ID
         - id: credential-request-get
