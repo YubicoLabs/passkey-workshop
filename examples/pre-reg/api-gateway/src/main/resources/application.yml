@@ -13,8 +13,6 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8081/realms/fido-connector-dev
-          # Optional: if you need to validate audience claim
-          #audiences: fido-connector-ui
   
   cloud:
     gateway:
@@ -31,8 +29,6 @@ spring:
             allowedMethods:
               - GET
               - POST
-              - PUT
-              - DELETE
               - OPTIONS
             allowedHeaders:
               - Authorization
@@ -40,18 +36,7 @@ spring:
               - Accept
             allowCredentials: true
       routes:
-        # Proxy for Get Exact Shipment by ID (match both /api/shipments_exact/{shipmentId} and /api/v1/shipments_exact/{shipmentId})
-        - id: shipment-exact-proxy
-          uri: https://iap-piercer.graywave-eec1246c.westus2.azurecontainerapps.io
-          predicates:
-            - Path=/api/shipments_exact/{shipmentId}
-            - Path=/api/v1/shipments_exact/{shipmentId}
-          filters:
-            - SetRequestHeader=Authorization, Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2FwaS5jb25zb2xlLmRldi55dWJpY28uY29tIiwiZXhwIjoxNzkyODczMjczLCJpYXQiOjE3NjEzMzcyNzMsImp0aSI6IlB3UXZxd1pScDFRcVlUWERuYXRhcFoiLCJvcmciOiJHR1FmcUI2UnhTbzNZR3hGTFZZeExzIiwic3ViIjoiTFhCTGNpQ0hNQ3U5ZnJBZlA3Y1dyWiIsInZlciI6InYyIn0.3-0H55SGztCHctxL_J6fu4SUnJ54y6FyBplvQ2DmoVg
-            - SetRequestHeader=X-Api-Key, my-secret-key
-            - RewritePath=/api/(v1/)?shipments_exact/(?<segment>.*),/v1/shipments_exact/${segment}
-            - AddResponseHeader=X-Gateway-Transformed, true
-        # Address validation
+        # Address validation (USED)
         - id: validate-address
           uri: https://iap-piercer.graywave-eec1246c.westus2.azurecontainerapps.io
           predicates:
@@ -60,7 +45,7 @@ spring:
             - SetRequestHeader=Authorization, Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2FwaS5jb25zb2xlLmRldi55dWJpY28uY29tIiwiZXhwIjoxNzkyODczMjczLCJpYXQiOjE3NjEzMzcyNzMsImp0aSI6IlB3UXZxd1pScDFRcVlUWERuYXRhcFoiLCJvcmciOiJHR1FmcUI2UnhTbzNZR3hGTFZZeExzIiwic3ViIjoiTFhCTGNpQ0hNQ3U5ZnJBZlA3Y1dyWiIsInZlciI6InYyIn0.3-0H55SGztCHctxL_J6fu4SUnJ54y6FyBplvQ2DmoVg
             - RewritePath=/api/addresses/validate,/v1/validate-address
             - AddResponseHeader=X-Gateway-Transformed, true
-        # Get countries list
+
         - id: countries-list
           uri: https://iap-piercer.graywave-eec1246c.westus2.azurecontainerapps.io
           predicates:
@@ -69,85 +54,14 @@ spring:
             - SetRequestHeader=Authorization, Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2FwaS5jb25zb2xlLmRldi55dWJpY28uY29tIiwiZXhwIjoxNzkyODczMjczLCJpYXQiOjE3NjEzMzcyNzMsImp0aSI6IlB3UXZxd1pScDFRcVlUWERuYXRhcFoiLCJvcmciOiJHR1FmcUI2UnhTbzNZR3hGTFZZeExzIiwic3ViIjoiTFhCTGNpQ0hNQ3U5ZnJBZlA3Y1dyWiIsInZlciI6InYyIn0.3-0H55SGztCHctxL_J6fu4SUnJ54y6FyBplvQ2DmoVg
             - RewritePath=/api/countries,/v1/countries
             - AddResponseHeader=X-Gateway-Transformed, true
-        # Get shipment by ID
-        - id: shipment-proxy
-          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
-          predicates:
-            - Path=/api/shipments/{shipmentId}
-          filters:
-            - SetRequestHeader=X-Api-Key, my-secret-key
-            - RewritePath=/api/shipments/(?<segment>.*),/v1/fpr/shipments/${segment}
-            - AddResponseHeader=X-Gateway-Transformed, true
 
-        # Create a new FIDO pre-registration shipment
         - id: create-shipment
           uri: ${FIDO_CONNECTOR_URL:http://localhost:8080}
           predicates:
             - Path=/api/shipments
           filters:
-            - UserInfo  # Add user info to headers
-            - SetRequestHeader=X-Api-Key, my-secret-key
+            - TokenRelay
             - RewritePath=/api/shipments,/v1/fpr/shipments
-
-        # Get credential request by ID
-        - id: credential-request-get
-          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
-          predicates:
-            - Path=/api/credential-requests/{credentialRequestId}
-          filters:
-            - SetRequestHeader=X-Api-Key, my-secret-key
-            - RewritePath=/api/credential-requests/(?<segment>.*),/v1/credential-requests/${segment}
-            - AddResponseHeader=X-Gateway-Transformed, true
-
-        # Create a new credential request
-        - id: credential-request-create
-          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
-          predicates:
-            - Path=/api/credential-requests
-          filters:
-            - SetRequestHeader=X-Api-Key, my-secret-key
-            - RewritePath=/api/credential-requests,/v1/credential-requests
-            - AddResponseHeader=X-Gateway-Transformed, true
-
-        # Process credential request activation
-        - id: credential-request-activation
-          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
-          predicates:
-            - Path=/api/credential-requests/process-activation
-          filters:
-            - SetRequestHeader=X-Api-Key, my-secret-key
-            - RewritePath=/api/credential-requests/process-activation,/v1/credential-requests/process-activation
-            - AddResponseHeader=X-Gateway-Transformed, true
-
-        # Process active shipments
-        - id: process-shipments
-          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
-          predicates:
-            - Path=/api/operations/process-shipments
-          filters:
-            - SetRequestHeader=X-Api-Key, my-secret-key
-            - RewritePath=/api/operations/process-shipments,/v1/operations/process-shipments
-            - AddResponseHeader=X-Gateway-Transformed, true
-
-        # Resend PIN for a completed shipment
-        - id: resend-pin
-          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
-          predicates:
-            - Path=/api/operations/resend-pin/{shipmentId}
-          filters:
-            - SetRequestHeader=X-Api-Key, my-secret-key
-            - RewritePath=/api/operations/resend-pin/(?<segment>.*),/v1/operations/resend-pin/${segment}
-            - AddResponseHeader=X-Gateway-Transformed, true
-
-        # Application status
-        - id: status
-          uri: ${FIDO_CONNECTOR_URL:http://localhost:8081}
-          predicates:
-            - Path=/api/status
-          filters:
-            - SetRequestHeader=X-Api-Key, my-secret-key
-            - RewritePath=/api/status,/v1/status
-            - AddResponseHeader=X-Gateway-Transformed, true
 
 server:
   port: 8086
