@@ -4,15 +4,16 @@ import {
   TextField,
   Button,
   Typography,
-  MenuItem,
   Alert,
   CircularProgress,
   Chip,
   Stack,
   Collapse,
+  Autocomplete,
+  Grid,
 } from '@mui/material';
 import { ChevronDown, Check } from 'lucide-react';
-import Grid from '@mui/material/Grid';
+// ...existing code...
 import { Address, Country, CountriesResponse } from '@/types/api';
 
 import { useQuery } from '@tanstack/react-query';
@@ -354,31 +355,55 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Country"
-              value={formData.country}
-              onChange={handleFieldChange('country')}
-              required
+          <Grid item xs={12} sm={6} >
+            <Autocomplete
               fullWidth
-              error={!!fieldErrors.country}
-              helperText={fieldErrors.country || (formData.country === 'US' ? 'United States format expected' : formData.country === 'CA' ? 'Canadian format expected' : '')}
-              sx={{ minWidth: 340 }}
-              SelectProps={{
-                MenuProps: {
-                  PaperProps: {
-                    style: { minWidth: 340 },
-                  },
-                },
+              id="country-select"
+              options={countries}
+              autoHighlight
+              getOptionLabel={(option) => option.country_name}
+              value={countries.find((c) => c.country_code_2 === formData.country) || null}
+              onChange={(_, newValue) => {
+                const event = {
+                  target: { value: newValue ? newValue.country_code_2 : '' },
+                } as React.ChangeEvent<HTMLInputElement>;
+                handleFieldChange('country')(event);
               }}
-            >
-              {countries.map((country) => (
-                <MenuItem key={country.country_code_2} value={country.country_code_2}>
-                  {country.country_name}
-                </MenuItem>
-              ))}
-            </TextField>
+              renderOption={(props, option) => {
+                const { key, ...otherProps } = props;
+                return (
+                  <Box
+                    key={key}
+                    component="li"
+                    {...otherProps}
+                  >
+                    {option.country_name}
+                  </Box>
+                );
+              }}
+              sx={{ width: '100%' }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Country"
+                  required
+                  fullWidth
+                  error={!!fieldErrors.country}
+                  helperText={
+                    fieldErrors.country ||
+                    (formData.country === 'US'
+                      ? 'United States format expected'
+                      : formData.country === 'CA'
+                      ? 'Canadian format expected'
+                      : '')
+                  }
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password',
+                  }}
+                />
+              )}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6}>
