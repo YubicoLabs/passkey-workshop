@@ -1,87 +1,102 @@
 import React from 'react';
-import { Box, CssBaseline, Paper, Typography, Button } from '@mui/material';
+import { 
+  Box, 
+  Paper, 
+  Typography, 
+  Button, 
+  Link, 
+  styled 
+} from '@mui/material';
 import SecurityIcon from '@mui/icons-material/Security';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
+const PageContainer = styled(Box)(({ theme }) => ({
+  minHeight: '100vh',
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: theme.palette.grey[50], 
+}));
+
+const ContentWrapper = styled(Box)(({ theme }) => ({
+  flex: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing(2), 
+}));
+
+const LoginCard = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(5),
+  width: '100%',
+  maxWidth: 450,
+  textAlign: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(3),
+  borderRadius: (theme.shape.borderRadius as number) * 2,
+}));
+
+const SSOButton = styled(Button)(({ theme }) => ({
+  paddingBlock: theme.spacing(1.5),
+  fontSize: '1.1rem',
+  fontWeight: 600,
+  textTransform: 'none',
+}));
+
 interface LoginPageProps {
-    onLogin: () => void;
+  onLogin: () => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => (
-    <Box
-        sx={{
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-        }}
-    >
-        {/* Main Content Area - Centered */}
-        <Box
-            sx={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                p: 2,
-            }}
+  <PageContainer>
+    <ContentWrapper>
+      <LoginCard elevation={3}>
+        
+        {/* Header */}
+        <Box mb={1}>
+          <SecurityIcon sx={{ fontSize: 48, color: 'primary.main' }} />
+        </Box>
+
+        {/* Text */}
+        <Box>
+          <Typography variant="h4" component="h1" fontWeight="700" gutterBottom>
+            Sign in
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Welcome to the YubiKey LaunchPad. <br />
+            Please authenticate to manage your orders.
+          </Typography>
+        </Box>
+
+        {/* Action */}
+        <SSOButton
+          variant="contained"
+          size="large"
+          fullWidth
+          onClick={onLogin}
+          endIcon={<ArrowForwardIcon />}
         >
-            <Paper
-                elevation={3}
-                sx={{
-                    p: 5,
-                    width: '100%',
-                    maxWidth: 450,
-                    borderRadius: 2,
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 3,
-                }}
-            >
-                {/* Logo Section */}
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-                    <SecurityIcon sx={{ fontSize: 48, color: 'primary.main' }} />
-                </Box>
-                {/* Text Section */}
-                <Box>
-                    <Typography variant="h4" component="h1" fontWeight="600" gutterBottom>
-                        Sign in
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary">
-                        Welcome to the YubiKey LaunchPad. <br />
-                        Please authenticate to manage your orders.
-                    </Typography>
-                </Box>
-                {/* Action Section */}
-                <Button
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                    onClick={onLogin}
-                    endIcon={<ArrowForwardIcon />}
-                    sx={{
-                        py: 1.5,
-                        fontSize: '1.1rem',
-                        textTransform: 'none',
-                        fontWeight: 600,
-                    }}
-                >
-                    Log in with SSO
-                </Button>
-                {/* Footer / Help Links inside the card */}
-                <Typography variant="caption" color="text.disabled" sx={{ mt: 2 }}>
-                    Protected by FIDO2 & WebAuthn
-                </Typography>
-            </Paper>
-        </Box>
-        {/* Global Footer */}
-        <Box component="footer" sx={{ py: 3, textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
-                © 2024 Yubico. All rights reserved. |{' '}
-                <a href="#" style={{ color: 'inherit' }}>Privacy Policy</a>
-            </Typography>
-        </Box>
+          Log in with SSO
+        </SSOButton>
+
+        {/* Footer Note */}
+        <Typography variant="caption" color="text.disabled" mt={2}>
+          Protected by FIDO2 & WebAuthn
+        </Typography>
+
+      </LoginCard>
+    </ContentWrapper>
+
+    {/* Global Footer */}
+    <Box component="footer" py={3} textAlign="center">
+      <Typography variant="body2" color="text.secondary">
+        &copy; {new Date().getFullYear()} Yubico. All rights reserved. |{' '}
+        <Link href="#" color="inherit" underline="hover">
+          Privacy Policy
+        </Link>
+      </Typography>
     </Box>
+  </PageContainer>
 );
 
 export default LoginPage;
