@@ -1,27 +1,87 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Radio,
-  FormControlLabel,
-  RadioGroup,
-  Alert,
-  Button,
-  Chip,
-  Stack,
-} from '@mui/material';
+import React from 'react';
+import { Box, Card, CardContent, Typography, Radio, FormControlLabel, RadioGroup, Alert, Button, Chip, Stack, styled } from '@mui/material';
 import { Wifi as WifiIcon, Key as KeyIcon } from 'lucide-react';
-import { Product, SelectedProduct } from '@/types/api';
 import DOMPurify from 'dompurify';
+import { Product, SelectedProduct } from '@/types/api';
+
+const SectionTitle = styled(Typography)(({ theme }) => ({
+  fontWeight: 500,
+  marginBottom: theme.spacing(1),
+  marginTop: theme.spacing(3), // Handles the top spacing automatically
+}));
+
+const NextButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(4), // Handles its own spacing
+  paddingBlock: theme.spacing(1.5),
+  backgroundColor: '#000',
+  '&:hover': { backgroundColor: '#333' },
+  '&.Mui-disabled': { backgroundColor: 'rgba(0, 0, 0, 0.12)' },
+}));
+
+const StyledCard = styled(Card, {
+  shouldForwardProp: (prop) => prop !== 'isSelected',
+})<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+  marginBottom: theme.spacing(2),
+  borderWidth: isSelected ? 2 : 1,
+  borderStyle: 'solid',
+  borderColor: isSelected ? theme.palette.primary.main : theme.palette.divider,
+  transition: 'all 0.2s',
+  cursor: 'pointer',
+  '&:hover': {
+    borderColor: theme.palette.primary.light,
+    boxShadow: theme.shadows[2],
+  },
+}));
+
+const LinkText = styled('a')(({ theme }) => ({
+  color: theme.palette.primary.main,
+  textDecoration: 'none',
+  '&:hover': { textDecoration: 'underline' },
+}));
+
+const ProductCard = ({ product, isSelected, groupName }: { product: Product; isSelected: boolean; groupName: string }) => {
+  const cleanDescription = DOMPurify.sanitize(product.description);
+
+  return (
+    <StyledCard isSelected={isSelected} variant="outlined">
+      <CardContent>
+        <FormControlLabel
+          value={product.id}
+          control={<Radio name={groupName} checked={isSelected} />}
+          label={
+            <Box ml={1} width="100%">
+              <Stack direction="row" spacing={2} alignItems="center">
+                <KeyIcon size={24} />
+                <Box flex={1}>
+                  <Typography variant="h6">{product.name}</Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    dangerouslySetInnerHTML={{ __html: cleanDescription }}
+                  />
+                  <Stack direction="row" spacing={1} mt={1}>
+                    <Chip size="small" label={product.formFactor} color="primary" variant="outlined" />
+                    {product.capabilities.includes('NFC') && (
+                      <Chip size="small" label="NFC" icon={<WifiIcon size={14} />} variant="outlined" />
+                    )}
+                  </Stack>
+                </Box>
+                <Typography variant="h6" color="primary">${product.price}</Typography>
+              </Stack>
+            </Box>
+          }
+          sx={{ width: '100%', margin: 0 }}
+        />
+      </CardContent>
+    </StyledCard>
+  );
+};
 
 interface ProductSelectionProps {
   products: Product[];
   selectedProducts: SelectedProduct[];
   onProductsChange: (products: SelectedProduct[]) => void;
   onNext: () => void;
-  maxProducts?: number;
 }
 
 export const ProductSelection: React.FC<ProductSelectionProps> = ({
@@ -30,231 +90,78 @@ export const ProductSelection: React.FC<ProductSelectionProps> = ({
   onProductsChange,
   onNext,
 }) => {
-  // Initialize state from props
-  const [primaryKeyId, setPrimaryKeyId] = useState<string>(() => {
-    const primary = selectedProducts.find(p => p.isPrimary);
-    return primary?.product.id || '';
-  });
-  
-  const [backupKeyId, setBackupKeyId] = useState<string>(() => {
-    const backup = selectedProducts.find(p => !p.isPrimary);
-    return backup?.product.id || '';
-  });
-
-  // Sync with prop changes
-  useEffect(() => {
-    const primary = selectedProducts.find(p => p.isPrimary);
-    const backup = selectedProducts.find(p => !p.isPrimary);
-    
-    if (primary?.product.id !== primaryKeyId) {
-      setPrimaryKeyId(primary?.product.id || '');
-    }
-    if (backup?.product.id !== backupKeyId) {
-      setBackupKeyId(backup?.product.id || '');
-    }
-  }, [selectedProducts]);
-
-  const handlePrimaryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const productId = event.target.value;
-    setPrimaryKeyId(productId);
-    updateSelectedProducts(productId, backupKeyId);
-  };
-
-  const handleBackupChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const productId = event.target.value;
-    setBackupKeyId(productId);
-    updateSelectedProducts(primaryKeyId, productId);
-  };
-
-  const updateSelectedProducts = (primaryId: string, backupId: string) => {
-    const newSelected: SelectedProduct[] = [];
-    
-    if (primaryId) {
-      const primaryProduct = products.find(p => p.id === primaryId);
-      if (primaryProduct) {
-        newSelected.push({
-          product: primaryProduct,
-          quantity: 1,
-          isPrimary: true,
-        });
-      }
-    }
-    
-    if (backupId) {
-      const backupProduct = products.find(p => p.id === backupId);
-      if (backupProduct) {
-        newSelected.push({
-          product: backupProduct,
-          quantity: 1,
-          isPrimary: false,
-        });
-      }
-    }
-    
-    onProductsChange(newSelected);
-  };
-
+  const primaryKeyId = selectedProducts.find(p => p.isPrimary)?.product.id || '';
+  const backupKeyId = selectedProducts.find(p => !p.isPrimary)?.product.id || '';
   const isComplete = primaryKeyId && backupKeyId;
 
-  const renderProductCard = (product: Product, isPrimary: boolean) => {
-    const isSelected = isPrimary 
-      ? primaryKeyId === product.id 
-      : backupKeyId === product.id;
+  const handleSelection = (id: string, isPrimary: boolean) => {
+    const currentPrimaryId = isPrimary ? id : primaryKeyId;
+    const currentBackupId = !isPrimary ? id : backupKeyId;
 
-    // Sanitize description
-    const cleanDescription = DOMPurify.sanitize(product.description);
+    const newSelected: SelectedProduct[] = [];
+    const primaryProd = products.find(p => p.id === currentPrimaryId);
+    const backupProd = products.find(p => p.id === currentBackupId);
 
-    return (
-      <Card
-        key={`${isPrimary ? 'primary' : 'backup'}-${product.id}`}
-        sx={{
-          mb: 2,
-          border: isSelected ? 2 : 1,
-          borderColor: isSelected ? 'primary.main' : 'divider',
-          transition: 'all 0.2s',
-          cursor: 'pointer',
-          '&:hover': {
-            borderColor: 'primary.light',
-            boxShadow: 2,
-          },
-        }}
-      >
-        <CardContent>
-          <FormControlLabel
-            control={
-              <Radio
-                checked={isSelected}
-                value={product.id}
-                name={isPrimary ? 'primary-key' : 'backup-key'}
-              />
-            }
-            label={
-              <Box sx={{ ml: 1 }}>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <KeyIcon size={24} />
-                  <Box flex={1}>
-                    <Typography variant="h6">
-                      {product.name}
-                    </Typography>
-                    <Typography 
-                      variant="body2" 
-                      color="text.secondary"
-                      dangerouslySetInnerHTML={{ __html: cleanDescription }}
-                    />
-                    <Stack direction="row" spacing={1} mt={1}>
-                      <Chip 
-                        size="small" 
-                        label={product.formFactor}
-                        color="primary"
-                        variant="outlined"
-                      />
-                      {product.capabilities.includes('NFC') && (
-                        <Chip 
-                          size="small" 
-                          label="NFC"
-                          icon={<WifiIcon size={14} />}
-                          variant="outlined"
-                        />
-                      )}
-                    </Stack>
-                  </Box>
-                  <Typography variant="h6" color="primary">
-                    ${product.price}
-                  </Typography>
-                </Stack>
-              </Box>
-            }
-          />
-        </CardContent>
-      </Card>
-    );
+    if (primaryProd) newSelected.push({ product: primaryProd, quantity: 1, isPrimary: true });
+    if (backupProd) newSelected.push({ product: backupProd, quantity: 1, isPrimary: false });
+
+    onProductsChange(newSelected);
   };
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Get your YubiKeys
-      </Typography>
+      <Typography variant="h4" gutterBottom>Get your YubiKeys</Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        To protect our users against account takeovers, we're rolling out the
-        use of security keys. Order YubiKeys directly to your home.
+        To protect our users against account takeovers, we're rolling out the use of security keys.
       </Typography>
 
       <Box mt={4}>
-        <Typography variant="h5" gutterBottom>
-          1 • Select your products
-        </Typography>
-        
+        <Typography variant="h5" gutterBottom>1 • Select your products</Typography>
+
         <Typography variant="body2" color="text.secondary" gutterBottom>
           Don't know what a YubiKey is?{' '}
-          <a href="https://www.yubico.com/why-yubico/" target="_blank" rel="noopener noreferrer">
+          <LinkText href="https://www.yubico.com" target="_blank" rel="noopener noreferrer">
             Learn more
-          </a>
+          </LinkText>
         </Typography>
 
         {!isComplete && (
-          <Alert severity="info" sx={{ my: 2 }}>
-            Select a total of 2 products to continue.
-          </Alert>
+          <Alert severity="info" sx={{ my: 2 }}>Select a total of 2 products to continue.</Alert>
         )}
 
-        <Box mt={3}>
-          <Typography variant="subtitle1" gutterBottom fontWeight={500}>
-            Please select your primary key
-          </Typography>
-          <RadioGroup 
-            value={primaryKeyId} 
-            onChange={handlePrimaryChange}
-            name="primary-key-group"
-          >
-            {products.map(product => 
-              renderProductCard(product, true)
-            )}
-          </RadioGroup>
-        </Box>
+        <SectionTitle variant="subtitle1">Please select your primary key</SectionTitle>
+        <RadioGroup value={primaryKeyId} onChange={(e) => handleSelection(e.target.value, true)}>
+          {products.map(product => (
+            <ProductCard
+              key={`primary-${product.id}`}
+              product={product}
+              isSelected={primaryKeyId === product.id}
+              groupName="primary-key-group"
+            />
+          ))}
+        </RadioGroup>
 
-        <Box mt={3}>
-          <Typography variant="subtitle1" gutterBottom fontWeight={500}>
-            Please select your backup key
-          </Typography>
-          <RadioGroup 
-            value={backupKeyId} 
-            onChange={handleBackupChange}
-            name="backup-key-group"
-          >
-            {products.map(product => 
-              renderProductCard(product, false)
-            )}
-          </RadioGroup>
-        </Box>
+        <SectionTitle variant="subtitle1">Please select your backup key</SectionTitle>
+        <RadioGroup value={backupKeyId} onChange={(e) => handleSelection(e.target.value, false)}>
+          {products.map(product => (
+            <ProductCard
+              key={`backup-${product.id}`}
+              product={product}
+              isSelected={backupKeyId === product.id}
+              groupName="backup-key-group"
+            />
+          ))}
+        </RadioGroup>
 
-        <Box mt={4}>
-          <Button
-            variant="contained"
-            size="large"
-            fullWidth
-            disabled={!isComplete}
-            onClick={onNext}
-            sx={{ 
-              py: 1.5, 
-              backgroundColor: '#000',
-              '&:hover': {
-                backgroundColor: '#333',
-              },
-              '&.Mui-disabled': {
-                backgroundColor: 'rgba(0, 0, 0, 0.12)',
-              },
-            }}
-          >
-            Next
-          </Button>
-        </Box>
-      </Box>
-
-      <Box mt={4}>
-        <Typography variant="h5" gutterBottom sx={{ opacity: 0.3 }}>
-          2 • Address
-        </Typography>
+        <NextButton
+          variant="contained"
+          size="large"
+          fullWidth
+          disabled={!isComplete}
+          onClick={onNext}
+        >
+          Next
+        </NextButton>
       </Box>
     </Box>
   );
