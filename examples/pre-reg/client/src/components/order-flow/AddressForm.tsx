@@ -1,22 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Alert,
-  CircularProgress,
-  Chip,
-  Stack,
-  Collapse,
-  Autocomplete,
+import React, { useState } from 'react';
+import { 
+  Box, 
+  TextField, 
+  Button, 
+  Typography, 
+  Alert, 
+  CircularProgress, 
+  Chip, 
+  Stack, 
+  Collapse, 
+  Autocomplete, 
   Grid,
+  styled 
 } from '@mui/material';
 import { ChevronDown, Check } from 'lucide-react';
-// ...existing code...
-import { Address, Country, CountriesResponse } from '@/types/api';
-
+import { Address, Country, CountriesResponse, AddressWithValidationSchema } from '@/types/api';
 import { useQuery } from '@tanstack/react-query';
+
+
+const SectionTitle = styled(Typography)(({ theme }) => ({
+  fontWeight: 500,
+  marginBottom: theme.spacing(2),
+}));
+
+const FormGrid = styled(Grid)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+}));
+
+const ActionButton = styled(Button)(({ theme }) => ({
+  paddingBlock: theme.spacing(1.5),
+  minWidth: 120,
+}));
+
+const PrimaryButton = styled(ActionButton)(({ theme }) => ({
+  backgroundColor: '#000',
+  '&:hover': { backgroundColor: '#333' },
+}));
+
+const ValidationButton = styled(ActionButton)(({ theme }) => ({
+  backgroundColor: '#666',
+  '&:hover': { backgroundColor: '#555' },
+}));
+
+
+const CompletedStep = ({ label }: { label: string }) => (
+  <Stack direction="row" spacing={2} alignItems="center" mb={3}>
+    <Typography variant="h5" color="text.secondary">
+      {label}
+    </Typography>
+    <Chip 
+      label="Done" 
+      size="small" 
+      icon={<Check size={16} />} 
+      color="success" 
+      variant="outlined" 
+    />
+  </Stack>
+);
 
 interface AddressFormProps {
   address: Address | null;
@@ -35,17 +75,11 @@ export const AddressForm: React.FC<AddressFormProps> = ({
   onBack,
   getCountries,
 }) => {
+  // --- STATE LOGIC ---
   const [formData, setFormData] = useState<Address>(
     address || {
-      firstName: '',
-      lastName: '',
-      addressLine1: '',
-      addressLine2: '',
-      city: '',
-      stateProvince: '',
-      postalCode: '',
-      country: '',
-      phone: '',
+      firstName: '', lastName: '', addressLine1: '', addressLine2: '',
+      city: '', stateProvince: '', postalCode: '', country: '', phone: '',
     }
   );
 
@@ -54,103 +88,34 @@ export const AddressForm: React.FC<AddressFormProps> = ({
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const { data: countriesData = undefined, isLoading: countriesLoading } = useQuery<CountriesResponse>({
-    queryKey: ['countries'],
-    queryFn: getCountries,
-  });
-  const countries: Country[] = countriesData?.countries ?? [];
+  const { data: countriesData } = useQuery({ queryKey: ['countries'], queryFn: getCountries });
+  const countries = countriesData?.countries ?? [];
 
-
-  const selectedCountry = countries.find(c => c.country_code_2 === formData.country);
-  // If you have states in the API, map them here. Otherwise, keep as empty array.
-  const states = selectedCountry?.states || [];
-
-  const handleFieldChange = (field: keyof Address) => (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const newData = { ...formData, [field]: event.target.value };
+  const handleFieldChange = (field: keyof Address) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newData = { ...formData, [field]: e.target.value };
     
-    // Clear state/province when country changes
-    if (field === 'country' && event.target.value !== formData.country) {
+    // Clear state/province if country changes to force re-selection/entry
+    if (field === 'country' && e.target.value !== formData.country) {
       newData.stateProvince = '';
     }
-    
+
     setFormData(newData);
     onAddressChange(newData);
     
-    // Clear field error when user starts typing
+    // Clear specific field error on change
     if (fieldErrors[field]) {
-      setFieldErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
+      setFieldErrors(prev => { 
+        const n = { ...prev }; 
+        delete n[field]; 
+        return n; 
       });
     }
     
-    // Reset validation when address changes
+    // Reset global validation status on any change
     if (validationStatus === 'validated' || validationStatus === 'error') {
       setValidationStatus('idle');
       setValidationErrors([]);
     }
-  };
-
-  const validateField = (field: keyof Address, value: string): string | null => {
-    const latinCharRegex = /^[0-9A-Za-z #'.,-/()&\u00C0-\u017F]*$/;
-    const phoneRegex = /^[\d\s\-\(\)\+\.]+$/;
-    const usPostalRegex = /^\d{5}(-\d{4})?$/;
-    const caPostalRegex = /^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/i;
-
-    switch (field) {
-      case 'firstName':
-      case 'lastName':
-        if (!value) return `${field === 'firstName' ? 'First' : 'Last'} name is required`;
-        if (!latinCharRegex.test(value)) return 'Only Latin characters are allowed (A-Z, 0-9, spaces, and common punctuation)';
-        if (value.length > 15) return `Maximum 15 characters allowed`;
-        break;
-      
-      case 'addressLine1':
-        if (!value) return 'Address is required';
-        if (!latinCharRegex.test(value)) return 'Only Latin characters are allowed';
-        if (value.length > 60) return 'Maximum 60 characters allowed';
-        break;
-      
-      case 'addressLine2':
-        if (value && !latinCharRegex.test(value)) return 'Only Latin characters are allowed';
-        if (value && value.length > 60) return 'Maximum 60 characters allowed';
-        break;
-      
-      case 'city':
-        if (!value) return 'City is required';
-        if (!latinCharRegex.test(value)) return 'Only Latin characters are allowed';
-        if (value.length > 60) return 'Maximum 60 characters allowed';
-        break;
-      
-      case 'stateProvince':
-        if (!value) return 'State/Province is required';
-        if (value.length > 50) return 'Maximum 50 characters allowed';
-        break;
-      
-      case 'postalCode':
-        if (!value) return 'Postal code is required';
-        if (formData.country === 'US' && !usPostalRegex.test(value)) {
-          return 'Please enter a valid US postal code (e.g., 12345 or 12345-6789)';
-        }
-        if (formData.country === 'CA' && !caPostalRegex.test(value)) {
-          return 'Please enter a valid Canadian postal code (e.g., A1B 2C3)';
-        }
-        if (value.length > 50) return 'Maximum 50 characters allowed';
-        break;
-      
-      case 'phone':
-        if (!value) return 'Phone number is required';
-        if (!phoneRegex.test(value)) {
-          return 'Please enter a valid phone number (digits, spaces, dashes, and parentheses allowed)';
-        }
-        if (value.length > 40) return 'Maximum 40 characters allowed';
-        break;
-    }
-    
-    return null;
   };
 
   const handleValidate = async () => {
@@ -158,70 +123,46 @@ export const AddressForm: React.FC<AddressFormProps> = ({
     setValidationErrors([]);
     setFieldErrors({});
 
-    // First, do client-side validation
-    const errors: Record<string, string> = {};
-    let hasErrors = false;
+    // 1. Zod Schema Validation (Client-Side)
+    const result = AddressWithValidationSchema.safeParse(formData);
 
-    Object.keys(formData).forEach((key) => {
-      const field = key as keyof Address;
-      if (field !== 'country') {
-        const error = validateField(field, formData[field] || '');
-        if (error) {
-          errors[field] = error;
-          hasErrors = true;
+    if (!result.success) {
+      const newFieldErrors: Record<string, string> = {};
+      
+      result.error.issues.forEach((issue) => {
+        // Map Zod path to field name (e.g., ['postalCode'] -> 'postalCode')
+        if (issue.path.length > 0) {
+          const fieldName = issue.path[0] as string;
+          newFieldErrors[fieldName] = issue.message;
         }
-      }
-    });
+      });
 
-    if (hasErrors) {
-      setFieldErrors(errors);
+      setFieldErrors(newFieldErrors);
       setValidationStatus('error');
-      setValidationErrors(['Please correct the errors below']);
+      setValidationErrors(['Please correct the errors highlighted below.']);
       return;
     }
 
-    // If client-side validation passes, call server validation
+    // 2. Server-Side Validation (Existing Logic)
     try {
-      const result = await onValidate(formData);
+      const serverResult = await onValidate(formData);
       
-      if (result.validated) {
+      if (serverResult.validated) {
         setValidationStatus('validated');
+        if (serverResult.suggestedAddress) {
+          setFormData(serverResult.suggestedAddress);
+        }
       } else {
         setValidationStatus('error');
-        // Parse server errors to see if they're field-specific
-        if (result.errors && result.errors.length > 0) {
-          const serverFieldErrors: Record<string, string> = {};
-          const generalErrors: string[] = [];
-          
-          result.errors.forEach(error => {
-            // Try to match field-specific errors
-            const fieldMatch = error.toLowerCase().match(/(first name|last name|address|city|state|province|postal|zip|phone)/);
-            if (fieldMatch) {
-              if (fieldMatch[1].includes('first name')) serverFieldErrors.firstName = error;
-              else if (fieldMatch[1].includes('last name')) serverFieldErrors.lastName = error;
-              else if (fieldMatch[1].includes('address')) serverFieldErrors.addressLine1 = error;
-              else if (fieldMatch[1].includes('city')) serverFieldErrors.city = error;
-              else if (fieldMatch[1].includes('state') || fieldMatch[1].includes('province')) serverFieldErrors.stateProvince = error;
-              else if (fieldMatch[1].includes('postal') || fieldMatch[1].includes('zip')) serverFieldErrors.postalCode = error;
-              else if (fieldMatch[1].includes('phone')) serverFieldErrors.phone = error;
-            } else {
-              generalErrors.push(error);
-            }
-          });
-          
-          if (Object.keys(serverFieldErrors).length > 0) {
-            setFieldErrors(serverFieldErrors);
-          }
-          if (generalErrors.length > 0) {
-            setValidationErrors(generalErrors);
-          }
+        if (serverResult.errors && serverResult.errors.length > 0) {
+          setValidationErrors(serverResult.errors);
         } else {
-          setValidationErrors(['Address validation failed. Please check your information and try again.']);
+          setValidationErrors(['Address validation failed. Please check your information.']);
         }
       }
     } catch (error) {
       setValidationStatus('error');
-      setValidationErrors(['Unable to validate address. Please check your connection and try again.']);
+      setValidationErrors(['Unable to validate address. Please check your connection.']);
     }
   };
 
@@ -238,270 +179,185 @@ export const AddressForm: React.FC<AddressFormProps> = ({
     );
   };
 
-  const handleNext = () => {
-    if (validationStatus === 'validated') {
-      onNext();
-    }
-  };
-
+  // --- RENDER ---
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Get your YubiKeys
-      </Typography>
+      <Typography variant="h4" gutterBottom>Get your YubiKeys</Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        To protect our users against account takeovers, we're rolling out the
-        use of security keys. Order YubiKeys directly to your home.
+        To protect our users against account takeovers, we're rolling out the use of security keys.
       </Typography>
 
       <Box mt={4}>
-        <Stack direction="row" spacing={2} alignItems="center" mb={3}>
-          <Typography variant="h5">
-            1 • Select your products
-          </Typography>
-          <Chip 
-            label="Done" 
-            size="small" 
-            icon={<Check size={16} />}
-            color="success"
-          />
-        </Stack>
+        {/* Step 1: Done */}
+        <CompletedStep label="1 • Select your products" />
 
-        <Typography variant="h5" gutterBottom>
-          2 • Address
-        </Typography>
+        {/* Step 2: Active */}
+        <SectionTitle variant="h5">2 • Address</SectionTitle>
 
-        <Grid container spacing={2} mt={2}>
+        <FormGrid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            <TextField
-              label="First Name"
-              value={formData.firstName}
-              onChange={handleFieldChange('firstName')}
-              required
-              fullWidth
-              error={!!fieldErrors.firstName}
-              helperText={fieldErrors.firstName}
+            <TextField 
+              label="First Name" 
+              value={formData.firstName} 
+              onChange={handleFieldChange('firstName')} 
+              required 
+              fullWidth 
+              error={!!fieldErrors.firstName} 
+              helperText={fieldErrors.firstName} 
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              label="Last Name"
-              value={formData.lastName}
-              onChange={handleFieldChange('lastName')}
-              required
-              fullWidth
-              error={!!fieldErrors.lastName}
-              helperText={fieldErrors.lastName}
+            <TextField 
+              label="Last Name" 
+              value={formData.lastName} 
+              onChange={handleFieldChange('lastName')} 
+              required 
+              fullWidth 
+              error={!!fieldErrors.lastName} 
+              helperText={fieldErrors.lastName} 
             />
           </Grid>
           
           <Grid item xs={12}>
-            <TextField
-              label="Address Line 1"
-              value={formData.addressLine1}
-              onChange={handleFieldChange('addressLine1')}
-              required
-              fullWidth
-              error={!!fieldErrors.addressLine1}
-              helperText={fieldErrors.addressLine1}
+            <TextField 
+              label="Address Line 1" 
+              value={formData.addressLine1} 
+              onChange={handleFieldChange('addressLine1')} 
+              required 
+              fullWidth 
+              error={!!fieldErrors.addressLine1} 
+              helperText={fieldErrors.addressLine1} 
             />
           </Grid>
 
           <Grid item xs={12}>
             <Collapse in={showAddressLine2}>
-              <TextField
-                label="Address Line 2"
-                value={formData.addressLine2}
-                onChange={handleFieldChange('addressLine2')}
-                placeholder="Apartment, suite, etc. (optional)"
-                fullWidth
+              <TextField 
+                label="Address Line 2" 
+                value={formData.addressLine2 || ''} 
+                onChange={handleFieldChange('addressLine2')} 
+                placeholder="Apartment, suite, etc." 
+                fullWidth 
                 error={!!fieldErrors.addressLine2}
                 helperText={fieldErrors.addressLine2}
               />
             </Collapse>
             {!showAddressLine2 && (
-              <Button
-                startIcon={<ChevronDown />}
-                onClick={() => setShowAddressLine2(true)}
-                size="small"
-                sx={{ mt: -1 }}
-              >
+              <Button startIcon={<ChevronDown />} onClick={() => setShowAddressLine2(true)} size="small" sx={{ mt: -1 }}>
                 Add Address Line 2
               </Button>
             )}
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              label="City"
-              value={formData.city}
-              onChange={handleFieldChange('city')}
-              required
-              fullWidth
-              error={!!fieldErrors.city}
-              helperText={fieldErrors.city}
+            <TextField 
+              label="City" 
+              value={formData.city} 
+              onChange={handleFieldChange('city')} 
+              required 
+              fullWidth 
+              error={!!fieldErrors.city} 
+              helperText={fieldErrors.city} 
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              label="State/Province"
-              value={formData.stateProvince}
-              onChange={handleFieldChange('stateProvince')}
-              required
-              fullWidth
-              error={!!fieldErrors.stateProvince}
-              helperText={fieldErrors.stateProvince}
+            <TextField 
+              label="State/Province" 
+              value={formData.stateProvince} 
+              onChange={handleFieldChange('stateProvince')} 
+              required 
+              fullWidth 
+              error={!!fieldErrors.stateProvince} 
+              helperText={fieldErrors.stateProvince} 
             />
           </Grid>
 
-          <Grid item xs={12} sm={6} >
+          <Grid item xs={12} sm={6}>
             <Autocomplete
               fullWidth
-              id="country-select"
               options={countries}
               autoHighlight
               getOptionLabel={(option) => option.country_name}
               value={countries.find((c) => c.country_code_2 === formData.country) || null}
-              onChange={(_, newValue) => {
-                const event = {
-                  target: { value: newValue ? newValue.country_code_2 : '' },
-                } as React.ChangeEvent<HTMLInputElement>;
-                handleFieldChange('country')(event);
-              }}
-              renderOption={(props, option) => {
-                const { key, ...otherProps } = props;
-                return (
-                  <Box
-                    key={key}
-                    component="li"
-                    {...otherProps}
-                  >
-                    {option.country_name}
-                  </Box>
-                );
-              }}
-              sx={{ width: '100%' }}
+              onChange={(_, v) => handleFieldChange('country')({ target: { value: v?.country_code_2 || '' } } as any)}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Country"
-                  required
-                  fullWidth
-                  error={!!fieldErrors.country}
-                  helperText={
-                    fieldErrors.country ||
-                    (formData.country === 'US'
-                      ? 'United States format expected'
-                      : formData.country === 'CA'
-                      ? 'Canadian format expected'
-                      : '')
-                  }
-                  inputProps={{
-                    ...params.inputProps,
-                    autoComplete: 'new-password',
-                  }}
+                <TextField 
+                  {...params} 
+                  label="Country" 
+                  required 
+                  fullWidth 
+                  error={!!fieldErrors.country} 
+                  helperText={fieldErrors.country} 
                 />
               )}
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              label="Postal Code"
-              value={formData.postalCode}
-              onChange={handleFieldChange('postalCode')}
-              required
-              fullWidth
-              error={!!fieldErrors.postalCode}
-              helperText={fieldErrors.postalCode || (formData.country === 'US' ? 'Format: 12345 or 12345-6789' : formData.country === 'CA' ? 'Format: A1B 2C3' : '')}
-              placeholder={formData.country === 'US' ? '12345' : formData.country === 'CA' ? 'A1B 2C3' : ''}
+            <TextField 
+              label="Postal Code" 
+              value={formData.postalCode} 
+              onChange={handleFieldChange('postalCode')} 
+              required 
+              fullWidth 
+              error={!!fieldErrors.postalCode} 
+              helperText={fieldErrors.postalCode || (formData.country === 'US' ? 'Format: 12345 or 12345-6789' : '')} 
             />
           </Grid>
 
           <Grid item xs={12}>
-            <TextField
-              label="Phone"
-              value={formData.phone}
-              onChange={handleFieldChange('phone')}
-              placeholder="555-123-4567"
-              required
-              fullWidth
-              error={!!fieldErrors.phone}
-              helperText={fieldErrors.phone || 'Include country code for international numbers'}
+            <TextField 
+              label="Phone" 
+              value={formData.phone} 
+              onChange={handleFieldChange('phone')} 
+              required 
+              fullWidth 
+              error={!!fieldErrors.phone} 
+              helperText={fieldErrors.phone} 
             />
           </Grid>
-        </Grid>
+        </FormGrid>
 
+        {/* Feedback Messages */}
         {validationErrors.length > 0 && (
           <Alert severity="error" sx={{ mt: 2 }}>
-            {validationErrors.map((error, index) => (
-              <div key={index}>{error}</div>
-            ))}
+            {validationErrors.map((e, i) => <div key={i}>{e}</div>)}
           </Alert>
         )}
 
         {validationStatus === 'validated' && (
-          <Alert 
-            severity="success" 
-            sx={{ mt: 2 }}
-            action={
-              <Chip
-                label="Validated"
-                icon={<Check size={16} />}
-                color="success"
-                size="small"
-              />
-            }
-          >
-            Shipping address validated successfully
+          <Alert severity="success" sx={{ mt: 2 }} action={<Chip label="Validated" size="small" color="success" icon={<Check size={14} />} />}>
+            Address validated successfully
           </Alert>
         )}
 
+        {/* Actions */}
         <Stack direction="row" spacing={2} mt={4}>
-          <Button
-            variant="outlined"
-            size="large"
-            onClick={onBack}
-            sx={{ minWidth: 120 }}
-          >
+          <ActionButton variant="outlined" size="large" onClick={onBack}>
             Back
-          </Button>
+          </ActionButton>
           
-          {validationStatus !== 'validated' && (
-            <Button
+          {validationStatus !== 'validated' ? (
+            <ValidationButton
               variant="contained"
               size="large"
               fullWidth
               disabled={!isFormComplete() || validationStatus === 'validating'}
               onClick={handleValidate}
-              startIcon={validationStatus === 'validating' ? <CircularProgress size={20} /> : null}
-              sx={{ 
-                backgroundColor: '#666',
-                '&:hover': {
-                  backgroundColor: '#555',
-                },
-              }}
+              startIcon={validationStatus === 'validating' ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {validationStatus === 'validating' ? 'Validating...' : 'Validate Address'}
-            </Button>
-          )}
-
-          {validationStatus === 'validated' && (
-            <Button
+            </ValidationButton>
+          ) : (
+            <PrimaryButton
               variant="contained"
               size="large"
               fullWidth
-              onClick={handleNext}
-              sx={{ 
-                backgroundColor: '#000',
-                '&:hover': {
-                  backgroundColor: '#333',
-                },
-              }}
+              onClick={onNext}
             >
               Next
-            </Button>
+            </PrimaryButton>
           )}
         </Stack>
       </Box>
