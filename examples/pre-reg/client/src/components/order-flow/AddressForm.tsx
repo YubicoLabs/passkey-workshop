@@ -17,7 +17,6 @@ import { ChevronDown, Check } from 'lucide-react';
 import { Address, CountriesResponse, AddressWithValidationSchema } from '@/types/api';
 import { useQuery } from '@tanstack/react-query';
 
-
 const useAddressForm = (
   initialAddress: Address | null,
   onAddressChange: (address: Address) => void,
@@ -118,7 +117,7 @@ const useAddressForm = (
     fieldErrors,
     validationStatus,
     validationErrors,
-    setFieldValue, // Exposing the new setter
+    setFieldValue,
     validate,
     isComplete
   };
@@ -180,7 +179,9 @@ export const AddressForm: React.FC<AddressFormProps> = ({
         <CompletedStep label="1 • Select your products" />
         <SectionTitle variant="h5">2 • Address</SectionTitle>
 
-        <FormGrid container spacing={2}>
+        {/* Updated: Added flexWrap="wrap" to ensure items don't squeeze onto one line 
+        */}
+        <FormGrid container spacing={2} flexWrap="wrap">
           <Grid item xs={12} sm={6}>
             <TextField 
               label="First Name" 
@@ -254,22 +255,37 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          {/* Fixed:
+            1. Added minWidth: '300px' so it can't shrink to a tiny square.
+            2. Kept xs={12} for full width on mobile/small screens.
+            3. Kept the auto-dropdown fix (openOnFocus={false}).
+          */}
+          <Grid item xs={12} sm={6}> 
             <Autocomplete
               fullWidth
+              sx={{ minWidth: '250px' }}
               options={countries}
-              autoHighlight
               getOptionLabel={(option) => option.country_name}
               value={countries.find((c) => c.country_code_2 === formData.country) || null}
-              // IMPROVEMENT: No more fake events or 'as any'
               onChange={(_, newValue) => setFieldValue('country', newValue ? newValue.country_code_2 : '')}
+              
+              // Prevent auto dropdown behavior
+              autoHighlight={false}
+              autoSelect={false}
+              openOnFocus={false} 
+              
               renderInput={(params) => (
                 <TextField 
                   {...params} 
                   label="Country" 
-                  required fullWidth 
+                  required 
+                  fullWidth 
                   error={!!fieldErrors.country} 
-                  helperText={fieldErrors.country} 
+                  helperText={fieldErrors.country}
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', 
+                  }}
                 />
               )}
             />
