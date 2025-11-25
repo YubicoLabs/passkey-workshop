@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { 
   Box, 
   TextField, 
@@ -14,114 +14,9 @@ import {
   styled 
 } from '@mui/material';
 import { ChevronDown, Check } from 'lucide-react';
-import { Address, CountriesResponse, AddressWithValidationSchema } from '@/types/api';
+import { Address, CountriesResponse } from '@/types/api';
 import { useQuery } from '@tanstack/react-query';
-
-const useAddressForm = (
-  initialAddress: Address | null,
-  onAddressChange: (address: Address) => void,
-  onServerValidate: (address: Address) => Promise<{ validated: boolean; errors?: string[]; suggestedAddress?: any }>
-) => {
-  const [formData, setFormData] = useState<Address>(
-    initialAddress || {
-      firstName: '', lastName: '', addressLine1: '', addressLine2: '',
-      city: '', stateProvince: '', postalCode: '', country: '', phone: '',
-    }
-  );
-
-  const [validationStatus, setValidationStatus] = useState<'idle' | 'validating' | 'validated' | 'error'>('idle');
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  
-  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof Address, string>>>({});
-
-  const setFieldValue = useCallback((field: keyof Address, value: string) => {
-    setFormData(prev => {
-      const newData = { ...prev, [field]: value };
-      
-      if (field === 'country' && value !== prev.country) {
-        newData.stateProvince = '';
-      }
-      
-      onAddressChange(newData);
-      return newData;
-    });
-
-    setFieldErrors(prev => {
-      if (!prev[field]) return prev;
-      const newErrors = { ...prev };
-      delete newErrors[field];
-      return newErrors;
-    });
-
-    setValidationStatus(status => 
-      (status === 'validated' || status === 'error') ? 'idle' : status
-    );
-    setValidationErrors([]);
-  }, [onAddressChange]);
-
-  const validate = useCallback(async () => {
-    setValidationStatus('validating');
-    setValidationErrors([]);
-    setFieldErrors({});
-
-    const result = AddressWithValidationSchema.safeParse(formData);
-
-    if (!result.success) {
-      const newFieldErrors: Partial<Record<keyof Address, string>> = {};
-      result.error.issues.forEach((issue) => {
-        if (issue.path.length > 0) {
-          const key = issue.path[0] as keyof Address;
-          newFieldErrors[key] = issue.message;
-        }
-      });
-      setFieldErrors(newFieldErrors);
-      setValidationStatus('error');
-      setValidationErrors(['Please correct the errors highlighted below.']);
-      return false;
-    }
-
-    try {
-      const serverResult = await onServerValidate(formData);
-      
-      if (serverResult.validated) {
-        setValidationStatus('validated');
-        if (serverResult.suggestedAddress) {
-          setFormData(serverResult.suggestedAddress);
-        }
-        return true;
-      } else {
-        setValidationStatus('error');
-        setValidationErrors(serverResult.errors && serverResult.errors.length > 0 
-          ? serverResult.errors 
-          : ['Address validation failed.']
-        );
-        return false;
-      }
-    } catch (error) {
-      setValidationStatus('error');
-      setValidationErrors(['Unable to validate address. Please check your connection.']);
-      return false;
-    }
-  }, [formData, onServerValidate]);
-
-  const isComplete = () => {
-    return !!(
-      formData.firstName && formData.lastName && formData.addressLine1 &&
-      formData.city && formData.stateProvince && formData.postalCode &&
-      formData.country && formData.phone
-    );
-  };
-
-  return {
-    formData,
-    fieldErrors,
-    validationStatus,
-    validationErrors,
-    setFieldValue,
-    validate,
-    isComplete
-  };
-};
+import { useAddressForm } from '@/features/orders/hooks/useAddressForm';
 
 const CompletedStep = ({ label }: { label: string }) => (
   <Stack direction="row" spacing={2} alignItems="center" mb={3}>
@@ -157,7 +52,11 @@ export const AddressForm: React.FC<AddressFormProps> = ({
     setFieldValue,
     validate,
     isComplete
-  } = useAddressForm(address, onAddressChange, onValidate);
+  } = useAddressForm({
+    initialAddress: address,
+    onAddressChange,
+    onServerValidate: onValidate,
+  });
 
   const [showAddressLine2, setShowAddressLine2] = useState(!!formData.addressLine2);
 
