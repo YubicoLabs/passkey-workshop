@@ -1,61 +1,46 @@
 import React, { useState } from 'react';
 import { 
   Container, 
-  Paper,
-  Box,
-  Typography,
+  Paper, 
+  Box, 
+  Typography, 
+  CircularProgress, 
+  Alert, 
+  Button,
+  Fade
 } from '@mui/material';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { CheckCircle } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+
 import { ProductSelection } from './order-flow/ProductSelection';
 import { AddressForm } from './order-flow/AddressForm';
 import { OrderReview } from './order-flow/OrderReview';
-import { OrderStatus } from './order-management/OrderStatus';
+import ErrorBoundary from './common/ErrorBoundary';
+
 import { 
   SelectedProduct, 
-  Address,
-  Product,
-  Shipment,
-  ShipmentRequest,
+  Address, 
+  Product, 
+  Shipment, 
+  ShipmentRequest 
 } from '@/types/api';
 import { YubiKeyApiClient } from '@/services/api-client';
-import ErrorBoundary from './common/ErrorBoundary';
-import { UserInfoStep } from './order-flow/UserInfoStep';
 
 export interface YubiKeyOrderFlowProps {
   apiClient: YubiKeyApiClient;
   userEmail?: string;
+  keycloakUserId?: string;
+  products?: Product[];
   onComplete?: (shipment: Shipment) => void;
   onCancel?: () => void;
-  locale?: string;
-  translations?: Record<string, string>;
-  products?: Product[];
   containerProps?: React.ComponentProps<typeof Container>;
   paperProps?: React.ComponentProps<typeof Paper>;
-  keycloakUserId?: string; 
 }
 
-type OrderStep = 'products' | 'address' | 'userInfo' | 'review' | 'confirmation';
+type OrderStep = 'products' | 'address' | 'review' | 'success';
 
-// Create query client outside component to avoid recreation
-const createQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Updated retry logic
-      retry: (failureCount, error: any) => {
-        // Do not retry on 4xx client errors
-        if (error.response?.status >= 400 && error.response?.status < 500) {
-          return false;
-        }
-        // Retry up to 2 times (3 attempts total)
-        return failureCount < 2;
-      },
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+const RESELLER_ORG_ID = 'YUBI-RESELLER-ORG-001';
 
-// Default products for demonstration
 const defaultProducts: Product[] = [
   {
     id: 'yubikey-5-nfc',
@@ -99,262 +84,220 @@ const defaultProducts: Product[] = [
   },
 ];
 
+const useOrderFlow = (initialProducts: Product[]) => {
+  const [step, setStep] = useState<OrderStep>('products');
+  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
+  const [address, setAddress] = useState<Address | null>(null);
+  const [createdShipment, setCreatedShipment] = useState<Shipment | null>(null);
+
+  const goToNext = () => {
+    if (step === 'products') setStep('address');
+    else if (step === 'address') setStep('review');
+  };
+
+  const goToBack = () => {
+    if (step === 'address') setStep('products');
+    else if (step === 'review') setStep('address');
+  };
+
+  return {
+    step,
+    setStep,
+    selectedProducts,
+    setSelectedProducts,
+    address,
+    setAddress,
+    createdShipment,
+    setCreatedShipment,
+    goToNext,
+    goToBack,
+  };
+};
+
+const useSubmitOrder = (apiClient: YubiKeyApiClient, onSuccess: (data: Shipment) => void) => {
+  return useMutation({
+    mutationFn: async (payload: ShipmentRequest) => {
+      return await apiClient.createShipment(payload);
+    },
+    onSuccess,
+  });
+};
+
+const SuccessView = ({ shipmentId, onReset }: { shipmentId: string; onReset: () => void }) => (
+  <Box textAlign="center" py={6}>
+    <Fade in>
+      <Box>
+        <CheckCircle size={64} color="#388E3C" style={{ marginBottom: 16 }} />
+        <Typography variant="h4" gutterBottom>
+          Order Confirmed!
+        </Typography>
+        <Typography color="text.secondary" paragraph>
+          Your shipment has been created successfully.
+        </Typography>
+        <Typography variant="subtitle1" sx={{ fontFamily: 'monospace', mb: 4, bgcolor: 'grey.100', p: 1, borderRadius: 1, display: 'inline-block' }}>
+          ID: {shipmentId}
+        </Typography>
+        <Box>
+          <Button variant="contained" onClick={onReset}>
+            Place Another Order
+          </Button>
+        </Box>
+      </Box>
+    </Fade>
+  </Box>
+);
+
 const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
   apiClient,
   userEmail = 'user@example.com',
+  keycloakUserId,
+  products = defaultProducts, // Uses the restored default data
   onComplete,
   onCancel,
-  products = defaultProducts,
-  containerProps = {},
+  containerProps,
   paperProps = {},
-  keycloakUserId,
 }) => {
-  const [queryClient] = useState(createQueryClient);
-  const [currentStep, setCurrentStep] = useState<OrderStep>('products');
-  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
-  const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
-  const [userId, setUserId] = useState(keycloakUserId || '');
-  const [shipment, setShipment] = useState<any>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  React.useEffect(() => {
-    console.log('🎯 YubiKeyOrderFlow received:', { keycloakUserId, userId });
-  }, [keycloakUserId, userId]);
+  const {
+    step,
+    setStep,
+    selectedProducts,
+    setSelectedProducts,
+    address,
+    setAddress,
+    createdShipment,
+    setCreatedShipment,
+    goToNext,
+    goToBack,
+  } = useOrderFlow(products);
 
-  const resellerOrgId = 'YUBI-RESELLER-ORG-001';
+  const { mutate: submitOrder, isPending, error: submitError } = useSubmitOrder(apiClient, (data) => {
+    setCreatedShipment(data);
+    setStep('success');
+    if (onComplete) onComplete(data);
+  });
 
-  const handleProductsChange = (products: SelectedProduct[]) => {
-    setSelectedProducts(products);
-  };
-
-  const handleAddressChange = (address: Address) => {
-    setShippingAddress(address);
-  };
-
-  const handleAddressValidation = async (address: Address) => {
-    try {
-      const response = await apiClient.validateAddress({ address });
-      return {
-        validated: response.validated,
-        errors: response.errors,
-      };
-    } catch (error) {
-      console.error('Address validation error:', error);
-      return {
-        validated: false,
-        errors: ['Failed to validate address'],
-      };
-    }
-  };
-
-  const handleProductsNext = () => {
-    if (selectedProducts.length >= 2) {
-      setCurrentStep('address');
-    }
-  };
-
-const handleAddressNext = () => {
-  if (shippingAddress) {
-    // If we have a Keycloak ID, skip the manual entry step
-    if (keycloakUserId) {
-      console.log('✅ Skipping user info step, using Keycloak ID:', keycloakUserId);
-      setCurrentStep('review');
-    } else {
-      console.log('❌ No Keycloak ID, showing user info step');
-      setCurrentStep('userInfo');
-    }
-  }
-};
-
-  const handleUserInfoNext = () => {
-    if (userId.trim()) {
-      setCurrentStep('review');
-    }
-  };
-
-  const handleReviewConfirm = async () => {
-    if (!shippingAddress || selectedProducts.length === 0 || !userId.trim()) {
+  const handleReviewConfirm = () => {
+    if (!address || !keycloakUserId) {
+      console.error("Missing address or User ID");
       return;
     }
 
-    setIsSubmitting(true);
-
-    try {
-      const shipmentRequest: ShipmentRequest = {
-        user_id: userId.trim(),
-        pin_request: {
-          type: "generate",
-          length: 8,
+    // Construct the payload based on the strict Zod schema in types/api.ts
+    const payload: ShipmentRequest = {
+      user_id: keycloakUserId,
+      pin_request: { type: 'generate', length: 8 },
+      yubico_shipment_request: {
+        delivery_type: 1,
+        recipient: {
+          recipient_company: 'Yubico', // Or derive from props
+          recipient_email: userEmail,
+          recipient_firstname: address.firstName,
+          recipient_lastname: address.lastName,
+          recipient_telephone: address.phone,
         },
-        yubico_shipment_request: {
-          delivery_type: 1,
-          recipient: {
-            recipient_company: "Yubico",
-            recipient_email: userEmail,
-            recipient_firstname: shippingAddress?.firstName || "",
-            recipient_lastname: shippingAddress?.lastName || "",
-            recipient_telephone: shippingAddress?.phone || "",
-          },
-          mailing_address: {
-            street_line1: shippingAddress?.addressLine1 || "",
-            street_line2: shippingAddress?.addressLine2 || "",
-            city: shippingAddress?.city || "",
-            region: shippingAddress?.stateProvince || "",
-            postal_code: shippingAddress?.postalCode || "",
-            country_code_2: shippingAddress?.country || "US",
-          },
-          shipment_items: [
-            {
-              product_id: 3,
-              inventory_product_id: 133,
-              product_quantity: 1,
-              customization_id: "test00"
-            }
-          ],
+        mailing_address: {
+          street_line1: address.addressLine1,
+          street_line2: address.addressLine2 || undefined,
+          city: address.city,
+          region: address.stateProvince,
+          postal_code: address.postalCode,
+          country_code_2: address.country,
         },
-      };
-      // Print shipment request for debugging
-      console.log('🚚 ShipmentRequest:', JSON.stringify(shipmentRequest, null, 2));
+        // Mapping selected products to shipment items
+        shipment_items: selectedProducts.map(sp => ({
+          product_id: sp.product.productId || 0, // Fallback if ID missing
+          inventory_product_id: 133, // Ideally mocked or dynamic
+          product_quantity: sp.quantity,
+          customization_id: 'standard-config'
+        })),
+      },
+    };
 
-      const shipment = await apiClient.createShipment(shipmentRequest);
-      // Use returned shipment object for confirmation
-      if (shipment && shipment.shipment_id) {
-        const mappedShipment = {
-          id: shipment.shipment_id,
-          orderId: '',
-          status: 'PROCESSING',
-          products: selectedProducts.map((item) => ({
-            product: item.product,
-            quantity: item.quantity,
-            isPrimary: item.isPrimary || false,
-          })),
-          shippingAddress: shippingAddress,
-          userEmail: userEmail || '',
-          requestDate: new Date().toISOString(),
-          requestor: shippingAddress?.firstName + ' ' + shippingAddress?.lastName,
-          trackingNumber: '',
-          carrier: '',
-          estimatedDelivery: '',
-          actualDelivery: '',
-          metadata: {},
-        };
-        setShipment(mappedShipment);
-        setCurrentStep('confirmation');
-        if (onComplete) {
-          onComplete({ shipment_id: shipment.shipment_id });
-        }
-      } else {
-        throw new Error('Shipment creation failed or did not return a valid shipment_id');
-      }
-    } catch (error) {
-      console.error('Failed to create shipment:', error);
-      // In production, show error UI
-    } finally {
-      setIsSubmitting(false);
-    }
+    submitOrder(payload);
   };
 
-  const handleBack = () => {
-    switch (currentStep) {
-      case 'address':
-        setCurrentStep('products');
-        break;
-      case 'userInfo':
-        setCurrentStep('address');
-        break;
-      case 'review':
-        setCurrentStep('userInfo');
-        break;
-      case 'confirmation':
-        setCurrentStep('review');
-        break;
-    }
-  };
-
-  const renderStep = () => {
-    switch (currentStep) {
+  const renderStepContent = () => {
+    switch (step) {
       case 'products':
         return (
           <ProductSelection
             products={products}
             selectedProducts={selectedProducts}
-            onProductsChange={handleProductsChange}
-            onNext={handleProductsNext}
+            onProductsChange={setSelectedProducts}
+            onNext={goToNext}
           />
         );
+      
       case 'address':
         return (
           <AddressForm
-            address={shippingAddress}
-            onAddressChange={handleAddressChange}
-            onValidate={handleAddressValidation}
-            onNext={handleAddressNext}
-            onBack={handleBack}
-            getCountries={apiClient.getCountries.bind(apiClient)}
+            address={address}
+            onAddressChange={setAddress}
+            // Bind the method to the class instance
+            onValidate={(addr) => apiClient.validateAddress({ address: addr })}
+            onNext={goToNext}
+            onBack={goToBack}
+            getCountries={() => apiClient.getCountries()}
           />
         );
-      case 'userInfo':
-        return (
-          <UserInfoStep
-            userId={userId}
-            onUserIdChange={setUserId}
-            resellerOrgId={resellerOrgId}
-            onNext={handleUserInfoNext}
-            onBack={handleBack}
-          />
-        );
+
       case 'review':
+        if (!address) return null;
         return (
-          <OrderReview
-            selectedProducts={selectedProducts}
-            shippingAddress={shippingAddress!}
-            userId={userId}
-            resellerOrgId={resellerOrgId}
-            onConfirm={handleReviewConfirm}
-            onBack={handleBack}
-            isSubmitting={isSubmitting}
-          />
-        );
-      case 'confirmation':
-        return shipment ? (
           <>
-            <OrderStatus
-              shipment={shipment}
-              onBack={onCancel}
+            {submitError && (
+              <Alert severity="error" sx={{ mb: 3 }}>
+                Order submission failed. Please try again.
+              </Alert>
+            )}
+            <OrderReview
+              selectedProducts={selectedProducts}
+              shippingAddress={address}
+              onConfirm={handleReviewConfirm}
+              onBack={goToBack}
+              isSubmitting={isPending}
             />
-            <Box mt={3}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>Keycloak User ID</Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>{userId}</Typography>
-            </Box>
           </>
-        ) : null;
+        );
+
+      case 'success':
+        return createdShipment ? (
+            <SuccessView 
+              shipmentId={createdShipment.shipment_id} 
+              onReset={onCancel || (() => window.location.reload())} 
+            />
+        ) : <CircularProgress />;
+
       default:
         return null;
     }
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Container maxWidth="md" sx={{ py: 4 }} {...containerProps}>
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: { xs: 3, md: 5 },
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider',
-            ...paperProps.sx,
-          }}
-          {...paperProps}
-        >
-          {renderStep()}
-        </Paper>
-      </Container>
-    </QueryClientProvider>
+    <Container maxWidth="md" sx={{ py: 4 }} {...containerProps}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 3, md: 5 },
+          borderRadius: 2,
+          border: '1px solid',
+          borderColor: 'divider',
+          ...paperProps.sx,
+        }}
+        {...paperProps}
+      >
+        {!keycloakUserId && step !== 'success' && (
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            Development Mode: No Keycloak User ID detected. Submission may fail.
+          </Alert>
+        )}
+        
+        {renderStepContent()}
+      </Paper>
+    </Container>
   );
 };
 
-// Export the component wrapped in the ErrorBoundary
 export const YubiKeyOrderFlow: React.FC<YubiKeyOrderFlowProps> = (props) => (
   <ErrorBoundary>
     <YubiKeyOrderFlowInternal {...props} />

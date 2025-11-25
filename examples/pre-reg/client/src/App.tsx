@@ -1,26 +1,28 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, CircularProgress, Button, Box, Typography, Paper,  } from '@mui/material';
-import SecurityIcon from '@mui/icons-material/Security';
+import { CssBaseline, CircularProgress, Button, Box, Typography } from '@mui/material';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // - Add this import
+import { AuthProvider, useAuth } from 'react-oidc-context';
+
 import LoginPage from './components/LoginPage';
 import { YubiKeyOrderFlow } from './components/YubiKeyOrderFlow';
 import { createApiClient } from './services/api-client';
 import { theme } from './theme';
-import { AuthProvider, useAuth } from 'react-oidc-context';
 import { oidcConfig } from './auth/config';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+
+// 1. Create a client instance outside the component to keep it stable
+const queryClient = new QueryClient();
 
 function AuthenticatedApp() {
   const auth = useAuth();
 
-    React.useEffect(() => {
+  // ... (Keep your existing AuthenticatedApp logic unchanged)
+  React.useEffect(() => {
     if (auth.user) {
       console.log('🔐 Token Info:', {
         sub: auth.user.profile.sub,
         email: auth.user.profile.email,
         name: auth.user.profile.name,
-        preffered_username: auth.user?.profile?.preferred_username,
-        fullProfile: auth.user.profile
       });
     }
   }, [auth.user]);
@@ -59,13 +61,11 @@ function AuthenticatedApp() {
     return <LoginPage onLogin={() => auth.signinRedirect()} />;
   }
 
-  // User is authenticated - show the actual app
   const userId = auth.user?.profile.sub;
   const userEmail = auth.user?.profile.email;
 
   return (
     <>
-      {/* Optional: Add a logout button in the corner */}
       <Button 
         variant="outlined" 
         size="small"
@@ -92,12 +92,15 @@ function AuthenticatedApp() {
 
 function App() {
   return (
-    <AuthProvider {...oidcConfig}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AuthenticatedApp />
-      </ThemeProvider>
-    </AuthProvider>
+    // 2. Wrap the entire app hierarchy with the Provider
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider {...oidcConfig}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AuthenticatedApp />
+        </ThemeProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
