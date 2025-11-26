@@ -9,7 +9,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { YubiKeyOrderFlow } from './components/YubiKeyOrderFlow';
 import { useApiClient } from './hooks/useApiClient';
 import { theme } from './theme';
-import { oidcConfig } from './auth/config';
+import { oidcConfig } from '@/features/auth/config/oidc';
 
 const queryClient = new QueryClient();
 
