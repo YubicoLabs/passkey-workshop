@@ -14,9 +14,10 @@ import {
   styled 
 } from '@mui/material';
 import { ChevronDown, Check } from 'lucide-react';
-import { Address, CountriesResponse } from '@/types/api';
-import { useQuery } from '@tanstack/react-query';
+import { Address } from '@/types/api';
 import { useAddressForm } from '@/features/orders/hooks/useAddressForm';
+import { useCountries } from '@/hooks/useCountries';
+import { useAddressValidation } from '@/hooks/useAddressValidation';
 
 const CompletedStep = ({ label }: { label: string }) => (
   <Stack direction="row" spacing={2} alignItems="center" mb={3}>
@@ -30,20 +31,19 @@ const CompletedStep = ({ label }: { label: string }) => (
 interface AddressFormProps {
   address: Address | null;
   onAddressChange: (address: Address) => void;
-  onValidate: (address: Address) => Promise<{ validated: boolean; errors?: string[]; suggestedAddress?: any }>;
   onNext: () => void;
   onBack: () => void;
-  getCountries: () => Promise<CountriesResponse>;
 }
 
 export const AddressForm: React.FC<AddressFormProps> = ({
   address,
   onAddressChange,
-  onValidate,
   onNext,
   onBack,
-  getCountries,
 }) => {
+  const { mutateAsync: validateAddress } = useAddressValidation();
+  const { data: countriesData } = useCountries();
+
   const {
     formData,
     fieldErrors,
@@ -55,12 +55,11 @@ export const AddressForm: React.FC<AddressFormProps> = ({
   } = useAddressForm({
     initialAddress: address,
     onAddressChange,
-    onServerValidate: onValidate,
+    onServerValidate: validateAddress,
   });
 
   const [showAddressLine2, setShowAddressLine2] = useState(!!formData.addressLine2);
 
-  const { data: countriesData } = useQuery({ queryKey: ['countries'], queryFn: getCountries });
   const countries = countriesData?.countries ?? [];
 
   const handleNextClick = () => {

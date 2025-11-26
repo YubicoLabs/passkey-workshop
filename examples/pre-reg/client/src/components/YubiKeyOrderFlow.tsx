@@ -198,11 +198,8 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
           <AddressForm
             address={address}
             onAddressChange={setAddress}
-            // Bind the method to the class instance
-            onValidate={(addr) => apiClient.validateAddress({ address: addr })}
             onNext={goToNext}
             onBack={goToBack}
-            getCountries={() => apiClient.getCountries()}
           />
         );
 
