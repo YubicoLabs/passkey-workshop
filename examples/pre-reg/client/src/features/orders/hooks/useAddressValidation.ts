@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { useApiClient } from './useApiClient';
+import { useApiClient } from '@/shared/hooks/useApiClient';
 import type { Address } from '@/types/api';
 
 export const useAddressValidation = () => {

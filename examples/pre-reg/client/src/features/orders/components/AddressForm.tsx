@@ -15,9 +15,9 @@ import {
 } from '@mui/material';
 import { ChevronDown, Check } from 'lucide-react';
 import { Address } from '@/types/api';
-import { useAddressForm } from '@/features/orders/hooks/useAddressForm';
-import { useCountries } from '@/hooks/useCountries';
-import { useAddressValidation } from '@/hooks/useAddressValidation';
+import { useAddressForm } from '../hooks/useAddressForm';
+import { useCountries } from '../hooks/useCountries';
+import { useAddressValidation } from '../hooks/useAddressValidation';
 
 const CompletedStep = ({ label }: { label: string }) => (
   <Stack direction="row" spacing={2} alignItems="center" mb={3}>

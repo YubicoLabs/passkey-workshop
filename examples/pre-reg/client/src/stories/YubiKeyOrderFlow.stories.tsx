@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { YubiKeyOrderFlow } from '@/components/YubiKeyOrderFlow';
+import { YubiKeyOrderFlow } from '@/features/orders/components/YubiKeyOrderFlow';
 import { createApiClient } from '@/services/api-client';
 import { theme } from '@/theme';
 

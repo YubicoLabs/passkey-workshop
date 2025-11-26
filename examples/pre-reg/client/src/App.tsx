@@ -7,7 +7,7 @@ import { AuthProvider } from 'react-oidc-context';
 import LoginPage from '@/features/auth/components/LoginPage';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { YubiKeyOrderFlow } from '@/features/orders/components/YubiKeyOrderFlow';
-import { useApiClient } from './hooks/useApiClient';
+import { useApiClient } from '@/shared/hooks/useApiClient';
 import { theme } from './theme';
 import { oidcConfig } from '@/features/auth/config/oidc';
 
