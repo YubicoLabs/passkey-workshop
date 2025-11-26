@@ -22,7 +22,7 @@ import {
   Shipment, 
   ShipmentRequest 
 } from '@/types/api';
-import { YubiKeyApiClient } from '@/services/api-client';
+import { YubiKeyApiClient } from '@/shared/api/client';
 import { useOrderFlow } from '@/features/orders/hooks/useOrderFlow';
 
 export interface YubiKeyOrderFlowProps {
