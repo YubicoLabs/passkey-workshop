@@ -1,0 +1,30 @@
+import { useAuth as useOidcAuth } from 'react-oidc-context';
+
+export interface AuthUser {
+  sub: string;
+  email?: string;
+  name?: string;
+  access_token: string;
+}
+
+export const useAuth = () => {
+  const auth = useOidcAuth();
+
+  const user: AuthUser | null = auth.isAuthenticated && auth.user
+    ? {
+        sub: auth.user.profile.sub as string,
+        email: auth.user.profile.email as string | undefined,
+        name: auth.user.profile.name as string | undefined,
+        access_token: auth.user.access_token,
+      }
+    : null;
+
+  return {
+    isAuthenticated: auth.isAuthenticated,
+    isLoading: auth.isLoading,
+    error: auth.error,
+    user,
+    login: () => auth.signinRedirect(),
+    logout: () => auth.signoutRedirect(),
+  };
+};
