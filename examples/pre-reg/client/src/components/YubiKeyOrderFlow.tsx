@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Container, 
   Paper, 
@@ -18,13 +18,12 @@ import { OrderReview } from './order-flow/OrderReview';
 import ErrorBoundary from './common/ErrorBoundary';
 
 import { 
-  SelectedProduct, 
-  Address, 
   Product, 
   Shipment, 
   ShipmentRequest 
 } from '@/types/api';
 import { YubiKeyApiClient } from '@/services/api-client';
+import { useOrderFlow } from '@/features/orders/hooks/useOrderFlow';
 
 export interface YubiKeyOrderFlowProps {
   apiClient: YubiKeyApiClient;
@@ -36,10 +35,6 @@ export interface YubiKeyOrderFlowProps {
   containerProps?: React.ComponentProps<typeof Container>;
   paperProps?: React.ComponentProps<typeof Paper>;
 }
-
-type OrderStep = 'products' | 'address' | 'review' | 'success';
-
-const RESELLER_ORG_ID = 'YUBI-RESELLER-ORG-001';
 
 const defaultProducts: Product[] = [
   {
@@ -83,36 +78,6 @@ const defaultProducts: Product[] = [
     capabilities: ['FIDO2', 'U2F', 'Smart Card', 'OTP'],
   },
 ];
-
-const useOrderFlow = (initialProducts: Product[]) => {
-  const [step, setStep] = useState<OrderStep>('products');
-  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
-  const [address, setAddress] = useState<Address | null>(null);
-  const [createdShipment, setCreatedShipment] = useState<Shipment | null>(null);
-
-  const goToNext = () => {
-    if (step === 'products') setStep('address');
-    else if (step === 'address') setStep('review');
-  };
-
-  const goToBack = () => {
-    if (step === 'address') setStep('products');
-    else if (step === 'review') setStep('address');
-  };
-
-  return {
-    step,
-    setStep,
-    selectedProducts,
-    setSelectedProducts,
-    address,
-    setAddress,
-    createdShipment,
-    setCreatedShipment,
-    goToNext,
-    goToBack,
-  };
-};
 
 const useSubmitOrder = (apiClient: YubiKeyApiClient, onSuccess: (data: Shipment) => void) => {
   return useMutation({
