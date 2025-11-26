@@ -11,7 +11,7 @@ import {
   ApiValidateAddressRequestSchema,
   ApiValidateAddressResponseSchema,
   ShipmentRequest
-} from '@/types/api';
+} from '@/features/orders/types';
 
 export interface ApiClientConfig {
   baseURL: string;

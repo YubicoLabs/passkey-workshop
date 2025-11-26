@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { Product, SelectedProduct, Address, Shipment } from '@/types/api';
+import type { Product, SelectedProduct, Address, Shipment } from '@/features/orders/types';
 
 export type OrderStep = 'products' | 'address' | 'review' | 'success';
 

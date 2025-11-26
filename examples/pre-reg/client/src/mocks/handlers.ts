@@ -5,7 +5,7 @@ import {
   Shipment, 
   ValidateAddressResponse,
   ShipmentListResponse 
-} from '@/types/api';
+} from '@/features/orders/types';
 
 // Mock data
 const mockProducts: Product[] = [

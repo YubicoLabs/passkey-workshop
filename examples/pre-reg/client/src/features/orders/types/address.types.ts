@@ -14,25 +14,6 @@ const restrictedCountries = [
   'NZ', 'PH', 'PL', 'PT', 'RO', 'SA', 'SG', 'SK', 'SI', 'TH', 'TW', 'AE'
 ] as const;
 
-// Product schemas
-export const ProductSchema = z.object({
-  id: z.string(),
-  productId: z.number().optional(),
-  name: z.string(),
-  description: z.string(),
-  price: z.number(),
-  currency: z.string().default('USD'),
-  image: z.string().optional(),
-  formFactor: z.enum(['USB-A', 'USB-C', 'NFC', 'Nano']),
-  capabilities: z.array(z.string()),
-});
-
-export const SelectedProductSchema = z.object({
-  product: ProductSchema,
-  quantity: z.number().min(1).default(1),
-  isPrimary: z.boolean().default(false),
-});
-
 // Base address schema with proper validations
 export const AddressSchema = z.object({
   firstName: z.string()
@@ -156,29 +137,6 @@ export const ValidateAddressResponseSchema = z.object({
   errors: z.array(z.string()).optional(),
 });
 
-
-// Country schema
-export const DeliveryTypeSchema = z.object({
-  value: z.number(),
-  name: z.string(),
-});
-
-export const CountryApiSchema = z.object({
-  country_id: z.number(),
-  country_name: z.string(),
-  country_code_2: z.string().length(2),
-  country_code_3: z.string().length(3),
-  country_vat_rate: z.number(),
-  delivery_types: z.array(DeliveryTypeSchema),
-  states: z.array(z.object({ code: z.string(), name: z.string() })).optional(),
-});
-
-export const CountriesResponseSchema = z.object({
-  count: z.number(),
-  total_count: z.number(),
-  countries: z.array(CountryApiSchema),
-});
-
 // Validate API Schema
 export const ApiValidateAddressRequestSchema = z.object({
   street_line1: z.string().max(60),
@@ -204,63 +162,9 @@ export const ApiValidateAddressResponseSchema = z.object({
   }).optional()
 });
 
-// Shipment API Schema
-export const ShipmentItemSchema = z.object({
-  product_id: z.number(),
-  inventory_product_id: z.number(),
-  product_quantity: z.number(),
-  customization_id: z.string(),
-});
-
-export const MailingAddressSchema = z.object({
-  street_line1: z.string(),
-  street_line2: z.string().optional(),
-  city: z.string(),
-  region: z.string(),
-  postal_code: z.string(),
-  country_code_2: z.string().length(2),
-});
-
-export const RecipientSchema = z.object({
-  recipient_company: z.string(),
-  recipient_email: z.string().email(),
-  recipient_firstname: z.string(),
-  recipient_lastname: z.string(),
-  recipient_telephone: z.string(),
-});
-
-export const YubicoShipmentRequestSchema = z.object({
-  delivery_type: z.number(),
-  recipient: RecipientSchema,
-  mailing_address: MailingAddressSchema,
-  shipment_items: z.array(ShipmentItemSchema),
-});
-
-export const PinRequestSchema = z.object({
-  type: z.string(),
-  length: z.number(),
-});
-
-export const ShipmentRequestSchema = z.object({
-  user_id: z.string(),
-  pin_request: PinRequestSchema,
-  yubico_shipment_request: YubicoShipmentRequestSchema,
-});
-
-export const ShipmentSchema = z.object({
-  shipment_id: z.string()
-});
-
 // Type exports
-export type Product = z.infer<typeof ProductSchema>;
-export type SelectedProduct = z.infer<typeof SelectedProductSchema>;
 export type Address = z.infer<typeof AddressSchema>;
 export type ValidateAddressRequest = z.infer<typeof ValidateAddressRequestSchema>;
 export type ValidateAddressResponse = z.infer<typeof ValidateAddressResponseSchema>;
-export type Country = z.infer<typeof CountryApiSchema>;
-export type Shipment = z.infer<typeof ShipmentSchema>;
-export type ShipmentRequest = z.infer<typeof ShipmentRequestSchema>;
-export type DeliveryType = z.infer<typeof DeliveryTypeSchema>;
-export type CountriesResponse = z.infer<typeof CountriesResponseSchema>;
 export type ApiValidateAddressRequest = z.infer<typeof ApiValidateAddressRequestSchema>;
 export type ApiValidateAddressResponse = z.infer<typeof ApiValidateAddressResponseSchema>;

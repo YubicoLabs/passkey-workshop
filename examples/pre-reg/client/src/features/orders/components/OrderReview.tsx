@@ -14,7 +14,7 @@ import {
   Chip,
 } from '@mui/material';
 import { Key as KeyIcon, MapPin, User, Phone } from 'lucide-react';
-import { SelectedProduct, Address } from '@/types/api';
+import { SelectedProduct, Address } from '@/features/orders/types';
 import DOMPurify from 'dompurify';
 
 interface OrderReviewProps {

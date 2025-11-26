@@ -21,7 +21,7 @@ import {
   Product, 
   Shipment, 
   ShipmentRequest 
-} from '@/types/api';
+} from '@/features/orders/types';
 import { YubiKeyApiClient } from '@/shared/api/client';
 import { useOrderFlow } from '@/features/orders/hooks/useOrderFlow';
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Card, CardContent, Typography, Radio, FormControlLabel, RadioGroup, Alert, Button, Chip, Stack, styled } from '@mui/material';
 import { Wifi as WifiIcon, Key as KeyIcon } from 'lucide-react';
 import DOMPurify from 'dompurify';
-import { Product, SelectedProduct } from '@/types/api';
+import { Product, SelectedProduct } from '@/features/orders/types';
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 500,

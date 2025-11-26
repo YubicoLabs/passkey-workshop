@@ -14,7 +14,7 @@ import {
   styled 
 } from '@mui/material';
 import { ChevronDown, Check } from 'lucide-react';
-import { Address } from '@/types/api';
+import { Address } from '@/features/orders/types';
 import { useAddressForm } from '../hooks/useAddressForm';
 import { useCountries } from '../hooks/useCountries';
 import { useAddressValidation } from '../hooks/useAddressValidation';

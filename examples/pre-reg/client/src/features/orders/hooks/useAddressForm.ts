@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { AddressWithValidationSchema } from '@/types/api';
-import type { Address } from '@/types/api';
+import { AddressWithValidationSchema } from '@/features/orders/types';
+import type { Address } from '@/features/orders/types';
 
 export type ValidationStatus = 'idle' | 'validating' | 'validated' | 'error';
 
