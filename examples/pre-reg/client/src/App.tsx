@@ -4,8 +4,8 @@ import { CssBaseline, CircularProgress, Button, Box, Typography } from '@mui/mat
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // - Add this import
 import { AuthProvider } from 'react-oidc-context';
 
-import LoginPage from './components/LoginPage';
-import { useAuth } from './hooks/useAuth';
+import LoginPage from '@/features/auth/components/LoginPage';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { YubiKeyOrderFlow } from './components/YubiKeyOrderFlow';
 import { useApiClient } from './hooks/useApiClient';
 import { theme } from './theme';
