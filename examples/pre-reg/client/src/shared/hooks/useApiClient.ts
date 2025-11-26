@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { createApiClient, YubiKeyApiClient } from '@/services/api-client';
+import { createApiClient, YubiKeyApiClient } from '@/shared/api/client';
 
 export const useApiClient = (): YubiKeyApiClient => {
   const { user } = useAuth();
