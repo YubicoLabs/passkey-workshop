@@ -6,7 +6,7 @@ import { AuthProvider, useAuth } from 'react-oidc-context';
 
 import LoginPage from './components/LoginPage';
 import { YubiKeyOrderFlow } from './components/YubiKeyOrderFlow';
-import { createApiClient } from './services/api-client';
+import { useApiClient } from './hooks/useApiClient';
 import { theme } from './theme';
 import { oidcConfig } from './auth/config';
 
@@ -27,14 +27,7 @@ function AuthenticatedApp() {
     }
   }, [auth.user]);
 
-  const apiClient = React.useMemo(() => {
-    return createApiClient({
-      baseURL: import.meta.env.VITE_API_BASE_URL,
-      getIdToken: async () => {
-        return auth.user?.access_token || '';
-      },
-    });
-  }, [auth.user?.access_token]);
+  const apiClient = useApiClient();
 
   if (auth.isLoading) {
     return (
