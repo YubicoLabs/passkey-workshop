@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+# Minimal logging for production
+logging:
+  level:
+    root: WARN
+    com.example.apigateway: INFO
+    org.springframework.security: WARN
+    org.springframework.cloud.gateway: WARN

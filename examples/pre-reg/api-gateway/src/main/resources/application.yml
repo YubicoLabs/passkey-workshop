@@ -1,19 +1,13 @@
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: DEBUG
-    org.springframework.security.jwt: TRACE
-    org.springframework.cloud.gateway: DEBUG
-    reactor.netty.http.server: DEBUG
-    com.example.apigateway: DEBUG  # Your package
-
 spring:
+  application:
+    name: api-gateway
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8081/realms/fido-connector-dev
-  
+          issuer-uri: ${OIDC_ISSUER_URI}
+
   cloud:
     gateway:
       globalcors:
@@ -22,46 +16,55 @@ spring:
         add-to-simple-url-handler-mapping: true
         corsConfigurations:
           '[/api/**]':
-            allowedOrigins:
-              - "http://localhost:5173"
-              - "http://localhost:5175"
-              - "http://localhost:5174"
+            allowedOrigins: ${CORS_ALLOWED_ORIGINS}
             allowedMethods:
               - GET
               - POST
+              - PUT
+              - DELETE
               - OPTIONS
-            allowedHeaders:
-              - Authorization
-              - Content-Type
-              - Accept
+            allowedHeaders: "*"
             allowCredentials: true
+            maxAge: 3600
       routes:
-        # Address validation (USED)
+        # Address validation
         - id: validate-address
-          uri: https://iap-piercer.graywave-eec1246c.westus2.azurecontainerapps.io
+          uri: ${ADDRESS_VALIDATION_SERVICE_URL}
           predicates:
             - Path=/api/addresses/validate
           filters:
-            - SetRequestHeader=Authorization, Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2FwaS5jb25zb2xlLmRldi55dWJpY28uY29tIiwiZXhwIjoxNzkyODczMjczLCJpYXQiOjE3NjEzMzcyNzMsImp0aSI6IlB3UXZxd1pScDFRcVlUWERuYXRhcFoiLCJvcmciOiJHR1FmcUI2UnhTbzNZR3hGTFZZeExzIiwic3ViIjoiTFhCTGNpQ0hNQ3U5ZnJBZlA3Y1dyWiIsInZlciI6InYyIn0.3-0H55SGztCHctxL_J6fu4SUnJ54y6FyBplvQ2DmoVg
+            - SetRequestHeader=Authorization, Bearer ${DOWNSTREAM_API_TOKEN}
             - RewritePath=/api/addresses/validate,/v1/validate-address
-            - AddResponseHeader=X-Gateway-Transformed, true
 
+        # Countries list
         - id: countries-list
-          uri: https://iap-piercer.graywave-eec1246c.westus2.azurecontainerapps.io
+          uri: ${ADDRESS_VALIDATION_SERVICE_URL}
           predicates:
             - Path=/api/countries
           filters:
-            - SetRequestHeader=Authorization, Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2FwaS5jb25zb2xlLmRldi55dWJpY28uY29tIiwiZXhwIjoxNzkyODczMjczLCJpYXQiOjE3NjEzMzcyNzMsImp0aSI6IlB3UXZxd1pScDFRcVlUWERuYXRhcFoiLCJvcmciOiJHR1FmcUI2UnhTbzNZR3hGTFZZeExzIiwic3ViIjoiTFhCTGNpQ0hNQ3U5ZnJBZlA3Y1dyWiIsInZlciI6InYyIn0.3-0H55SGztCHctxL_J6fu4SUnJ54y6FyBplvQ2DmoVg
+            - SetRequestHeader=Authorization, Bearer ${DOWNSTREAM_API_TOKEN}
             - RewritePath=/api/countries,/v1/countries
-            - AddResponseHeader=X-Gateway-Transformed, true
 
+        # Shipment creation
         - id: create-shipment
           uri: ${FIDO_CONNECTOR_URL:http://localhost:8080}
           predicates:
             - Path=/api/shipments
+            - Method=POST
           filters:
             - TokenRelay
             - RewritePath=/api/shipments,/v1/fpr/shipments
 
 server:
-  port: 8086
+  port: ${SERVER_PORT:8086}
+  shutdown: graceful
+
+# Production-safe logging (defaults to INFO)
+logging:
+  level:
+    root: INFO
+    com.example.apigateway: INFO
+    org.springframework.security: WARN
+    org.springframework.cloud.gateway: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
