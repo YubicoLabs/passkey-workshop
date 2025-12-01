@@ -55,7 +55,7 @@ function AuthenticatedApp() {
 
       <YubiKeyOrderFlow
         apiClient={apiClient}
-        userEmail={user?.email || 'demo@example.com'}
+        userEmail={user?.email || ''}
         keycloakUserId={user?.sub}
         onComplete={() => {}}
         onCancel={() => {}}

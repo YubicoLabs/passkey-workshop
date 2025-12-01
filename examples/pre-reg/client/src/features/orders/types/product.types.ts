@@ -3,7 +3,9 @@ import { z } from 'zod';
 // Product schemas
 export const ProductSchema = z.object({
   id: z.string(),
-  productId: z.number().optional(),
+  productId: z.number(),
+  inventoryId: z.number(),
+  customizationId: z.string(),
   name: z.string(),
   description: z.string(),
   price: z.number(),

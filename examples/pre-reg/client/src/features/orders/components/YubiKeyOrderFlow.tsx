@@ -40,6 +40,8 @@ const defaultProducts: Product[] = [
   {
     id: 'yubikey-5-nfc',
     productId: 1,
+    inventoryId: 114,
+    customizationId: 'SV4Y20',
     name: 'YubiKey 5 NFC',
     description: 'USB-A with NFC for mobile and desktop',
     price: 50,
@@ -50,6 +52,8 @@ const defaultProducts: Product[] = [
   {
     id: 'yubikey-5-nano',
     productId: 2,
+    inventoryId: 114,
+    customizationId: 'SV4Y20',
     name: 'YubiKey 5 Nano',
     description: 'Ultra-small USB-A for laptops',
     price: 60,
@@ -60,6 +64,8 @@ const defaultProducts: Product[] = [
   {
     id: 'yubikey-5c',
     productId: 3,
+    inventoryId: 114,
+    customizationId: 'SV4Y20',
     name: 'YubiKey 5C',
     description: 'USB-C for modern devices',
     price: 55,
@@ -70,6 +76,8 @@ const defaultProducts: Product[] = [
   {
     id: 'yubikey-5c-nano',
     productId: 4,
+    inventoryId: 114,
+    customizationId: 'SV4Y20',
     name: 'YubiKey 5C Nano',
     description: 'Ultra-small USB-C for laptops',
     price: 65,
@@ -170,10 +178,10 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
         },
         // Mapping selected products to shipment items
         shipment_items: selectedProducts.map(sp => ({
-          product_id: sp.product.productId || 0, // Fallback if ID missing
-          inventory_product_id: 133, // Ideally mocked or dynamic
+          product_id: sp.product.productId,
+          inventory_product_id: sp.product.inventoryId,
           product_quantity: sp.quantity,
-          customization_id: 'standard-config'
+          customization_id: sp.product.customizationId
         })),
       },
     };
