@@ -149,7 +149,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
               onChange={(e) => setFieldValue('stateProvince', e.target.value)} 
               required fullWidth 
               error={!!fieldErrors.stateProvince} 
-              helperText={fieldErrors.stateProvince} 
+              helperText={fieldErrors.stateProvince || (formData.country === 'US' ? 'Use 2-letter code (e.g., TX, AZ, CA)' : '')} 
             />
           </Grid>
 
@@ -273,11 +273,11 @@ const ActionButton = styled(Button)(({ theme }) => ({
 }));
 
 const PrimaryButton = styled(ActionButton)(({ theme }) => ({
-  backgroundColor: '#000',
-  '&:hover': { backgroundColor: '#333' },
+  backgroundColor: theme.palette.common.black,
+  '&:hover': { backgroundColor: theme.palette.grey[800] },
 }));
 
 const ValidationButton = styled(ActionButton)(({ theme }) => ({
-  backgroundColor: '#666',
-  '&:hover': { backgroundColor: '#555' },
+  backgroundColor: theme.palette.grey[600],
+  '&:hover': { backgroundColor: theme.palette.grey[700] },
 }));

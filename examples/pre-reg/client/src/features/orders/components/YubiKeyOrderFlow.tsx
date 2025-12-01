@@ -100,7 +100,7 @@ const SuccessView = ({ shipmentId, onReset }: { shipmentId: string; onReset: () 
   <Box textAlign="center" py={6}>
     <Fade in>
       <Box>
-        <CheckCircle size={64} color="#388E3C" style={{ marginBottom: 16 }} />
+        <CheckCircle size={64} style={{ marginBottom: 16, color: '#4caf50' }} />
         <Typography variant="h4" gutterBottom>
           Order Confirmed!
         </Typography>

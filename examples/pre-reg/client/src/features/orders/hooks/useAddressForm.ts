@@ -46,10 +46,6 @@ export const useAddressForm = ({
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
       
-      if (field === 'country' && value !== prev.country) {
-        newData.stateProvince = '';
-      }
-      
       onAddressChange(newData);
       return newData;
     });

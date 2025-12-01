@@ -13,8 +13,8 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
 const NextButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(4), // Handles its own spacing
   paddingBlock: theme.spacing(1.5),
-  backgroundColor: '#000',
-  '&:hover': { backgroundColor: '#333' },
+  backgroundColor: theme.palette.common.black,
+  '&:hover': { backgroundColor: theme.palette.grey[800] },
   '&.Mui-disabled': { backgroundColor: 'rgba(0, 0, 0, 0.12)' },
 }));
 
