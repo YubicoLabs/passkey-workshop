@@ -10,7 +10,15 @@ import { useApiClient } from '@/shared/hooks/useApiClient';
 import { theme } from './theme';
 import { oidcConfig } from '@/features/auth/config/oidc';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 3,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function AuthenticatedApp() {
   const { isAuthenticated, isLoading, error, user, login, logout } = useAuth();
