@@ -1,4 +1,3 @@
-import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, CircularProgress, Button, Box, Typography } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // - Add this import
@@ -15,16 +14,6 @@ const queryClient = new QueryClient();
 
 function AuthenticatedApp() {
   const { isAuthenticated, isLoading, error, user, login, logout } = useAuth();
-
-  React.useEffect(() => {
-    if (user) {
-      console.log('🔐 Token Info:', {
-        sub: user.sub,
-        email: user.email,
-        name: user.name,
-      });
-    }
-  }, [user]);
 
   const apiClient = useApiClient();
 
@@ -68,12 +57,8 @@ function AuthenticatedApp() {
         apiClient={apiClient}
         userEmail={user?.email || 'demo@example.com'}
         keycloakUserId={user?.sub}
-        onComplete={(shipment) => {
-          console.log('Order completed:', shipment);
-        }}
-        onCancel={() => {
-          console.log('Order cancelled');
-        }}
+        onComplete={() => {}}
+        onCancel={() => {}}
       />
     </>
   );

@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { z } from 'zod';
 import {
   ValidateAddressRequest,
   ValidateAddressResponse,
@@ -44,7 +45,7 @@ export class YubiKeyApiClient {
           const token = await this.config.getIdToken();
           reqConfig.headers['Authorization'] = `Bearer ${token}`;
         } catch (error) {
-          console.error('Failed to get ID token:', error);
+          // Token fetch failed - request will proceed without auth header
         }
       }
 
@@ -55,34 +56,6 @@ export class YubiKeyApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response) {
-          // Server responded with error status
-          const { status, data } = error.response;
-          switch (status) {
-            case 401:
-              console.error('Unauthorized: Invalid credentials');
-              break;
-            case 403:
-              console.error('Forbidden: Access denied');
-              break;
-            case 404:
-              console.error('Not found');
-              break;
-            case 422:
-              console.error('Validation error:', data);
-              break;
-            case 500:
-              console.error('Server error');
-              break;
-          }
-        } else if (error.request) {
-          console.error('Network error: No response received');
-        } else if (axios.isCancel(error)) {
-          console.error('Request canceled:', error.message);
-        } else {
-          console.error('Error', error.message);
-        }
-
         return Promise.reject(error);
       }
     );
@@ -142,10 +115,10 @@ export class YubiKeyApiClient {
     try {
       return ShipmentSchema.parse(shipmentData);
     } catch (error) {
-      console.error('Failed to parse shipment response:', error);
-      console.error('Response data:', shipmentData);
-      // Return raw data for debugging if validation fails
-      return shipmentData as Shipment;
+      if (error instanceof z.ZodError) {
+        throw new Error(`Invalid shipment response: ${error.issues[0].message}`);
+      }
+      throw error;
     }
   }
 }
