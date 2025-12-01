@@ -13,6 +13,7 @@ import {
   ApiValidateAddressResponseSchema,
   ShipmentRequest
 } from '@/features/orders/types';
+import { env } from '@/config/env';
 
 export interface ApiClientConfig {
   baseURL: string;
@@ -126,7 +127,7 @@ export class YubiKeyApiClient {
 // Factory function for creating API client
 export const createApiClient = (config: Partial<ApiClientConfig> = {}): YubiKeyApiClient => {
   const defaultConfig: ApiClientConfig = {
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8086/api',
+    baseURL: env.VITE_API_BASE_URL,
     ...config,
   };
 

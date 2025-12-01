@@ -1,13 +1,14 @@
 import React from 'react';
-import { 
-  Container, 
-  Paper, 
-  Box, 
-  Typography, 
-  CircularProgress, 
-  Alert, 
+import {
+  Container,
+  Paper,
+  Box,
+  Typography,
+  CircularProgress,
+  Alert,
   Button,
-  Fade
+  Fade,
+  useTheme
 } from '@mui/material';
 import { CheckCircle } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
@@ -17,13 +18,14 @@ import { AddressForm } from './AddressForm';
 import { OrderReview } from './OrderReview';
 import ErrorBoundary from '@/shared/components/ErrorBoundary';
 
-import { 
-  Product, 
-  Shipment, 
-  ShipmentRequest 
+import {
+  Product,
+  Shipment,
+  ShipmentRequest
 } from '@/features/orders/types';
 import { YubiKeyApiClient } from '@/shared/api/client';
 import { useOrderFlow } from '@/features/orders/hooks/useOrderFlow';
+import { SHIPMENT_DEFAULTS } from '@/features/orders/constants/shipment.constants';
 
 export interface YubiKeyOrderFlowProps {
   apiClient: YubiKeyApiClient;
@@ -96,29 +98,33 @@ const useSubmitOrder = (apiClient: YubiKeyApiClient, onSuccess: (data: Shipment)
   });
 };
 
-const SuccessView = ({ shipmentId, onReset }: { shipmentId: string; onReset: () => void }) => (
-  <Box textAlign="center" py={6}>
-    <Fade in>
-      <Box>
-        <CheckCircle size={64} style={{ marginBottom: 16, color: '#4caf50' }} />
-        <Typography variant="h4" gutterBottom>
-          Order Confirmed!
-        </Typography>
-        <Typography color="text.secondary" paragraph>
-          Your shipment has been created successfully.
-        </Typography>
-        <Typography variant="subtitle1" sx={{ fontFamily: 'monospace', mb: 4, bgcolor: 'grey.100', p: 1, borderRadius: 1, display: 'inline-block' }}>
-          ID: {shipmentId}
-        </Typography>
+const SuccessView = ({ shipmentId, onReset }: { shipmentId: string; onReset: () => void }) => {
+  const theme = useTheme();
+
+  return (
+    <Box textAlign="center" py={6}>
+      <Fade in>
         <Box>
-          <Button variant="contained" onClick={onReset}>
-            Place Another Order
-          </Button>
+          <CheckCircle size={64} style={{ marginBottom: 16, color: theme.palette.success.main }} />
+          <Typography variant="h4" gutterBottom>
+            Order Confirmed!
+          </Typography>
+          <Typography color="text.secondary" paragraph>
+            Your shipment has been created successfully.
+          </Typography>
+          <Typography variant="subtitle1" sx={{ fontFamily: 'monospace', mb: 4, bgcolor: 'grey.100', p: 1, borderRadius: 1, display: 'inline-block' }}>
+            ID: {shipmentId}
+          </Typography>
+          <Box>
+            <Button variant="contained" onClick={onReset}>
+              Place Another Order
+            </Button>
+          </Box>
         </Box>
-      </Box>
-    </Fade>
-  </Box>
-);
+      </Fade>
+    </Box>
+  );
+};
 
 const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
   apiClient,
@@ -151,18 +157,21 @@ const YubiKeyOrderFlowInternal: React.FC<YubiKeyOrderFlowProps> = ({
 
   const handleReviewConfirm = () => {
     if (!address || !keycloakUserId) {
-      console.error("Missing address or User ID");
-      return;
+      // This should never happen due to UI validation, but handle gracefully
+      throw new Error('Cannot submit order: missing required information');
     }
 
     // Construct the payload based on the strict Zod schema in types/api.ts
     const payload: ShipmentRequest = {
       user_id: keycloakUserId,
-      pin_request: { type: 'generate', length: 8 },
+      pin_request: {
+        type: SHIPMENT_DEFAULTS.PIN_TYPE,
+        length: SHIPMENT_DEFAULTS.PIN_LENGTH
+      },
       yubico_shipment_request: {
-        delivery_type: 1,
+        delivery_type: SHIPMENT_DEFAULTS.DELIVERY_TYPE_STANDARD,
         recipient: {
-          recipient_company: 'Yubico', // Or derive from props
+          recipient_company: SHIPMENT_DEFAULTS.RECIPIENT_COMPANY,
           recipient_email: userEmail,
           recipient_firstname: address.firstName,
           recipient_lastname: address.lastName,

@@ -53,9 +53,16 @@ function AuthenticatedApp() {
   return (
     <>
       <Button 
-        variant="outlined" 
+        variant="contained" 
         size="small"
-        sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
+        sx={{ 
+          position: 'absolute', 
+          top: 16, 
+          right: 16, 
+          zIndex: 1000,
+          backgroundColor: 'common.black',
+          '&:hover': { backgroundColor: 'grey.800' }
+        }}
         onClick={logout}
       >
         Logout ({user?.email})
