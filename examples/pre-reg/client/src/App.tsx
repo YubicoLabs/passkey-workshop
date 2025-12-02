@@ -1,12 +1,13 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, CircularProgress, Button, Box, Typography } from '@mui/material';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // - Add this import
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from 'react-oidc-context';
 
 import LoginPage from '@/features/auth/components/LoginPage';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { YubiKeyOrderFlow } from '@/features/orders/components/YubiKeyOrderFlow';
 import { useApiClient } from '@/shared/hooks/useApiClient';
+import { ErrorScreen } from '@/shared/components/ErrorScreen';
 import { theme } from './theme';
 import { oidcConfig } from '@/features/auth/config/oidc';
 
@@ -36,13 +37,14 @@ function AuthenticatedApp() {
 
   if (error) {
     return (
-      <Box sx={{ p: 4 }}>
-        <Typography variant="h6" color="error">Authentication Error</Typography>
-        <Typography>{error.message}</Typography>
-        <Button variant="contained" onClick={login}>
-          Try Again
-        </Button>
-      </Box>
+      <ErrorScreen
+        title="Authentication Error"
+        message="We couldn't sign you in. Please check your connection and try again."
+        actionLabel="Try Again"
+        onAction={login}
+        showTechnicalDetails={import.meta.env.DEV}
+        technicalDetails={error.message}
+      />
     );
   }
 
