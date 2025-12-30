@@ -1,0 +1,16 @@
+# Environment files (contain secrets)
+.env
+.env.*
+!default.env
+
+# Build artifacts
+node_modules/
+target/
+dist/
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store

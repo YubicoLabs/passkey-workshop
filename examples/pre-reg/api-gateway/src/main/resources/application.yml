@@ -6,7 +6,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${OIDC_ISSUER_URI}
+          # The issuer that appears in the JWT token (what browser sees)
+          issuer-uri: ${OIDC_ISSUER_URI:http://localhost:8081/realms/pre-reg}
+          # Where to fetch JWKS keys (internal Docker network)
+          jwk-set-uri: ${OIDC_JWK_SET_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/certs}
 
   cloud:
     gateway:

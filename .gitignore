@@ -44,3 +44,15 @@ scripts/java-app/.env
 scripts/java-app/com.yubicolabs.passkey_rp.jar
 scripts/java-app/source
 scripts/react-app/source
+
+### Node.js ###
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+### Environment files ###
+.env
+.env.local
+.env.*.local
