@@ -2,6 +2,59 @@ import { useState, useCallback } from 'react';
 import { AddressWithValidationSchema } from '@/features/orders/types';
 import type { Address } from '@/features/orders/types';
 
+/**
+ * Region/state normalization for address validation API.
+ * The API requires 2-letter region codes if country_code_2 is "US" or "CA".
+ * These mappings convert full names to abbreviations.
+ */
+
+// US States mapping
+const US_STATES: Record<string, string> = {
+  'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR',
+  'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE',
+  'florida': 'FL', 'georgia': 'GA', 'hawaii': 'HI', 'idaho': 'ID',
+  'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA', 'kansas': 'KS',
+  'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
+  'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS',
+  'missouri': 'MO', 'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV',
+  'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY',
+  'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH', 'oklahoma': 'OK',
+  'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+  'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT',
+  'vermont': 'VT', 'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV',
+  'wisconsin': 'WI', 'wyoming': 'WY', 'district of columbia': 'DC',
+};
+
+// Canadian Provinces mapping
+const CA_PROVINCES: Record<string, string> = {
+  'alberta': 'AB', 'british columbia': 'BC', 'manitoba': 'MB',
+  'new brunswick': 'NB', 'newfoundland and labrador': 'NL', 'newfoundland': 'NL',
+  'northwest territories': 'NT', 'nova scotia': 'NS', 'nunavut': 'NU',
+  'ontario': 'ON', 'prince edward island': 'PE', 'quebec': 'QC',
+  'saskatchewan': 'SK', 'yukon': 'YT',
+};
+
+/**
+ * Converts state/province name to 2-letter abbreviation.
+ * Required for US and CA addresses per API specification.
+ */
+const normalizeStateProvince = (state: string, country: string): string => {
+  const normalized = state.trim().toLowerCase();
+  
+  // If already a 2-letter code, return uppercase
+  if (normalized.length === 2) return state.toUpperCase();
+  
+  if (country === 'US') {
+    return US_STATES[normalized] || state;
+  }
+  
+  if (country === 'CA') {
+    return CA_PROVINCES[normalized] || state;
+  }
+  
+  return state;
+};
+
 export type ValidationStatus = 'idle' | 'validating' | 'validated' | 'error';
 
 export interface UseAddressFormOptions {
@@ -85,12 +138,25 @@ export const useAddressForm = ({
     }
 
     try {
-      const serverResult = await onServerValidate(formData);
+      // Normalize state/province before sending to server (e.g., "Texas" -> "TX")
+      const normalizedData = {
+        ...formData,
+        stateProvince: normalizeStateProvince(formData.stateProvince, formData.country),
+      };
+      const serverResult = await onServerValidate(normalizedData);
       
       if (serverResult.validated) {
         setValidationStatus('validated');
+        // If API suggests address corrections (e.g., typo fixes), apply those
+        // but preserve the user's original state/province format for display
         if (serverResult.suggestedAddress) {
-          setFormData(serverResult.suggestedAddress);
+          const displayAddress = {
+            ...serverResult.suggestedAddress,
+            // Keep user's original input for state/province (they typed "Texas", not "TX")
+            stateProvince: formData.stateProvince,
+          };
+          setFormData(displayAddress);
+          onAddressChange(displayAddress);
         }
         return true;
       } else {

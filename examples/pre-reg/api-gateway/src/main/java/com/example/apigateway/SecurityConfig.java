@@ -11,13 +11,13 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authorization.HttpStatusServerAccessDeniedHandler;
 import org.springframework.security.web.server.authentication.HttpStatusServerEntryPoint;
 
+/**
+ * Security configuration for the API Gateway.
+ * Enforces JWT authentication for all API endpoints while allowing
+ * unauthenticated access to health probes and CORS preflight requests.
+ */
 @Configuration
 @EnableWebFluxSecurity
-/**
- * Ensures that only authenticated users can access our APIs.
- * Status checks and browser preflight requests are allowed without login.
- * All other requests require a valid JWT from our identity provider.
- */
 public class SecurityConfig {
 
     @Bean
@@ -28,7 +28,7 @@ public class SecurityConfig {
             .authorizeExchange(authorize -> authorize
                 .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .pathMatchers("/api/status").permitAll()
-                .pathMatchers("/actuator/**").permitAll() // Health checks
+                .pathMatchers("/actuator/health", "/actuator/health/**").permitAll() // Only health probes public
                 .anyExchange().authenticated()
             )
 

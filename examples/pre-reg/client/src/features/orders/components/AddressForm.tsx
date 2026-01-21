@@ -147,7 +147,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
               onChange={(e) => setFieldValue('stateProvince', e.target.value)} 
               required fullWidth 
               error={!!fieldErrors.stateProvince} 
-              helperText={fieldErrors.stateProvince || (formData.country === 'US' ? 'Use 2-letter code (e.g., TX, AZ, CA)' : '')} 
+              helperText={fieldErrors.stateProvince} 
             />
           </Grid>
 

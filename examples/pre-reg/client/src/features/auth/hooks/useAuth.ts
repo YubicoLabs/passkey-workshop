@@ -4,6 +4,7 @@ export interface AuthUser {
   sub: string;
   email?: string;
   name?: string;
+  preferred_username?: string;
   access_token: string;
 }
 
@@ -24,6 +25,7 @@ export const useAuth = (): UseAuthReturn => {
         sub: auth.user.profile.sub as string,
         email: auth.user.profile.email as string | undefined,
         name: auth.user.profile.name as string | undefined,
+        preferred_username: auth.user.profile.preferred_username as string | undefined,
         access_token: auth.user.access_token,
       }
     : null;

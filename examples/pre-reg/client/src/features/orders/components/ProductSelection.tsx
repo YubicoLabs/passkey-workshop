@@ -92,7 +92,7 @@ export const ProductSelection: React.FC<ProductSelectionProps> = ({
 }) => {
   const primaryKeyId = selectedProducts.find(p => p.isPrimary)?.product.id || '';
   const backupKeyId = selectedProducts.find(p => !p.isPrimary)?.product.id || '';
-  const isComplete = primaryKeyId && backupKeyId;
+  const isComplete = primaryKeyId;
 
   const handleSelection = (id: string, isPrimary: boolean) => {
     const currentPrimaryId = isPrimary ? id : primaryKeyId;

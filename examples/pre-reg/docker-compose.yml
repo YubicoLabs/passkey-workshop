@@ -21,6 +21,8 @@ services:
       - keycloak
     ports:
       - "${GATEWAY_PORT:-8086}:8086"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       SPRING_PROFILES_ACTIVE: dev
       OIDC_ISSUER_URI: ${KEYCLOAK_URL:-http://localhost:8082}/realms/pre-reg
@@ -28,6 +30,7 @@ services:
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
       ADDRESS_VALIDATION_SERVICE_URL: ${ADDRESS_VALIDATION_SERVICE_URL:-https://iap-piercer.graywave-eec1246c.westus2.azurecontainerapps.io}
       DOWNSTREAM_API_TOKEN: ${DOWNSTREAM_API_TOKEN}
+      FIDO_CONNECTOR_URL: http://host.docker.internal:8080
 
   keycloak:
     build: ./keycloak
