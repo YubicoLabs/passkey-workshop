@@ -1,0 +1,35 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Disable issuer validation for tests (we mock the JWT decoder)
+          issuer-uri: https://test-issuer.example.com
+          jwk-set-uri: https://test-issuer.example.com/.well-known/jwks.json
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/api/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    root: WARN
+    com.example.apigateway: DEBUG

@@ -1,0 +1,8 @@
+{
+  "label": "FIDO Pre-registration",
+  "position": 9,
+  "link": {
+    "type": "generated-index",
+    "description": "Learn how to implement FIDO Pre-registration to ship pre-registered YubiKeys directly to your users, enabling secure onboarding without requiring users to physically set up their security keys."
+  }
+}

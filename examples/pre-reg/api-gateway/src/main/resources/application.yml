@@ -1,0 +1,86 @@
+spring:
+  application:
+    name: api-gateway
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # The issuer that appears in the JWT token (what browser sees)
+          issuer-uri: ${OIDC_ISSUER_URI:http://localhost:8081/realms/pre-reg}
+          # Where to fetch JWKS keys (internal Docker network)
+          jwk-set-uri: ${OIDC_JWK_SET_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/certs}
+
+  cloud:
+    gateway:
+      globalcors:
+        default-filters:
+        - TokenRelay
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/api/**]':
+            allowedOrigins: ${CORS_ALLOWED_ORIGINS}
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+      routes:
+        # Address validation
+        - id: validate-address
+          uri: ${ADDRESS_VALIDATION_SERVICE_URL}
+          predicates:
+            - Path=/api/addresses/validate
+          filters:
+            - SetRequestHeader=Authorization, Bearer ${DOWNSTREAM_API_TOKEN}
+            - RewritePath=/api/addresses/validate,/v1/validate-address
+
+        # Countries list
+        - id: countries-list
+          uri: ${ADDRESS_VALIDATION_SERVICE_URL}
+          predicates:
+            - Path=/api/countries
+          filters:
+            - SetRequestHeader=Authorization, Bearer ${DOWNSTREAM_API_TOKEN}
+            - RewritePath=/api/countries,/v1/countries
+
+        # Shipment creation
+        - id: create-shipment
+          uri: ${FIDO_CONNECTOR_URL:http://localhost:8080}
+          predicates:
+            - Path=/api/shipments
+            - Method=POST
+          filters:
+            - TokenRelay
+            - RewritePath=/api/shipments,/v1/fpr/shipments
+
+server:
+  port: ${SERVER_PORT:8086}
+  shutdown: graceful
+
+# Production-safe logging (defaults to INFO)
+logging:
+  level:
+    root: INFO
+    com.example.apigateway: INFO
+    org.springframework.security: WARN
+    org.springframework.cloud.gateway: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Health checks and monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true

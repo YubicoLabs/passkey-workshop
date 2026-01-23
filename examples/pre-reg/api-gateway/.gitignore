@@ -1,0 +1,19 @@
+# Environment files (NEVER commit actual secrets)
+.env
+*.env
+!.env.template
+
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
