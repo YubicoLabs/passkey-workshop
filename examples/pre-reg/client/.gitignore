@@ -19,11 +19,6 @@ dist-ssr
 
 # Testing
 coverage/
-playwright-report/
-test-results/
-
-# Storybook build output
-storybook-static/
 
 # Environment variables
 .env
